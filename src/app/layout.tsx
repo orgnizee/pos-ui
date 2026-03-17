@@ -43,12 +43,6 @@ export default function RootLayout({
           </Link>
         </header>
 
-        <Link href={"/"}>
-          <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start">
-            Olá
-          </h1>
-        </Link>
-
         {children}
       </body>
     </html>

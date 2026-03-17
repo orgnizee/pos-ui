@@ -1,9 +1,14 @@
+import Link from "next/link";
 import Card from "@/components/card";
 import ArrowRight from "@/icons/ArrowRight";
 
 export default function Home() {
   return (
     <main>
+      <Link href={"/"}>
+        <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start">Olá</h1>
+      </Link>
+
       <div className="overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold">
@@ -12,7 +17,7 @@ export default function Home() {
               description={["01 ", "04", "26"]}
               year="acomanhe o andamento"
               where=""
-              link="/acompanhe"
+              link="/entrar"
             />
 
             <Card
