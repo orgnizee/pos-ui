@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Card from "@/components/card";
 import ArrowRight from "@/icons/ArrowRight";
 import { getUser } from "@/lib/api/user";
@@ -14,36 +13,42 @@ export default async function Home() {
 
   return (
     <main>
-      <Link href={"/"}>
-        <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start normal-case">
-          oi, @{name}
-        </h1>
-      </Link>
+      <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start normal-case">
+        oi, @{name}
+      </h1>
 
       <div className="overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold">
             <Card
-              title="INÍCIO EM 01 DE ABRIL"
-              description={["01 ", "04", "26"]}
-              year="acomanhe o andamento"
+              title="vendas hoje"
+              description={["01"]}
+              year="fazer venda"
               where=""
               link="/entrar"
             />
 
             <Card
-              title="parcelas & pagamentos"
-              description={["R$"]}
-              year="acompanhe suas parcelas"
+              title="saldo em caixa"
+              description={["R$1.230,00"]}
+              year="ver caixa"
               where=""
               link="/parcelas"
             />
 
             <Card
-              title="detalhamento"
-              description={["termos,", "valores,", "prazo."]}
-              year="atualizado em 14•03•26"
-              where="sp"
+              title="clientes & fornecedores"
+              description={["pesquisar"]}
+              year="cadastar • editar"
+              where=""
+              link="/termos"
+            />
+
+            <Card
+              title="produtos"
+              description={["pesquisar"]}
+              year="cadastar • editar"
+              where=""
               link="/termos"
             />
           </div>
