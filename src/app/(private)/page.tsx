@@ -33,7 +33,7 @@ export default async function Home() {
               description={["R$1.230,00"]}
               year="ver caixa"
               where=""
-              link="/parcelas"
+              link="/caixa"
             />
 
             <Card
