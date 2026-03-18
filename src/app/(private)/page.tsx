@@ -1,12 +1,23 @@
 import Link from "next/link";
 import Card from "@/components/card";
 import ArrowRight from "@/icons/ArrowRight";
+import { getUser } from "@/lib/api/user";
+import { isApiError } from "@/lib/api/types";
 
-export default function Home() {
+export default async function Home() {
+  const res = await getUser();
+  let name = "";
+
+  if (!isApiError(res)) {
+    name = res.username;
+  }
+
   return (
     <main>
       <Link href={"/"}>
-        <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start">Olá</h1>
+        <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start normal-case">
+          oi, @{name}
+        </h1>
       </Link>
 
       <div className="overflow-hidden">
