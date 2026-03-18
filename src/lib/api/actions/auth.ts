@@ -34,3 +34,9 @@ export async function getTokenAction(
 
   redirect("/");
 }
+
+export async function logoutAction() {
+  const cookieStore = await cookies();
+  cookieStore.delete("access");
+  redirect("/entrar");
+}

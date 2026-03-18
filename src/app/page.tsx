@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Card from "@/components/card";
 import ArrowRight from "@/icons/ArrowRight";
+import { LogoutButton } from "@/components/logoutButton";
 
 export default function Home() {
   return (
@@ -45,6 +46,8 @@ export default function Home() {
           strokeWidth={0.5}
         />
       </div>
+
+      <LogoutButton />
     </main>
   );
 }
