@@ -1,11 +1,15 @@
 "use server";
+
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { getToken } from "@/lib/api/token";
 import { isApiError } from "@/lib/api/types";
 
-export type TokenActionState =
-  | { error: true; message: string; details?: unknown }
-  | { success: true }
-  | null;
+export type TokenActionState = {
+  error: true;
+  message: string;
+  details?: unknown;
+} | null;
 
 export async function getTokenAction(
   _: unknown,
@@ -20,6 +24,13 @@ export async function getTokenAction(
     return { error: true, message: res.message, details: res.details };
   }
 
-  // res is Token here — do what you need, e.g. set a cookie
-  return { success: true };
+  const cookieStore = await cookies();
+  cookieStore.set("access", res.access, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+
+  redirect("/");
 }

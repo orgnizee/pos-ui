@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { ApiError } from "./types";
 import { buildApiError } from "./errors";
 
@@ -5,10 +6,14 @@ export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T | ApiError> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access")?.value;
+
   const res = await fetch(`${process.env.LOCAL_API_URL}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...(options.headers || {}),
     },
     cache: "no-store",
