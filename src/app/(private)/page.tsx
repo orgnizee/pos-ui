@@ -12,7 +12,7 @@ export default async function Home() {
   }
 
   return (
-    <main>
+    <main className="ml-4 mr-1 sm:ml-10">
       <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start normal-case">
         oi, @{name}
       </h1>
@@ -34,6 +34,22 @@ export default async function Home() {
               year="ver caixa"
               where=""
               link="/caixa"
+            />
+
+            <Card
+              title="a receber"
+              description={["fiados"]}
+              year="ver contas a receber"
+              where=""
+              link="/"
+            />
+
+            <Card
+              title="a pagar"
+              description={["contas"]}
+              year="ver contas a pagar"
+              where=""
+              link="/"
             />
 
             <Card

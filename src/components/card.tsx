@@ -23,7 +23,7 @@ export default function Card({
   return (
     <Link
         href={link}
-      className={`relative min-w-77.25 min-h-112.5 sm:min-w-100 sm:min-h-125 shrink-0 rounded-md shadow-lg ${bg} hover:bg-secondary/10 overflow-hidden`}
+      className={`relative min-w-77.25 min-h-110 sm:min-w-100 sm:min-h-120 shrink-0 rounded-md shadow-lg ${bg} hover:bg-secondary/10 overflow-hidden`}
     >
       <p className={`absolute top-4 left-4 text-xl ${text}`}>{title}</p>
 

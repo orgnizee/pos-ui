@@ -10,8 +10,7 @@ export default async function Acompanhe() {
   }
 
   return (
-    <main>
-      {/* HEADER */}
+    <main className="ml-4 mr-1 sm:ml-10">
       <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start normal-case">
         caixa
       </h1>

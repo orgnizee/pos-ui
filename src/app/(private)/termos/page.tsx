@@ -1,6 +1,6 @@
 export default function Proposta() {
   return (
-    <main>
+    <main className="p-4 sm:px-10">
       {/* HEADER */}
       <section className="grid grid-cols-1 sm:grid-cols-4">
         {/* TABLE OF CONTENT */}

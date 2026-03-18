@@ -2,7 +2,7 @@ import ArrowRight from "@/icons/ArrowRight";
 
 export default function Acompanhe() {
   return (
-    <main>
+    <main className="p-4 sm:px-10">
       {/* HEADER */}
       <p className="ml-2 text-sm normal-case">
         Acompanhe o andamento do seu projeto

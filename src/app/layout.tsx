@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body
-        className={`bg-background p-4 sm:px-10 ${lekton.className} uppercase antialiased`}
+        className={`bg-background ${lekton.className} uppercase antialiased`}
       >
         {children}
       </body>
