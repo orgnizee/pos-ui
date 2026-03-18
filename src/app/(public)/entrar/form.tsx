@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { getTokenAction, TokenActionState } from "../../lib/api/actions/auth";
+import { getTokenAction, TokenActionState } from "@/lib/api/actions/auth";
 
 export default function LoginForm() {
   const [state, action, pending] = useActionState<TokenActionState, FormData>(
