@@ -1,18 +1,24 @@
-export default function Form() {
-  async function action(formData: FormData) {
-    "use server";
-    const username = formData.get("username");
-    const password = formData.get("password");
-    console.log(username);
-    console.log(password);
-  }
+"use client";
+
+import { useActionState } from "react";
+import { getTokenAction, TokenActionState } from "./actions";
+
+export default function LoginForm() {
+  const [state, action, pending] = useActionState<TokenActionState, FormData>(
+    getTokenAction,
+    null,
+  );
 
   return (
-    <form action={action}>
-      <p className="text-center text-3xl">🗝️</p>
+    <form action={action} className="">
+      <p className="text-center text-3xl normal-case">oi,</p>
+      <p className="ml-2 text-center text-sm font-light normal-case">
+        entre na sua conta
+      </p>
 
       <div className="mt-6 w-50 h-fit text-sm font-light rounded-md bg-background">
         <input
+          required
           name="username"
           placeholder="usuário"
           type="text"
@@ -24,6 +30,7 @@ export default function Form() {
 
       <div className="mt-2 w-50 h-fit text-sm font-light rounded-md bg-background">
         <input
+          required
           name="password"
           placeholder="senha"
           type="password"
@@ -31,10 +38,19 @@ export default function Form() {
         />
       </div>
 
-      <div className="relative mt-4 w-fit px-2 py-0.5 rounded-md bg-black cursor-pointer">
+      <div className="mt-1 relative h-5">
+        {state && "error" in state && (
+          <p className="text-end text-xs font-light normal-case text-red-500">
+            {state.message}
+          </p>
+        )}
+      </div>
+
+      <div className="relative w-fit px-2 py-0.5 rounded-md bg-black cursor-pointer">
         <button
           type="submit"
-          className="text-white text-sm w-full h-full cursor-pointer"
+          disabled={pending}
+          className="flex items-center text-sm text-white cursor-pointer"
         >
           entrar
         </button>
