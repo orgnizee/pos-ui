@@ -10,6 +10,10 @@ type Account = {
   is_active: boolean;
 };
 
+type Balance = {
+  total_balance: string;
+};
+
 type AccountsResponse = {
   count: number;
   next: string | null;
@@ -26,3 +30,9 @@ export const getAccounts = cache(async (): Promise<Account[] | ApiError> => {
 
   return res.results.map((r) => r.account);
 });
+
+export async function getTotalBalance(): Promise<Balance | ApiError> {
+  return apiFetch("/finance/total-balance", {
+    method: "get",
+  });
+}

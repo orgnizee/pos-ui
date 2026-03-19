@@ -1,12 +1,17 @@
-import { getAccounts } from "@/lib/api/bank-accounts";
+import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 
 export default async function Acompanhe() {
-  const res = await getAccounts();
+  const accounts = await getAccounts();
+  const totalBalance = await getTotalBalance();
 
-  if (isApiError(res)) {
-    return <p>{res.message}</p>;
+  if (isApiError(accounts)) {
+    return <p>{accounts.message}</p>;
+  }
+
+  if (isApiError(totalBalance)) {
+    return <p>{totalBalance.message}</p>;
   }
 
   return (
@@ -18,11 +23,16 @@ export default async function Acompanhe() {
       <div className="mt-8 overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold items-center">
-            <div className="flex items-center justify-center w-40 h-fit px-1 py-0.5 pt-1 shrink-0 rounded-md bg-secondary/20 overflow-hidden">
-              <p className="text-center text-sm normal-case">R$ 1.2350,00</p>
+            <div className="grid items-center justify-center shrink-0 rounded-md overflow-hidden">
+              <p className="text-center text-sm normal-case font-light">
+                saldo total
+              </p>
+              <p className="w-40 h-fit px-1 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
+                {formatBRL(totalBalance.total_balance)}
+              </p>
             </div>
 
-            {res.map((account) => (
+            {accounts.map((account) => (
               <div
                 key={account.id}
                 className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full bg-secondary/10 overflow-hidden"
