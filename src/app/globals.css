@@ -8,6 +8,18 @@
   --color-background: #f4f3eeff;
 }
 
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
 @utility code {
   @apply p-1 rounded-md bg-secondary/20 font-mono text-xs;
 }

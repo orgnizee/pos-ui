@@ -2,6 +2,7 @@ import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 import { ArrowRightLeft, Minus, Plus } from "lucide-react";
+import Link from "next/link";
 
 export default async function Acompanhe() {
   const accounts = await getAccounts();
@@ -16,21 +17,30 @@ export default async function Acompanhe() {
   }
 
   return (
-    <main className="ml-4 mr-1 sm:ml-10">
-      <div className="flex items-center justify-between ml-1 mr-10 mt-8">
+    <section>
+      <div className="flex items-center justify-between mr-4 sm:mr-10">
         <h1 className="text-5xl sm:text-6xl normal-case">caixa</h1>
 
         {/* Transaction Buttons */}
         <div className="flex gap-2">
-          <div className="flex w-7 h-7 items-center justify-center rounded-md bg-black">
+          <Link
+            href={"caixa/entrada"}
+            className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
+          >
             <Plus className="text-white" size={16} />
-          </div>
-          <div className="flex w-7 h-7 items-center justify-center rounded-md bg-black">
+          </Link>
+          <Link
+            href={"caixa/saida"}
+            className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
+          >
             <Minus className="text-white" size={16} />
-          </div>
-          <div className="flex w-7 h-7 items-center justify-center rounded-md bg-black">
+          </Link>
+          <Link
+            href={"caixa/transferencia"}
+            className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
+          >
             <ArrowRightLeft className="text-white" size={16} />
-          </div>
+          </Link>
         </div>
       </div>
 
@@ -63,6 +73,6 @@ export default async function Acompanhe() {
           </div>
         </div>
       </div>
-    </main>
+    </section>
   );
 }
