@@ -28,7 +28,7 @@ export default function Card({
       <p className={`absolute top-4 left-4 text-xl ${text}`}>{title}</p>
 
       <p
-        className={`absolute top-14 left-4 pr-2 sm:pr-0 text-5xl sm:text-6xl font-light ${text} ${quicksand.className}`}
+        className={`absolute top-14 left-4 pr-2 sm:pr-0 text-4xl sm:text-5xl font-light ${text} ${quicksand.className}`}
       >
         {description.map((line, i) => (
           <span key={i} className="block">

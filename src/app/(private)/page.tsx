@@ -20,7 +20,7 @@ export default async function Home() {
 
   return (
     <main className="ml-4 mr-1 sm:ml-10">
-      <h1 className="ml-1 mt-8 text-5xl sm:text-6xl text-start normal-case">
+      <h1 className="ml-1 mt-8 text-4xl sm:text-5xl text-start normal-case">
         oi, @{name}
       </h1>
 
