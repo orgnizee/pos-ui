@@ -36,7 +36,7 @@ export default function TransactionTable({
                       {formatBRL(transaction.amount)}
                     </td>
                     <td className="hidden sm:table-cell px-2 truncate text-start normal-case">
-                      {transaction.contact.name ?? "Hugo Cordeiro Belém"}
+                      {transaction.contact.name ?? "-"}
                     </td>
                     <td className="px-2 pr-4 text-end sm:text-center normal-case rounded-r-lg">
                       {transaction.account.name.toLowerCase()}

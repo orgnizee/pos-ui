@@ -30,7 +30,19 @@ export default function TransactionForm({
   const [accountValue, setAccountValue] = useState("");
   const [categoryValue, setCategoryValue] = useState("");
   const [contactValue, setContactValue] = useState("");
-  
+
+  const [cents, setCents] = useState(0);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "");
+    setCents(Number(digits));
+  };
+
+  const displayValue = (cents / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
   return (
     <form action={action} className="flex flex-col items-start">
       <input
@@ -45,11 +57,14 @@ export default function TransactionForm({
       <p className="text-sm font-light normal-case">valor</p>
       <input
         required
-        name="amount"
-        type="number"
-        placeholder="R$ 0,00"
+        type="text"
+        inputMode="numeric"
+        value={displayValue}
+        onChange={handleChange}
         className="mt-1.5 text-start text-3xl normal-case outline-none"
       />
+      {/* Hidden input carries the real numeric value for form submission */}
+      <input type="hidden" name="amount" value={(cents / 100).toFixed(2)} />
 
       <div className="mt-4 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
         <select
