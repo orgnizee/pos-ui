@@ -2,13 +2,20 @@ import Card from "@/components/card";
 import ArrowRight from "@/icons/ArrowRight";
 import { getUser } from "@/lib/api/user";
 import { isApiError } from "@/lib/api/types";
+import { getTotalBalance } from "@/lib/api/bank-accounts";
+import { formatBRL } from "@/lib/utils/format";
 
 export default async function Home() {
   const res = await getUser();
+  const totalBalance = await getTotalBalance();
   let name = "";
 
   if (!isApiError(res)) {
     name = res.username;
+  }
+
+  if (isApiError(totalBalance)) {
+    return <p>{totalBalance.message}</p>;
   }
 
   return (
@@ -30,7 +37,7 @@ export default async function Home() {
 
             <Card
               title="saldo em caixa"
-              description={["R$1.230,00"]}
+              description={[formatBRL(totalBalance.total_balance)]}
               year="ver caixa"
               where=""
               link="/caixa"
