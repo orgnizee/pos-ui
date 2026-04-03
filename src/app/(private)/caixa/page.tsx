@@ -1,4 +1,6 @@
+import TransactionTable from "@/components/transactionsTable";
 import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
+import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 import { ArrowRightLeft, Minus, Plus } from "lucide-react";
@@ -7,6 +9,7 @@ import Link from "next/link";
 export default async function Acompanhe() {
   const accounts = await getAccounts();
   const totalBalance = await getTotalBalance();
+  const transactions = await getTransactions();
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
@@ -14,6 +17,10 @@ export default async function Acompanhe() {
 
   if (isApiError(totalBalance)) {
     return <p>{totalBalance.message}</p>;
+  }
+
+  if (isApiError(transactions)) {
+    return <p>{transactions.message}</p>;
   }
 
   return (
@@ -73,6 +80,9 @@ export default async function Acompanhe() {
           </div>
         </div>
       </div>
+
+      {/* Transaction History */}
+      <TransactionTable transactions={transactions} />
     </section>
   );
 }
