@@ -1,6 +1,9 @@
+"use client";
+
 import { Transaction } from "@/lib/api/transaction";
 import { formatBRL } from "@/lib/utils/format";
 import { ArrowDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -10,6 +13,7 @@ export default function TransactionTable({
   transactions,
 }: TransactionTableProps) {
   const grouped = groupByDate(transactions);
+  const router = useRouter();
 
   return (
     <section className="sm:mr-10 mr-4">
@@ -28,7 +32,13 @@ export default function TransactionTable({
               </colgroup>
               <tbody>
                 {group.map((transaction) => (
-                  <tr key={transaction.id} className="h-15 bg-secondary/10">
+                  <tr
+                    key={transaction.id}
+                    className="h-15 bg-secondary/10 cursor-pointer"
+                    onClick={() =>
+                      router.push(`/caixa/historico/${transaction.id}`)
+                    }
+                  >
                     <td className="pl-3 rounded-l-lg">
                       <ArrowDown strokeWidth={1.2} className="text-green-600" />
                     </td>

@@ -1,32 +1,32 @@
 import { cache } from "react";
-import { apiFetch } from "./client"
-import { ApiError } from "./types"
+import { apiFetch } from "./client";
+import { ApiError } from "./types";
 
 export type Transaction = {
-  id: string
-  type: string
+  id: string;
+  type: string;
   category: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   operator: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   account: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   contact: {
-    id: string
-    name: string
-  }
-  payment: string
-  linked: string
-  amount: string
-  description: string
-  timestamp: string
-}
+    id: string;
+    name: string;
+  };
+  payment: string;
+  linked: string;
+  amount: string;
+  description: string;
+  timestamp: string;
+};
 
 type TransactionsResponse = {
   count: number;
@@ -36,17 +36,17 @@ type TransactionsResponse = {
 };
 
 export async function submitTransaction(data: {
-  type: string
-  category: string
-  account: string
-  contact: string
-  amount: string
-  description: string
+  type: string;
+  category: string;
+  account: string;
+  contact: string;
+  amount: string;
+  description: string;
 }): Promise<Transaction | ApiError> {
   return apiFetch("/finance/transactions", {
     method: "POST",
     body: JSON.stringify(data),
-  })
+  });
 }
 
 export const getTransactions = cache(
@@ -61,3 +61,32 @@ export const getTransactions = cache(
   },
 );
 
+export async function getTransactionByID(
+  id: string,
+): Promise<Transaction | ApiError> {
+  const res = await apiFetch<{ transaction: Transaction }>(
+    `/finance/transactions/${id}`,
+    {
+      method: "GET",
+    },
+  );
+
+  if ("error" in res) return res;
+
+  return res.transaction;
+}
+
+export async function deleteTransactionByID(
+  id: string,
+): Promise<null | ApiError> {
+  const res = await apiFetch<never>(
+    `/finance/transactions/${id}`,
+    {
+      method: "DELETE",
+    },
+  );
+
+  if ("error" in res) return res;
+
+  return null;
+}

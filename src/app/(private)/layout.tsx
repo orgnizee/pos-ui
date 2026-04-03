@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoutButton } from "@/components/logoutButton";
+import { LogoutButton } from "@/components/logout-button";
 
 const now = () =>
   new Date()

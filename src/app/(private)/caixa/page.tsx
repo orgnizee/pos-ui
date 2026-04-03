@@ -1,4 +1,4 @@
-import TransactionTable from "@/components/transactionsTable";
+import TransactionTable from "@/components/transactions-table";
 import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
 import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";

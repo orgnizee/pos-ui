@@ -1,8 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { submitTransaction } from "@/lib/api/transaction";
-import { isApiError } from "@/lib/api/types";
+import {
+  deleteTransactionByID,
+  submitTransaction,
+} from "@/lib/api/transaction";
+import { ApiError, isApiError } from "@/lib/api/types";
 
 export type TransactionActionState = {
   error: true;
@@ -23,10 +26,21 @@ export async function submitTransactionFormAction(
     description: formData.get("description") as string,
   });
 
-  console.log(res)
-
   if (isApiError(res)) {
     return { error: true, message: res.message, details: res.details };
+  }
+
+  redirect("/caixa");
+}
+
+export async function deleteTransactionAction(
+  _: unknown,
+  id: string,
+): Promise<null | ApiError> {
+  const res = await deleteTransactionByID(id);
+
+  if (isApiError(res)) {
+    return res;
   }
 
   redirect("/caixa");
