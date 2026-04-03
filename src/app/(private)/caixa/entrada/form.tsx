@@ -6,23 +6,31 @@ import {
   TransactionActionState,
 } from "@/lib/api/actions/transaction";
 import { Account } from "@/lib/api/bank-accounts";
+import { FinanceCategory } from "@/lib/api/finance-category";
+import { Customer } from "@/lib/api/customers";
 
 interface TransactionFormProps {
   type: string;
   accounts: Account[];
+  categories: FinanceCategory[];
+  customers: Customer[];
 }
 
 export default function TransactionForm({
   type,
   accounts,
+  categories,
+  customers,
 }: TransactionFormProps) {
   const [state, action, pending] = useActionState<
     TransactionActionState,
     FormData
   >(submitTransactionFormAction, null);
 
-  const [value, setValue] = useState("");
-
+  const [accountValue, setAccountValue] = useState("");
+  const [categoryValue, setCategoryValue] = useState("");
+  const [contactValue, setContactValue] = useState("");
+  
   return (
     <form action={action} className="flex flex-col items-start">
       <input
@@ -49,9 +57,9 @@ export default function TransactionForm({
           name="account"
           defaultValue=""
           className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
-            value === "" ? "text-tertiary" : "text-primary"
+            accountValue === "" ? "text-tertiary" : "text-primary"
           }`}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => setAccountValue(e.target.value)}
         >
           <option value="" disabled>
             conta
@@ -65,21 +73,43 @@ export default function TransactionForm({
       </div>
 
       <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
-        <input
+        <select
           name="category"
-          placeholder="categoria"
-          type="text"
-          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
-        />
+          defaultValue=""
+          className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
+            categoryValue === "" ? "text-tertiary" : "text-primary"
+          }`}
+          onChange={(e) => setCategoryValue(e.target.value)}
+        >
+          <option value="" disabled>
+            categoria
+          </option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name.toLocaleLowerCase()}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
-        <input
+        <select
           name="contact"
-          placeholder="contato"
-          type="text"
-          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
-        />
+          defaultValue=""
+          className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
+            contactValue === "" ? "text-tertiary" : "text-primary"
+          }`}
+          onChange={(e) => setContactValue(e.target.value)}
+        >
+          <option value="" disabled>
+            contato
+          </option>
+          {customers.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name.toLocaleLowerCase()}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">

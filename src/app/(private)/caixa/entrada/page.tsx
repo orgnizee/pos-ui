@@ -1,11 +1,15 @@
-import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
-import { isApiError } from "@/lib/api/types";
 import TransactionForm from "./form";
 import BackButton from "./back-button";
+import { isApiError } from "@/lib/api/types";
+import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
+import { getFinanceCategories } from "@/lib/api/finance-category";
+import { getCustomers } from "@/lib/api/customers";
 
 export default async function Acompanhe() {
   const accounts = await getAccounts();
   const totalBalance = await getTotalBalance();
+  const categories = await getFinanceCategories();
+  const customers = await getCustomers();
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
@@ -13,6 +17,14 @@ export default async function Acompanhe() {
 
   if (isApiError(totalBalance)) {
     return <p>{totalBalance.message}</p>;
+  }
+
+  if (isApiError(categories)) {
+    return <p>{categories.message}</p>;
+  }
+
+  if (isApiError(customers)) {
+    return <p>{customers.message}</p>;
   }
 
   return (
@@ -23,7 +35,12 @@ export default async function Acompanhe() {
           <p className="text-6xl text-start font-light normal-case">entrada</p>
         </div>
         <div className="mt-2 relative ml-auto mr-auto flex items-center justify-center w-full min-h-65 sm:w-150 sm:min-h-95 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
-          <TransactionForm type="credit" accounts={accounts} />
+          <TransactionForm
+            type="credit"
+            categories={categories}
+            accounts={accounts}
+            customers={customers}
+          />
         </div>
       </div>
     </section>
