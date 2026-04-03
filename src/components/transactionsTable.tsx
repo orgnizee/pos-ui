@@ -12,7 +12,7 @@ export default function TransactionTable({
   const grouped = groupByDate(transactions);
 
   return (
-    <section className="ml-4 sm:mr-10 mr-4">
+    <section className="sm:mr-10 mr-4">
       <p className="mt-8 font-bold text-lg">histórico</p>
       {Object.entries(grouped).map(([label, group]) => (
         <div key={label}>
@@ -30,7 +30,7 @@ export default function TransactionTable({
                 {group.map((transaction) => (
                   <tr key={transaction.id} className="h-15 bg-secondary/10">
                     <td className="pl-3 rounded-l-lg">
-                      <ArrowDown strokeWidth={1.2} />
+                      <ArrowDown strokeWidth={1.2} className="text-green-600" />
                     </td>
                     <td className="px-2 text-start font-bold">
                       {formatBRL(transaction.amount)}
