@@ -2,7 +2,7 @@ import { cache } from "react";
 import { apiFetch } from "./client";
 import { ApiError } from "./types";
 
-type Account = {
+export type Account = {
   id: string;
   name: string;
   balance: string;

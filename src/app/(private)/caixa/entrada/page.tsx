@@ -23,7 +23,7 @@ export default async function Acompanhe() {
           <p className="text-6xl text-start font-light normal-case">entrada</p>
         </div>
         <div className="mt-2 relative ml-auto mr-auto flex items-center justify-center w-full min-h-65 sm:w-150 sm:min-h-95 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
-          <TransactionForm type="entrada" />
+          <TransactionForm type="credit" accounts={accounts} />
         </div>
       </div>
     </section>

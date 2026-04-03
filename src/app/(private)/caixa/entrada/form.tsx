@@ -1,17 +1,27 @@
 "use client";
 
-import { useActionState } from "react";
-import { getTokenAction, TokenActionState } from "@/lib/api/actions/auth";
+import { useActionState, useState } from "react";
+import {
+  submitTransactionFormAction,
+  TransactionActionState,
+} from "@/lib/api/actions/transaction";
+import { Account } from "@/lib/api/bank-accounts";
 
 interface TransactionFormProps {
   type: string;
+  accounts: Account[];
 }
 
-export default function TransactionForm({ type }: TransactionFormProps) {
-  const [state, action, pending] = useActionState<TokenActionState, FormData>(
-    getTokenAction,
-    null,
-  );
+export default function TransactionForm({
+  type,
+  accounts,
+}: TransactionFormProps) {
+  const [state, action, pending] = useActionState<
+    TransactionActionState,
+    FormData
+  >(submitTransactionFormAction, null);
+
+  const [value, setValue] = useState("");
 
   return (
     <form action={action} className="flex flex-col items-start">
@@ -33,43 +43,52 @@ export default function TransactionForm({ type }: TransactionFormProps) {
         className="mt-1.5 text-start text-3xl normal-case outline-none"
       />
 
-      <div className="mt-4 w-full max-w-xs h-fit text-sm font-light rounded-md bg-background">
-        <input
+      <div className="mt-4 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
+        <select
           required
           name="account"
-          placeholder="conta"
-          type="text"
-          className="w-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
-        />
+          defaultValue=""
+          className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
+            value === "" ? "text-tertiary" : "text-primary"
+          }`}
+          onChange={(e) => setValue(e.target.value)}
+        >
+          <option value="" disabled>
+            conta
+          </option>
+          {accounts.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name.toLocaleLowerCase()}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="mt-2 w-full max-w-xs h-fit text-sm font-light rounded-md bg-background">
+      <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
         <input
-          required
           name="category"
           placeholder="categoria"
           type="text"
-          className="w-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
+          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
         />
       </div>
 
-      <div className="mt-2 w-full max-w-xs h-fit text-sm font-light rounded-md bg-background">
+      <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
         <input
-          required
           name="contact"
           placeholder="contato"
           type="text"
-          className="w-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
+          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
         />
       </div>
 
-      <div className="mt-2 w-full max-w-xs h-fit text-sm font-light rounded-md bg-background">
+      <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
         <input
           required
           name="description"
           placeholder="descrição"
           type="text"
-          className="w-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
+          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
         />
       </div>
 
