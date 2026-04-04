@@ -17,10 +17,11 @@ export default function TransactionTable({
 
   return (
     <section className="sm:mr-10 mr-4">
-      <p className="mt-8 font-bold text-lg">histórico</p>
+      <p className="mt-8 mb-10 font-bold text-lg">histórico</p>
+
       {Object.entries(grouped).map(([label, group]) => (
         <div key={label}>
-          <p className="mt-10">{label}</p>
+          <p>{label}</p>
 
           <div className="mt-2 w-full overflow-hidden">
             <table className="w-full table-fixed border-separate border-spacing-y-2">
@@ -49,10 +50,7 @@ export default function TransactionTable({
                         />
                       )}
                       {transaction.type === "debit" && (
-                        <ArrowUp
-                          strokeWidth={1.2}
-                          className="text-red-600"
-                        />
+                        <ArrowUp strokeWidth={1.2} className="text-red-600" />
                       )}
                     </td>
                     <td className="px-2 text-start font-bold">
