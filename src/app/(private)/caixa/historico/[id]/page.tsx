@@ -26,13 +26,13 @@ export default async function TransactionPage({
             {formatDateTime(transaction.timestamp)}
           </p>
 
-          <p className="mt-10 sm:mt-15 text-4xl">
+          <p
+            className={`mt-10 sm:mt-15 text-4xl ${parseFloat(transaction.amount) < 0 ? "text-red-500" : ""}`}
+          >
             {formatBRL(transaction.amount)}
           </p>
 
-          <p className="normal-case">
-            {transaction.contact.name ?? "-"}
-          </p>
+          <p className="normal-case">{transaction.contact.name ?? "-"}</p>
 
           <div className="mt-5 w-fit h-fit rounded-full bg-tertiary/10">
             <p className="px-2 py-0.5 text-xs font-light normal-case">
@@ -84,7 +84,7 @@ export default async function TransactionPage({
             {transaction.id}
           </p>
         </div>
-        
+
         <DeleteTransactionButton id={transaction.id} />
       </div>
     </section>

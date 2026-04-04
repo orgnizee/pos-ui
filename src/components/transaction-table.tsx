@@ -2,7 +2,7 @@
 
 import { Transaction } from "@/lib/api/transaction";
 import { formatBRL } from "@/lib/utils/format";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TransactionTableProps {
@@ -21,6 +21,7 @@ export default function TransactionTable({
       {Object.entries(grouped).map(([label, group]) => (
         <div key={label}>
           <p className="mt-10">{label}</p>
+
           <div className="mt-2 w-full overflow-hidden">
             <table className="w-full table-fixed border-separate border-spacing-y-2">
               <colgroup>
@@ -30,6 +31,7 @@ export default function TransactionTable({
                 <col className="w-32" />
                 <col className="hidden sm:table-column w-48" />
               </colgroup>
+
               <tbody>
                 {group.map((transaction) => (
                   <tr
@@ -40,7 +42,18 @@ export default function TransactionTable({
                     }
                   >
                     <td className="pl-3 rounded-l-lg">
-                      <ArrowDown strokeWidth={1.2} className="text-green-600" />
+                      {transaction.type === "credit" && (
+                        <ArrowDown
+                          strokeWidth={1.2}
+                          className="text-green-600"
+                        />
+                      )}
+                      {transaction.type === "debit" && (
+                        <ArrowUp
+                          strokeWidth={1.2}
+                          className="text-red-600"
+                        />
+                      )}
                     </td>
                     <td className="px-2 text-start font-bold">
                       {formatBRL(transaction.amount)}

@@ -44,6 +44,10 @@ export default function TransactionForm({
     currency: "BRL",
   });
 
+  function isCustomer(c: Customer | Supplier): c is Customer {
+    return "name" in c;
+  }
+
   return (
     <form action={action} className="flex flex-col items-start">
       <input
@@ -122,7 +126,9 @@ export default function TransactionForm({
           </option>
           {contacts.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name.toLocaleLowerCase()}
+              {isCustomer(c)
+                ? c.name.toLocaleLowerCase()
+                : c.legal_name.toLocaleLowerCase()}
             </option>
           ))}
         </select>
