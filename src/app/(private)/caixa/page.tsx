@@ -3,7 +3,7 @@ import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
 import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
-import { ArrowRightLeft, Minus, Plus } from "lucide-react";
+import { ArrowRightLeft, Eye, EyeClosed, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function CaixaPage({
@@ -11,10 +11,12 @@ export default async function CaixaPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { bank } = await searchParams;
-
   const accounts = await getAccounts();
   const totalBalance = await getTotalBalance();
+
+  const { bank } = await searchParams;
+  const { showInactiveAccount } = await searchParams;
+  const showAllAccount = showInactiveAccount === "true";
 
   const transactions = await getTransactions({
     ...(typeof bank === "string" && { bank }),
@@ -31,6 +33,10 @@ export default async function CaixaPage({
   if (isApiError(transactions)) {
     return <p>{transactions.message}</p>;
   }
+
+  const filtered = showAllAccount
+    ? accounts
+    : accounts.filter((a) => a.is_active);
 
   return (
     <section>
@@ -73,14 +79,14 @@ export default async function CaixaPage({
               </p>
             </div>
 
-            {accounts.map((account) => (
+            {filtered.map((account) => (
               <Link
-                href={`?bank=${account.id}`}
+                href={`/caixa/conta/${account.id}`}
                 key={account.id}
-                className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full hover:bg-secondary/5 bg-secondary/10 overflow-hidden"
+                className={`relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full hover:bg-secondary/5 overflow-hidden ${!account.is_active ? "ring-2 ring-secondary/10" : "bg-secondary/10"}`}
               >
                 <p className="text-center text-2xl text-tertiary">
-                  {formatBRL(account.balance)}
+                  {account.is_active ? formatBRL(account.balance) : "conta inativa"}
                 </p>
                 <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
                   {account.name.toLowerCase()}
@@ -97,6 +103,24 @@ export default async function CaixaPage({
               </div>
               <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
                 adicionar conta
+              </p>
+            </Link>
+
+            <Link
+              href={
+                showAllAccount ? "/caixa" : "/caixa?showInactiveAccount=true"
+              }
+              className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full ring-2 ring-secondary/10 bg- hover:bg-secondary/5 overflow-hidden cursor-pointer"
+            >
+              <div className="text-center text-2xl text-tertiary">
+                {showAllAccount ? (
+                  <EyeClosed strokeWidth={1} size={50} />
+                ) : (
+                  <Eye strokeWidth={1} size={50} />
+                )}
+              </div>
+              <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
+                {showAllAccount ? "ocultar inativas" : "mostrar inativas"}
               </p>
             </Link>
           </div>

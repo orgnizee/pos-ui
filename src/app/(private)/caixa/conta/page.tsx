@@ -5,7 +5,7 @@ import { getFinanceCategories } from "@/lib/api/finance-category";
 import { getCustomers } from "@/lib/api/customers";
 import BankAccountForm from "@/components/bank-account-form";
 
-export default async function Acompanhe() {
+export default async function AddBankAccount() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
   const customers = await getCustomers();

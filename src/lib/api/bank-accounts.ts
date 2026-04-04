@@ -31,6 +31,21 @@ export const getAccounts = cache(async (): Promise<Account[] | ApiError> => {
   return res.results.map((r) => r.account);
 });
 
+export const getAccountByID = cache(
+  async (id: string): Promise<Account | ApiError> => {
+    const res = await apiFetch<{ account: Account }>(
+      `/finance/accounts/${id}`,
+      {
+        method: "GET",
+      },
+    );
+
+    if ("error" in res) return res;
+
+    return res.account;
+  },
+);
+
 export async function getTotalBalance(): Promise<Balance | ApiError> {
   return apiFetch("/finance/total-balance", {
     method: "get",
@@ -42,6 +57,19 @@ export async function createBankAccount(data: {
 }): Promise<Account | ApiError> {
   return apiFetch("/finance/accounts", {
     method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateBankAccount(
+  id: string,
+  data: {
+    name: string | null;
+    is_active: boolean;
+  },
+): Promise<Account | ApiError> {
+  return apiFetch(`/finance/accounts/${id}`, {
+    method: "PATCH",
     body: JSON.stringify(data),
   });
 }
