@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import {
   deleteTransactionByID,
-  submitTransaction,
+  createTransaction,
 } from "@/lib/api/transaction";
 import { ApiError, isApiError } from "@/lib/api/types";
 
@@ -17,7 +17,7 @@ export async function submitTransactionFormAction(
   _: unknown,
   formData: FormData,
 ): Promise<TransactionActionState> {
-  const res = await submitTransaction({
+  const res = await createTransaction({
     type: formData.get("type") as string,
     category: formData.get("category") as string,
     account: formData.get("account") as string,

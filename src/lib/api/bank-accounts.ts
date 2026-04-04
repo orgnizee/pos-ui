@@ -36,3 +36,12 @@ export async function getTotalBalance(): Promise<Balance | ApiError> {
     method: "get",
   });
 }
+
+export async function createBankAccount(data: {
+  name: string;
+}): Promise<Account | ApiError> {
+  return apiFetch("/finance/accounts", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}

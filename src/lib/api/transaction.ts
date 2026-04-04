@@ -35,7 +35,7 @@ type TransactionsResponse = {
   results: { transaction: Transaction }[];
 };
 
-export async function submitTransaction(data: {
+export async function createTransaction(data: {
   type: string;
   category: string;
   account: string;
