@@ -17,8 +17,6 @@ export default function TransactionTable({
 
   return (
     <section className="sm:mr-10 mr-4">
-      <p className="mt-8 mb-10 font-bold text-lg">histórico</p>
-
       {Object.entries(grouped).map(([label, group]) => (
         <div key={label}>
           <p>{label}</p>

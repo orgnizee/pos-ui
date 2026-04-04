@@ -1,6 +1,10 @@
 import "./globals.css";
 import { lekton } from "./fonts";
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Nizee + Frigorífico Saraiva",
@@ -20,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className={cn("scroll-smooth", "font-sans", inter.variable)} suppressHydrationWarning>
       <body
         className={`bg-background ${lekton.className} uppercase antialiased`}
       >

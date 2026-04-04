@@ -1,3 +1,4 @@
+import DropdownTypeMenu from "@/components/dropdown-type";
 import TransactionTable from "@/components/transaction-table";
 import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
 import { getTransactions } from "@/lib/api/transaction";
@@ -15,11 +16,11 @@ export default async function CaixaPage({
   const totalBalance = await getTotalBalance();
 
   const { bank } = await searchParams;
-  const { showInactiveAccount } = await searchParams;
-  const showAllAccount = showInactiveAccount === "true";
+  const { date } = await searchParams;
 
   const transactions = await getTransactions({
     ...(typeof bank === "string" && { bank }),
+    ...(typeof date === "string" && { date }),
   });
 
   if (isApiError(accounts)) {
@@ -34,6 +35,8 @@ export default async function CaixaPage({
     return <p>{transactions.message}</p>;
   }
 
+  const { showInactiveAccount } = await searchParams;
+  const showAllAccount = showInactiveAccount === "true";
   const filtered = showAllAccount
     ? accounts
     : accounts.filter((a) => a.is_active);
@@ -86,7 +89,9 @@ export default async function CaixaPage({
                 className={`relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full hover:bg-secondary/5 overflow-hidden ${!account.is_active ? "ring-2 ring-secondary/10" : "bg-secondary/10"}`}
               >
                 <p className="text-center text-2xl text-tertiary">
-                  {account.is_active ? formatBRL(account.balance) : "conta inativa"}
+                  {account.is_active
+                    ? formatBRL(account.balance)
+                    : "conta inativa"}
                 </p>
                 <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
                   {account.name.toLowerCase()}
@@ -123,6 +128,54 @@ export default async function CaixaPage({
                 {showAllAccount ? "ocultar inativas" : "mostrar inativas"}
               </p>
             </Link>
+          </div>
+        </div>
+      </div>
+
+      <p className="mt-8 font-bold text-lg">histórico</p>
+
+      {/* Filter Buttons */}
+      <div className="mt-1 mb-10 overflow-hidden">
+        <div className="overflow-auto flex">
+          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-4 font-bold items-center">
+            <Link
+              href={"/caixa"}
+              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+            >
+              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
+                tudo
+              </p>
+            </Link>
+
+            <Link
+              href={"?date=today"}
+              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+            >
+              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
+                hoje
+              </p>
+            </Link>
+
+
+            <Link
+              href={"?date=week"}
+              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+            >
+              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
+                essa semana
+              </p>
+            </Link>
+
+            <Link
+              href={"?date=month"}
+              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+            >
+              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
+                esse mês
+              </p>
+            </Link>
+
+            <DropdownTypeMenu />
           </div>
         </div>
       </div>
