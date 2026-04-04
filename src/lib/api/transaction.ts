@@ -51,13 +51,17 @@ export async function createTransaction(data: {
 }
 
 export const getTransactions = cache(
-  async (): Promise<Transaction[] | ApiError> => {
-    const res = await apiFetch<TransactionsResponse>("/finance/transactions", {
-      method: "GET",
-    });
-
+  async (
+    params?: Record<string, string>,
+  ): Promise<Transaction[] | ApiError> => {
+    const query = params ? `?${new URLSearchParams(params)}` : "";
+    const res = await apiFetch<TransactionsResponse>(
+      `/finance/transactions${query}`,
+      {
+        method: "GET",
+      },
+    );
     if ("error" in res) return res;
-
     return res.results.map((r) => r.transaction);
   },
 );
@@ -80,12 +84,9 @@ export async function getTransactionByID(
 export async function deleteTransactionByID(
   id: string,
 ): Promise<null | ApiError> {
-  const res = await apiFetch<never>(
-    `/finance/transactions/${id}`,
-    {
-      method: "DELETE",
-    },
-  );
+  const res = await apiFetch<never>(`/finance/transactions/${id}`, {
+    method: "DELETE",
+  });
 
   if ("error" in res) return res;
 

@@ -6,10 +6,19 @@ import { formatBRL } from "@/lib/utils/format";
 import { ArrowRightLeft, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
-export default async function CaixaPage() {
+export default async function CaixaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { bank } = await searchParams;
+
   const accounts = await getAccounts();
   const totalBalance = await getTotalBalance();
-  const transactions = await getTransactions();
+
+  const transactions = await getTransactions({
+    ...(typeof bank === "string" && { bank }),
+  });
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
@@ -65,9 +74,10 @@ export default async function CaixaPage() {
             </div>
 
             {accounts.map((account) => (
-              <div
+              <Link
+                href={`?bank=${account.id}`}
                 key={account.id}
-                className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full bg-secondary/10 overflow-hidden"
+                className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full hover:bg-secondary/5 bg-secondary/10 overflow-hidden"
               >
                 <p className="text-center text-2xl text-tertiary">
                   {formatBRL(account.balance)}
@@ -75,10 +85,13 @@ export default async function CaixaPage() {
                 <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
                   {account.name.toLowerCase()}
                 </p>
-              </div>
+              </Link>
             ))}
 
-            <Link href={"/caixa/conta"} className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full ring-2 ring-secondary/10 bg- hover:bg-secondary/5 overflow-hidden cursor-pointer">
+            <Link
+              href={"/caixa/conta"}
+              className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full ring-2 ring-secondary/10 bg- hover:bg-secondary/5 overflow-hidden cursor-pointer"
+            >
               <div className="text-center text-2xl text-tertiary">
                 <Plus strokeWidth={1} size={50} />
               </div>
