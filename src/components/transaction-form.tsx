@@ -8,19 +8,20 @@ import {
 import { Account } from "@/lib/api/bank-accounts";
 import { FinanceCategory } from "@/lib/api/finance-category";
 import { Customer } from "@/lib/api/customers";
+import { Supplier } from "@/lib/api/suppliers";
 
 interface TransactionFormProps {
   type: string;
   accounts: Account[];
   categories: FinanceCategory[];
-  customers: Customer[];
+  contacts: Customer[] | Supplier[];
 }
 
 export default function TransactionForm({
   type,
   accounts,
   categories,
-  customers,
+  contacts,
 }: TransactionFormProps) {
   const [state, action, pending] = useActionState<
     TransactionActionState,
@@ -119,7 +120,7 @@ export default function TransactionForm({
           <option value="" disabled>
             contato
           </option>
-          {customers.map((c) => (
+          {contacts.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name.toLocaleLowerCase()}
             </option>

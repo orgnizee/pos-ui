@@ -5,9 +5,6 @@ import { ApiError } from "./types";
 export type Customer = {
   id: string;
   name: string;
-  balance: string;
-  created_at: string;
-  is_active: boolean;
 };
 
 type CustomersResponse = {

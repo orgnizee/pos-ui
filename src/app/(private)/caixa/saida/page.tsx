@@ -3,12 +3,12 @@ import BackButton from "../../../../components/back-button";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bank-accounts";
 import { getFinanceCategories } from "@/lib/api/finance-category";
-import { getCustomers } from "@/lib/api/customers";
+import { getSuppliers } from "@/lib/api/suppliers";
 
 export default async function Acompanhe() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
-  const customers = await getCustomers();
+  const suppliers = await getSuppliers();
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
@@ -18,8 +18,8 @@ export default async function Acompanhe() {
     return <p>{categories.message}</p>;
   }
 
-  if (isApiError(customers)) {
-    return <p>{customers.message}</p>;
+  if (isApiError(suppliers)) {
+    return <p>{suppliers.message}</p>;
   }
 
   return (
@@ -27,14 +27,14 @@ export default async function Acompanhe() {
       <BackButton />
       <div className="flex flex-col mr-3 sm:mr-0 mt-10 sm:mt-8 px-1 pt-1 items-center font-bold">
         <div className="relative ml-auto mr-auto flex items-start justify-start w-full sm:w-150">
-          <p className="text-6xl text-start font-light normal-case">entrada</p>
+          <p className="text-6xl text-start font-light normal-case">saída</p>
         </div>
         <div className="mt-2 py-8 sm:py-0 relative ml-auto mr-auto flex items-center justify-center w-full min-h-65 sm:w-150 sm:min-h-95 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
           <TransactionForm
-            type="credit"
+            type="debit"
             categories={categories}
             accounts={accounts}
-            contacts={customers}
+            contacts={suppliers}
           />
         </div>
       </div>
