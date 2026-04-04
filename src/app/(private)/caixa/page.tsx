@@ -6,7 +6,7 @@ import { formatBRL } from "@/lib/utils/format";
 import { ArrowRightLeft, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
-export default async function Acompanhe() {
+export default async function CaixaPage() {
   const accounts = await getAccounts();
   const totalBalance = await getTotalBalance();
   const transactions = await getTransactions();
