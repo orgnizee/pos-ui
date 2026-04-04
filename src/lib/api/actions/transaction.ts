@@ -24,6 +24,7 @@ export async function submitTransactionFormAction(
     contact: formData.get("contact") as string,
     amount: formData.get("amount") as string,
     description: formData.get("description") as string,
+    send_to: formData.get("send_to") as string,
   });
 
   if (isApiError(res)) {

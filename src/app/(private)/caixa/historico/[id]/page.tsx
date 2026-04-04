@@ -3,6 +3,7 @@ import DeleteTransactionButton from "@/components/delete-transaction-button";
 import { getTransactionByID } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL, formatDateTime } from "@/lib/utils/format";
+import Link from "next/link";
 
 export default async function TransactionPage({
   params,
@@ -52,7 +53,7 @@ export default async function TransactionPage({
           <div className="relative w-full sm:w-100 h-5 px-2 py-4 flex items-center justify-between bg-tertiary/10">
             <p className="text-sm font-light normal-case">conta</p>
             <p className="text-sm font-light normal-case">
-              {transaction.account.name}
+              {transaction.account.name.toLowerCase()}
             </p>
           </div>
 
@@ -69,14 +70,22 @@ export default async function TransactionPage({
 
           <div className="relative w-full sm:w-100 h-5 px-2 py-4 flex items-center justify-between rounded-b-md bg-tertiary/10">
             <p className="text-sm font-light normal-case">ref</p>
-            <p className="text-sm font-light normal-case">
-              {transaction.linked ?? "-"}
-            </p>
+            {transaction.linked && (
+              <Link
+                href={`/caixa/historico/${transaction.linked}`}
+                className="text-sm font-light normal-case"
+              >
+                {transaction.linked}
+              </Link>
+            )}
+            {!transaction.linked && (
+              <p className="text-sm font-light normal-case">-</p>
+            )}
           </div>
 
           <div className="relative mt-4 w-full sm:w-100 px-2 py-3 flex flex-col gap-1 rounded-md bg-tertiary/10">
             <p className="text-sm text-center font-light normal-case">
-              {transaction.description}
+              {transaction.description.toLowerCase()}
             </p>
           </div>
 

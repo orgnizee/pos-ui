@@ -29,6 +29,7 @@ export default function TransactionForm({
   >(submitTransactionFormAction, null);
 
   const [accountValue, setAccountValue] = useState("");
+  const [sendToValue, setsendToValue] = useState("");
   const [categoryValue, setCategoryValue] = useState("");
   const [contactValue, setContactValue] = useState("");
 
@@ -77,12 +78,13 @@ export default function TransactionForm({
           name="account"
           defaultValue=""
           className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
-            accountValue === "" ? "text-tertiary" : "text-primary"
+            accountValue === "" ? "text-tertiary/75" : "text-black"
           }`}
           onChange={(e) => setAccountValue(e.target.value)}
         >
           <option value="" disabled>
-            conta
+            {type !== "transfer" && "conta"}
+            {type === "transfer" && "origem"}
           </option>
           {accounts.map((c) => (
             <option key={c.id} value={c.id}>
@@ -92,47 +94,74 @@ export default function TransactionForm({
         </select>
       </div>
 
-      <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
-        <select
-          name="category"
-          defaultValue=""
-          className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
-            categoryValue === "" ? "text-tertiary" : "text-primary"
-          }`}
-          onChange={(e) => setCategoryValue(e.target.value)}
-        >
-          <option value="" disabled>
-            categoria
-          </option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name.toLocaleLowerCase()}
+      {type === "transfer" && (
+        <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
+          <select
+            required
+            name="send_to"
+            defaultValue=""
+            className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
+              sendToValue === "" ? "text-tertiary/75" : "text-black"
+            }`}
+            onChange={(e) => setsendToValue(e.target.value)}
+          >
+            <option value="" disabled>
+              destino
             </option>
-          ))}
-        </select>
-      </div>
+            {accounts.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name.toLocaleLowerCase()}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
-      <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
-        <select
-          name="contact"
-          defaultValue=""
-          className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
-            contactValue === "" ? "text-tertiary" : "text-primary"
-          }`}
-          onChange={(e) => setContactValue(e.target.value)}
-        >
-          <option value="" disabled>
-            contato
-          </option>
-          {contacts.map((c) => (
-            <option key={c.id} value={c.id}>
-              {isCustomer(c)
-                ? c.name.toLocaleLowerCase()
-                : c.legal_name.toLocaleLowerCase()}
+      {type !== "transfer" && (
+        <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
+          <select
+            name="category"
+            defaultValue=""
+            className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
+              categoryValue === "" ? "text-tertiary/75" : "text-black"
+            }`}
+            onChange={(e) => setCategoryValue(e.target.value)}
+          >
+            <option value="" disabled>
+              categoria
             </option>
-          ))}
-        </select>
-      </div>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name.toLocaleLowerCase()}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {type !== "transfer" && (
+        <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
+          <select
+            name="contact"
+            defaultValue=""
+            className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
+              contactValue === "" ? "text-tertiary/75" : "text-black"
+            }`}
+            onChange={(e) => setContactValue(e.target.value)}
+          >
+            <option value="" disabled>
+              contato
+            </option>
+            {contacts.map((c) => (
+              <option key={c.id} value={c.id}>
+                {isCustomer(c)
+                  ? c.name.toLocaleLowerCase()
+                  : c.legal_name.toLocaleLowerCase()}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
         <input
@@ -140,7 +169,7 @@ export default function TransactionForm({
           name="description"
           placeholder="descrição"
           type="text"
-          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
+          className="w-full h-full p-2 placeholder:text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
         />
       </div>
 

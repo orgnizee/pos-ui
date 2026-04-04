@@ -42,6 +42,7 @@ export async function createTransaction(data: {
   contact: string;
   amount: string;
   description: string;
+  send_to: string;
 }): Promise<Transaction | ApiError> {
   return apiFetch("/finance/transactions", {
     method: "POST",

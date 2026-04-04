@@ -2,7 +2,7 @@
 
 import { Transaction } from "@/lib/api/transaction";
 import { formatBRL } from "@/lib/utils/format";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowRightLeft, ArrowUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TransactionTableProps {
@@ -51,6 +51,9 @@ export default function TransactionTable({
                       )}
                       {transaction.type === "debit" && (
                         <ArrowUp strokeWidth={1.2} className="text-red-600" />
+                      )}
+                      {transaction.type === "transfer" && (
+                        <ArrowRightLeft strokeWidth={1.2} />
                       )}
                     </td>
                     <td className="px-2 text-start font-bold">
