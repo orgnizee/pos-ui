@@ -33,7 +33,7 @@ export default async function Acompanhe() {
           <TransactionForm
             type="credit"
             categories={categories}
-            accounts={accounts}
+            accounts={accounts.filter((a) => a.is_active)}
             contacts={customers}
           />
         </div>
