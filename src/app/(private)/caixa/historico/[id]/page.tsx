@@ -33,11 +33,12 @@ export default async function TransactionPage({
             {formatBRL(transaction.amount)}
           </p>
 
-          <p className="normal-case">{transaction.contact.name ?? "-"}</p>
+          <p className="normal-case">{transaction.contact.name}</p>
 
           <div className="mt-5 w-fit h-fit rounded-full bg-tertiary/10">
             <p className="px-2 py-0.5 text-xs font-light normal-case">
-              {transaction.category.name ?? "-"}
+              {transaction.type !== "transfer" && transaction.category.name}
+              {transaction.type === "transfer" && "transferência"}
             </p>
           </div>
 
