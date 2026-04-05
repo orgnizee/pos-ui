@@ -5,12 +5,20 @@ import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
-import { ArrowRightLeft, Eye, EyeClosed, Minus, Plus } from "lucide-react";
+import {
+  ArrowRightLeft,
+  Eye,
+  EyeClosed,
+  Minus,
+  Plus,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
 import { filterClass } from "./filter-class";
 import DropdownCategoryMenu from "@/components/dropdown-category";
 import { getFinanceCategories } from "@/lib/api/finance-category";
 import DropdownBankAccountMenu from "@/components/dropdown-bank";
+import SearchInput from "@/components/search-input";
 
 export default async function CaixaPage({
   searchParams,
@@ -23,7 +31,7 @@ export default async function CaixaPage({
 
   const resolvedParams = await searchParams;
 
-  const { bank, date, type, inativas } = resolvedParams;
+  const { bank, date, type, search, inativas } = resolvedParams;
   const isAll = !date && !type && !bank;
   const isToday = date === "today";
   const isWeek = date === "week";
@@ -33,6 +41,7 @@ export default async function CaixaPage({
     ...(typeof bank === "string" && { bank }),
     ...(typeof date === "string" && { date }),
     ...(typeof type === "string" && { type }),
+    ...(typeof search === "string" && { search }),
   });
 
   if (isApiError(accounts)) {
@@ -147,8 +156,10 @@ export default async function CaixaPage({
 
       <p className="mt-8 font-bold text-lg">histórico</p>
 
+      <SearchInput />
+
       {/* Filter Buttons */}
-      <div className="mt-1 mb-10 overflow-hidden">
+      <div className="mt-2 mb-10 overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-4 font-bold items-center">
             <Link
