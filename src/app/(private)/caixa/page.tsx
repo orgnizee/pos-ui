@@ -106,7 +106,9 @@ export default async function CaixaPage({
                 key={account.id}
                 className={`relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full hover:bg-secondary/5 overflow-hidden ${!account.is_active ? "ring-2 ring-secondary/10" : "bg-secondary/10"}`}
               >
-                <p className="text-center text-2xl text-tertiary">
+                <p
+                  className={`text-center text-2xl ${Number(account.balance) < 0 ? "text-red-500" : "text-primary"}`}
+                >
                   {account.is_active
                     ? formatBRL(account.balance)
                     : "conta inativa"}
