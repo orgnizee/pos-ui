@@ -7,6 +7,10 @@ import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
 import { ArrowRightLeft, Eye, EyeClosed, Minus, Plus } from "lucide-react";
 import Link from "next/link";
+import { filterClass } from "./filter-class";
+import DropdownCategoryMenu from "@/components/dropdown-category";
+import { getFinanceCategories } from "@/lib/api/finance-category";
+import DropdownBankAccountMenu from "@/components/dropdown-bank";
 
 export default async function CaixaPage({
   searchParams,
@@ -14,11 +18,16 @@ export default async function CaixaPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const accounts = await getAccounts();
+  const categories = await getFinanceCategories();
   const totalBalance = await getTotalBalance();
 
   const resolvedParams = await searchParams;
 
-  const { bank, date, type, showInactiveAccount } = resolvedParams;
+  const { bank, date, type, inativas } = resolvedParams;
+  const isAll = !date && !type && !bank;
+  const isToday = date === "today";
+  const isWeek = date === "week";
+  const isMonth = date === "month";
 
   const transactions = await getTransactions({
     ...(typeof bank === "string" && { bank }),
@@ -30,6 +39,10 @@ export default async function CaixaPage({
     return <p>{accounts.message}</p>;
   }
 
+  if (isApiError(categories)) {
+    return <p>{categories.message}</p>;
+  }
+
   if (isApiError(totalBalance)) {
     return <p>{totalBalance.message}</p>;
   }
@@ -38,7 +51,7 @@ export default async function CaixaPage({
     return <p>{transactions.message}</p>;
   }
 
-  const showAllAccount = showInactiveAccount === "true";
+  const showAllAccount = inativas === "true";
   const filtered = showAllAccount
     ? accounts
     : accounts.filter((a) => a.is_active);
@@ -114,9 +127,7 @@ export default async function CaixaPage({
             </Link>
 
             <Link
-              href={
-                showAllAccount ? "/caixa" : "/caixa?showInactiveAccount=true"
-              }
+              href={showAllAccount ? "/caixa" : "/caixa?inativas=true"}
               className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full ring-2 ring-secondary/10 bg- hover:bg-secondary/5 overflow-hidden cursor-pointer"
             >
               <div className="text-center text-2xl text-tertiary">
@@ -142,41 +153,35 @@ export default async function CaixaPage({
           <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-4 font-bold items-center">
             <Link
               href={"/caixa"}
-              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+              className="grid items-center justify-center shrink-0 rounded-md"
             >
-              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
-                tudo
-              </p>
+              <p className={filterClass(isAll)}>tudo</p>
             </Link>
 
             <Link
               href={buildFilterHref(resolvedParams, { date: "today" })}
-              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+              className="grid items-center justify-center shrink-0 rounded-md"
             >
-              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
-                hoje
-              </p>
+              <p className={filterClass(isToday)}>hoje</p>
             </Link>
 
             <Link
               href={buildFilterHref(resolvedParams, { date: "week" })}
-              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+              className="grid items-center justify-center shrink-0 rounded-md"
             >
-              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
-                essa semana
-              </p>
+              <p className={filterClass(isWeek)}>essa semana</p>
             </Link>
 
             <Link
               href={buildFilterHref(resolvedParams, { date: "month" })}
-              className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
+              className="grid items-center justify-center shrink-0 rounded-md"
             >
-              <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
-                esse mês
-              </p>
+              <p className={filterClass(isMonth)}>esse mês</p>
             </Link>
 
             <DropdownTypeMenu />
+            <DropdownCategoryMenu categories={categories} />
+            <DropdownBankAccountMenu accounts={accounts} />
           </div>
         </div>
       </div>

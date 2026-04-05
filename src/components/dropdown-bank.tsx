@@ -1,26 +1,30 @@
 "use client";
 import { filterClass } from "@/app/(private)/caixa/filter-class";
+import { Account } from "@/lib/api/bank-accounts";
+import { FinanceCategory } from "@/lib/api/finance-category";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function DropdownTypeMenu() {
+export default function DropdownBankAccountMenu({
+  accounts,
+}: {
+  accounts: Account[];
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const current = searchParams.get("type") ?? "";
+  const current = searchParams.get("bank") ?? "";
 
   const options = [
-    { label: "tipo", value: "" },
-    { label: "entrada", value: "credit" },
-    { label: "saída", value: "debit" },
-    { label: "transferência", value: "transfer" },
+    { label: "conta", value: "" },
+    ...accounts.map((a) => ({ label: a.name, value: a.id })),
   ];
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
-      params.set("type", value);
+      params.set("bank", value);
     } else {
-      params.delete("type");
+      params.delete("bank");
     }
     router.push(`?${params.toString()}`);
   }
