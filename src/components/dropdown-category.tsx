@@ -17,7 +17,7 @@ export default function DropdownCategoryMenu({
       (c) =>
         c.is_active && !["receitas", "despesas"].includes(c.name.toLowerCase()),
     )
-    .map((c) => ({ label: c.name, value: c.id }));
+    .map((c) => ({ label: c.name.toLowerCase(), value: c.id }));
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;

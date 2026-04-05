@@ -13,7 +13,7 @@ export default function DropdownBankAccountMenu({
   const current = searchParams.get("bank") ?? "";
 
   const options = [
-    ...accounts.map((a) => ({ label: a.name, value: a.id })),
+    ...accounts.map((a) => ({ label: a.name.toLowerCase(), value: a.id })),
   ];
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
