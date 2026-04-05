@@ -4,6 +4,7 @@ import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
 import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
+import buildFilterHref from "@/lib/utils/search-params";
 import { ArrowRightLeft, Eye, EyeClosed, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -15,9 +16,9 @@ export default async function CaixaPage({
   const accounts = await getAccounts();
   const totalBalance = await getTotalBalance();
 
-  const { bank } = await searchParams;
-  const { date } = await searchParams;
-  const { type } = await searchParams;
+  const resolvedParams = await searchParams;
+
+  const { bank, date, type, showInactiveAccount } = resolvedParams;
 
   const transactions = await getTransactions({
     ...(typeof bank === "string" && { bank }),
@@ -37,7 +38,6 @@ export default async function CaixaPage({
     return <p>{transactions.message}</p>;
   }
 
-  const { showInactiveAccount } = await searchParams;
   const showAllAccount = showInactiveAccount === "true";
   const filtered = showAllAccount
     ? accounts
@@ -150,7 +150,7 @@ export default async function CaixaPage({
             </Link>
 
             <Link
-              href={"?date=today"}
+              href={buildFilterHref(resolvedParams, { date: "today" })}
               className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
             >
               <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
@@ -158,9 +158,8 @@ export default async function CaixaPage({
               </p>
             </Link>
 
-
             <Link
-              href={"?date=week"}
+              href={buildFilterHref(resolvedParams, { date: "week" })}
               className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
             >
               <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
@@ -169,7 +168,7 @@ export default async function CaixaPage({
             </Link>
 
             <Link
-              href={"?date=month"}
+              href={buildFilterHref(resolvedParams, { date: "month" })}
               className="grid items-center justify-center shrink-0 rounded-md overflow-hidden"
             >
               <p className="w-fit h-fit px-5 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
