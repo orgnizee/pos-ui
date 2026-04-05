@@ -21,7 +21,7 @@ export default function SearchInput() {
   }, 300);
 
   return (
-    <div className="flex items-center gap-2 w-80 h-7 px-3 rounded-full bg-secondary/25">
+    <div className="flex items-center gap-2 w-full sm:w-80 h-8.5 px-3 rounded-md bg-secondary/15">
       <Search strokeWidth={1} size={14} className="shrink-0 text-tertiary" />
       <input
         type="text"

@@ -154,14 +154,16 @@ export default async function CaixaPage({
         </div>
       </div>
 
-      <p className="mt-8 font-bold text-lg">histórico</p>
+      <p className="mt-8 ml-0.5 font-bold text-lg">histórico</p>
 
-      <SearchInput />
+      <div className="mr-3">
+        <SearchInput />
+      </div>
 
       {/* Filter Buttons */}
       <div className="mt-2 mb-10 overflow-hidden">
         <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-4 font-bold items-center">
+          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-2 font-bold items-center">
             <Link
               href={"/caixa"}
               className="grid items-center justify-center shrink-0 rounded-md"
