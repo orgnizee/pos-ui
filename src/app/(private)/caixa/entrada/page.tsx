@@ -1,5 +1,5 @@
-import TransactionForm from "../../../../components/transaction-form";
-import BackButton from "../../../../components/back-button";
+import TransactionForm from "@/components/transaction-form";
+import BackButton from "@/components/back-button";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bank-accounts";
 import { getFinanceCategories } from "@/lib/api/finance-category";
