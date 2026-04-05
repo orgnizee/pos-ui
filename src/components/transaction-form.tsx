@@ -9,6 +9,7 @@ import { Account } from "@/lib/api/bank-accounts";
 import { FinanceCategory } from "@/lib/api/finance-category";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
+import CategoryPickerModal from "@/components/category-picker-modal";
 
 interface TransactionFormProps {
   type: string;
@@ -118,24 +119,14 @@ export default function TransactionForm({
       )}
 
       {type !== "transfer" && (
-        <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background">
-          <select
-            name="category"
-            defaultValue=""
-            className={`w-full h-full p-2 outline-none focus:border focus:border-tertiary focus:rounded-md ${
-              categoryValue === "" ? "text-tertiary/75" : "text-black"
-            }`}
-            onChange={(e) => setCategoryValue(e.target.value)}
-          >
-            <option value="" disabled>
-              categoria
-            </option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name.toLocaleLowerCase()}
-              </option>
-            ))}
-          </select>
+        <div className="mt-2 w-full max-w-xs h-10 text-sm font-light rounded-md bg-background normal-case">
+          {/* Hidden input carries the category id for form submission */}
+          <input type="hidden" name="category" value={categoryValue} />
+          <CategoryPickerModal
+            categories={categories}
+            value={categoryValue}
+            onChange={setCategoryValue}
+          />
         </div>
       )}
 
