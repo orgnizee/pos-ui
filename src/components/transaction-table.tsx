@@ -27,6 +27,7 @@ export default function TransactionTable({
                 <col className="w-20 sm:w-10" />
                 <col className="w-32" />
                 <col className="hidden sm:table-column w-32" />
+                <col className="hidden sm:table-column w-32" />
                 <col className="w-32" />
                 <col className="hidden sm:table-column w-48" />
               </colgroup>
@@ -62,6 +63,9 @@ export default function TransactionTable({
                     </td>
                     <td className="px-2 pr-4 text-end sm:text-center normal-case rounded-r-lg">
                       {transaction.account.name.toLowerCase()}
+                    </td>
+                    <td className="hidden sm:table-cell px-2 pr-4 text-end sm:text-center normal-case rounded-r-lg">
+                      {transaction.category.name ?? "-"}
                     </td>
                     <td className="hidden sm:table-cell pr-4 text-right truncate normal-case rounded-r-lg">
                       {transaction.description.toLowerCase()}
