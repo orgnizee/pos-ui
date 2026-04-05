@@ -16,7 +16,7 @@ export default function TransactionTable({
   const router = useRouter();
 
   return (
-    <section className="sm:mr-10 mr-4">
+    <section className="sm:mr-10 mr-3">
       {Object.entries(grouped).map(([label, group]) => (
         <div key={label}>
           <p>{label}</p>
