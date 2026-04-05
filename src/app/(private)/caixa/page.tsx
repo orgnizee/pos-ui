@@ -17,10 +17,12 @@ export default async function CaixaPage({
 
   const { bank } = await searchParams;
   const { date } = await searchParams;
+  const { type } = await searchParams;
 
   const transactions = await getTransactions({
     ...(typeof bank === "string" && { bank }),
     ...(typeof date === "string" && { date }),
+    ...(typeof type === "string" && { type }),
   });
 
   if (isApiError(accounts)) {
