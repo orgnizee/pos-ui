@@ -5,20 +5,14 @@ import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
-import {
-  ArrowRightLeft,
-  Eye,
-  EyeClosed,
-  Minus,
-  Plus,
-  Search,
-} from "lucide-react";
+import { ArrowRightLeft, Eye, EyeClosed, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { filterClass } from "./filter-class";
 import DropdownCategoryMenu from "@/components/dropdown-category";
 import { getFinanceCategories } from "@/lib/api/finance-category";
 import DropdownBankAccountMenu from "@/components/dropdown-bank";
 import SearchInput from "@/components/search-input";
+import Pagination from "@/components/pagination";
 
 export default async function CaixaPage({
   searchParams,
@@ -200,7 +194,11 @@ export default async function CaixaPage({
       </div>
 
       {/* Transaction History */}
-      <TransactionTable transactions={transactions} />
+      <TransactionTable
+        transactions={transactions.results.map((r) => r.transaction)}
+      />
+
+      <Pagination count={transactions.count} />
     </section>
   );
 }

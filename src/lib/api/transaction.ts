@@ -53,7 +53,7 @@ export async function createTransaction(data: {
 export const getTransactions = cache(
   async (
     params?: Record<string, string>,
-  ): Promise<Transaction[] | ApiError> => {
+  ): Promise<TransactionsResponse | ApiError> => {
     const query = params ? `?${new URLSearchParams(params)}` : "";
     const res = await apiFetch<TransactionsResponse>(
       `/finance/transactions${query}`,
@@ -62,7 +62,7 @@ export const getTransactions = cache(
       },
     );
     if ("error" in res) return res;
-    return res.results.map((r) => r.transaction);
+    return res;
   },
 );
 
