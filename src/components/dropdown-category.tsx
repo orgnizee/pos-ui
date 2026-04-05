@@ -12,10 +12,12 @@ export default function DropdownCategoryMenu({
   const searchParams = useSearchParams();
   const current = searchParams.get("category") ?? "";
 
-  const options = [
-    { label: "categoria", value: "" },
-    ...categories.map((c) => ({ label: c.name, value: c.id })),
-  ];
+  const options = categories
+    .filter(
+      (c) =>
+        c.is_active && !["receitas", "despesas"].includes(c.name.toLowerCase()),
+    )
+    .map((c) => ({ label: c.name, value: c.id }));
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
@@ -35,6 +37,9 @@ export default function DropdownCategoryMenu({
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
+      <option value="" disabled>
+        categoria
+      </option>
       {options.map(({ label, value }) => (
         <option key={value} value={value}>
           {label}

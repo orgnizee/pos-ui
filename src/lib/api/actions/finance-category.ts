@@ -16,7 +16,7 @@ export async function submitFinanceCategoryFormAction(
 ): Promise<FinanceCategoryActionState> {
   const res = await createFinanceCategory({
     name: formData.get("category") as string,
-    parent: "",
+    parent: formData.get("tipo") as string,
     is_active: true,
   });
 

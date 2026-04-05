@@ -8,7 +8,6 @@ export default function DropdownTypeMenu() {
   const current = searchParams.get("type") ?? "";
 
   const options = [
-    { label: "tipo", value: "" },
     { label: "entrada", value: "credit" },
     { label: "saída", value: "debit" },
     { label: "transferência", value: "transfer" },
@@ -32,6 +31,9 @@ export default function DropdownTypeMenu() {
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
+      <option value="" disabled>
+        tipo
+      </option>
       {options.map(({ label, value }) => (
         <option key={value} value={value}>
           {label}

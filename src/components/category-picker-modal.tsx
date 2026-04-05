@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { FinanceCategory } from "@/lib/api/finance-category";
 import { Plus, X } from "lucide-react";
@@ -10,6 +9,8 @@ interface CategoryPickerModalProps {
   value: string;
   onChange: (id: string) => void;
 }
+
+const GROUP_NAMES = ["receitas", "despesas"];
 
 export default function CategoryPickerModal({
   categories,
@@ -24,6 +25,17 @@ export default function CategoryPickerModal({
   const filtered = categories.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()),
   );
+
+  // Find the parent categories for "receitas" and "despesas"
+  const parents = categories.filter((c) =>
+    GROUP_NAMES.includes(c.name.toLowerCase()),
+  );
+
+  // Get children for a given parent id
+  const childrenOf = (parentId: number | string) =>
+    filtered.filter(
+      (c) => c.parent !== null && String(c.parent.id) === String(parentId),
+    );
 
   useEffect(() => {
     if (!open) return;
@@ -57,7 +69,7 @@ export default function CategoryPickerModal({
         />
       )}
 
-      {/* Modal — slides up from bottom on mobile, centered on sm+ */}
+      {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
           <div
@@ -76,38 +88,57 @@ export default function CategoryPickerModal({
               </button>
             </div>
 
-            <div className="px-4 pt-4 pb-2">
+            <div className="px-4 pt-4 pb-2 shrink-0">
               <p className="text-6xl">categorias</p>
             </div>
 
-            {/* List */}
-            <ul className="overflow-y-auto flex-1 px-2 pb-6">
-              {filtered.length === 0 && (
-                <li className="px-4 py-3 text-sm text-tertiary/60 text-start">
-                  nenhuma categoria encontrada
-                </li>
-              )}
-              {filtered.map((c) => (
-                <li key={c.id}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onChange(String(c.id));
-                      setOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-light transition-colors hover:bg-tertiary/10 ${
-                      String(c.id) === value
-                        ? "font-medium text-black"
-                        : "text-black"
-                    }`}
+            {/* Grouped list */}
+            <div className="overflow-y-auto mt-4 flex-1 px-4 pb-6 flex flex-col gap-4 rounded-md">
+              {parents.map((parent) => {
+                const children = childrenOf(parent.id);
+                return (
+                  <div
+                    key={parent.id}
+                    className="rounded-md bg-secondary/10 overflow-hidden"
                   >
-                    {c.name.toLocaleLowerCase()}
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    {/* Group title */}
+                    <p className="px-4 pt-3 pb-1 text-lg font-medium text-tertiary uppercase tracking-wide">
+                      {parent.name.toLocaleLowerCase()}
+                    </p>
 
-            <div className="absolute bottom-2 right-0 px-4 pt-4 pb-2 flex items-center justify-between shrink-0">
+                    {/* Children */}
+                    <ul className="px-2 pb-2">
+                      {children.length === 0 && (
+                        <li className="px-2 py-2 text-sm text-tertiary/60">
+                          nenhuma categoria encontrada
+                        </li>
+                      )}
+                      {children.map((c) => (
+                        <li key={c.id}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onChange(String(c.id));
+                              setOpen(false);
+                            }}
+                            className={`w-full text-left px-2 py-2.5 rounded-lg text-sm font-light transition-colors hover:bg-tertiary/10 cursor-pointer ${
+                              String(c.id) === value
+                                ? "font-medium text-black"
+                                : "text-black"
+                            }`}
+                          >
+                            {c.name.toLocaleLowerCase()}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer */}
+            <div className="absolute bottom-2 right-0 px-4 pt-4 pb-2">
               <Link
                 href={"/financeiro/categorias"}
                 className="flex items-center justify-center w-5 h-7 rounded-full bg-tertiary/10 hover:bg-tertiary/20 transition-colors cursor-pointer"

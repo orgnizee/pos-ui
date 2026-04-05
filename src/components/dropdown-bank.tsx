@@ -1,7 +1,6 @@
 "use client";
 import { filterClass } from "@/app/(private)/caixa/filter-class";
 import { Account } from "@/lib/api/bank-accounts";
-import { FinanceCategory } from "@/lib/api/finance-category";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function DropdownBankAccountMenu({
@@ -14,7 +13,6 @@ export default function DropdownBankAccountMenu({
   const current = searchParams.get("bank") ?? "";
 
   const options = [
-    { label: "conta", value: "" },
     ...accounts.map((a) => ({ label: a.name, value: a.id })),
   ];
 
@@ -36,6 +34,9 @@ export default function DropdownBankAccountMenu({
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
+      <option value="" disabled>
+        conta
+      </option>
       {options.map(({ label, value }) => (
         <option key={value} value={value}>
           {label}

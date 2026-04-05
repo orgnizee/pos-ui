@@ -5,7 +5,10 @@ import { ApiError } from "./types";
 export type FinanceCategory = {
   id: string;
   name: string;
-  parent: string;
+  parent: {
+    id: string,
+    name: string,
+  };
   is_active: boolean;
 };
 
