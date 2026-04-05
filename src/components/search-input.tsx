@@ -11,7 +11,7 @@ export default function SearchInput() {
   const handleSearch = useDebouncedCallback((value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value && value.length > 3) {
+    if (value && value.length >= 3) {
       params.set("search", value);
     } else {
       params.delete("search");
