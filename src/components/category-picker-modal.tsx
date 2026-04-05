@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Search, X } from "lucide-react";
+import { useState, useEffect } from "react";
 import { FinanceCategory } from "@/lib/api/finance-category";
+import { Plus, X } from "lucide-react";
+import Link from "next/link";
 
 interface CategoryPickerModalProps {
   categories: FinanceCategory[];
@@ -16,21 +17,13 @@ export default function CategoryPickerModal({
   onChange,
 }: CategoryPickerModalProps) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [search] = useState("");
 
   const selected = categories.find((c) => String(c.id) === value);
 
   const filtered = categories.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()),
   );
-
-  useEffect(() => {
-    if (open) {
-      setSearch("");
-      setTimeout(() => searchRef.current?.focus(), 50);
-    }
-  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -68,12 +61,12 @@ export default function CategoryPickerModal({
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none">
           <div
-            className="pointer-events-auto w-full sm:w-[55%] bg-background rounded-t-4xl sm:rounded-t-2xl sm:rounded-xl shadow-xl flex flex-col"
+            className="relative pointer-events-auto w-full sm:w-[55%] bg-background rounded-t-4xl sm:rounded-t-2xl sm:rounded-xl shadow-xl flex flex-col"
             style={{ height: "92dvh", maxHeight: "92dvh" }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-4 pt-4 pb-2 flex items-center gap-3 shrink-0">
+            <div className="px-4 pt-4 pb-2 flex items-center justify-between shrink-0">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -84,31 +77,13 @@ export default function CategoryPickerModal({
             </div>
 
             <div className="px-4 pt-4 pb-2">
-              <p className="text-6xl">categoria</p>
-            </div>
-
-            {/* Search */}
-            <div className="flex items-center w-full gap-2 px-4 pb-2 shrink-0">
-              <div className="relative w-full">
-                <Search
-                  size={14}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 text-tertiary/50 pointer-events-none"
-                />
-                <input
-                  ref={searchRef}
-                  type="text"
-                  placeholder="pesquisar"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-9 pl-7 pr-2 text-sm font-light rounded-md bg-secondary/10 outline-none focus:border-tertiary placeholder:text-tertiary/50"
-                />
-              </div>
+              <p className="text-6xl">categorias</p>
             </div>
 
             {/* List */}
             <ul className="overflow-y-auto flex-1 px-2 pb-6">
               {filtered.length === 0 && (
-                <li className="px-2 py-3 text-sm text-tertiary/60 text-center">
+                <li className="px-4 py-3 text-sm text-tertiary/60 text-start">
                   nenhuma categoria encontrada
                 </li>
               )}
@@ -131,6 +106,15 @@ export default function CategoryPickerModal({
                 </li>
               ))}
             </ul>
+
+            <div className="absolute bottom-2 right-0 px-4 pt-4 pb-2 flex items-center justify-between shrink-0">
+              <Link
+                href={"/financeiro/categorias"}
+                className="flex items-center justify-center w-5 h-7 rounded-full bg-tertiary/10 hover:bg-tertiary/20 transition-colors cursor-pointer"
+              >
+                <Plus size={16} className="text-tertiary" />
+              </Link>
+            </div>
           </div>
         </div>
       )}

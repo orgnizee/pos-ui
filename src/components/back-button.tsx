@@ -8,7 +8,7 @@ export default function BackButton() {
   return (
     <button
       onClick={() => router.back()}
-      className="flex w-5 h-7 items-center justify-center rounded-full bg-secondary/20 cursor-pointer"
+      className="flex w-5 h-7 items-center justify-center rounded-full bg-secondary/20 hover:bg-tertiary/20 transition-colors cursor-pointer"
     >
       <ChevronLeft className="text-tertiary" size={16} />
     </button>

@@ -5,8 +5,7 @@ import { ApiError } from "./types";
 export type FinanceCategory = {
   id: string;
   name: string;
-  balance: string;
-  created_at: string;
+  parent: string;
   is_active: boolean;
 };
 
@@ -28,3 +27,14 @@ export const getFinanceCategories = cache(
     return res.results.map((r) => r.category);
   },
 );
+
+export async function createFinanceCategory(data: {
+  name: string;
+  parent: string;
+  is_active: boolean;
+}): Promise<FinanceCategory | ApiError> {
+  return apiFetch("/finance/categories", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}

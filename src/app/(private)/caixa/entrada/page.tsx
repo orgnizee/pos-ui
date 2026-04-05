@@ -5,7 +5,7 @@ import { getAccounts } from "@/lib/api/bank-accounts";
 import { getFinanceCategories } from "@/lib/api/finance-category";
 import { getCustomers } from "@/lib/api/customers";
 
-export default async function Acompanhe() {
+export default async function TransactionCreditPage() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
   const customers = await getCustomers();
