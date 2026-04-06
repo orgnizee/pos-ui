@@ -1,5 +1,5 @@
 "use client";
-import { filterClass } from "@/app/(private)/caixa/filter-class";
+import { filterClass } from "@/lib/style-filter-buttons";
 import { FinanceCategory } from "@/lib/api/finance-category";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -38,9 +38,7 @@ export default function DropdownCategoryMenu({
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
-      <option value="">
-        categoria
-      </option>
+      <option value="">categoria</option>
       {receitas && (
         <optgroup label="receitas">
           {children(receitas.id).map(({ label, value }) => (

@@ -1,5 +1,5 @@
 "use client";
-import { filterClass } from "@/app/(private)/caixa/filter-class";
+import { filterClass } from "@/lib/style-filter-buttons";
 import { Account } from "@/lib/api/bank-accounts";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -34,9 +34,7 @@ export default function DropdownBankAccountMenu({
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
-      <option value="">
-        conta
-      </option>
+      <option value="">conta</option>
       {options.map(({ label, value }) => (
         <option key={value} value={value}>
           {label}

@@ -64,7 +64,7 @@ export default async function Home() {
               description={["pesquisar"]}
               year="cadastar • editar"
               where=""
-              link="/termos"
+              link="/contatos"
             />
 
             <Card

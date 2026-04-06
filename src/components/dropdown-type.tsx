@@ -1,5 +1,5 @@
 "use client";
-import { filterClass } from "@/app/(private)/caixa/filter-class";
+import { filterClass } from "@/lib/style-filter-buttons";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function DropdownTypeMenu() {
@@ -31,9 +31,7 @@ export default function DropdownTypeMenu() {
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
-      <option value="">
-        tipo
-      </option>
+      <option value="">tipo</option>
       {options.map(({ label, value }) => (
         <option key={value} value={value}>
           {label}

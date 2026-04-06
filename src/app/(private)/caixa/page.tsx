@@ -7,7 +7,7 @@ import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
 import { ArrowRightLeft, Eye, EyeClosed, Minus, Plus } from "lucide-react";
 import Link from "next/link";
-import { filterClass } from "./filter-class";
+import { filterClass } from "../../../lib/style-filter-buttons";
 import DropdownCategoryMenu from "@/components/dropdown-category";
 import { getFinanceCategories } from "@/lib/api/finance-category";
 import DropdownBankAccountMenu from "@/components/dropdown-bank";
@@ -62,7 +62,7 @@ export default async function CaixaPage({
 
   return (
     <section>
-      <div className="flex items-center justify-between mr-4 sm:mr-10">
+      <div className="flex items-center justify-between mr-3 sm:mr-10">
         <h1 className="text-5xl sm:text-6xl normal-case">caixa</h1>
 
         {/* Transaction Buttons */}
