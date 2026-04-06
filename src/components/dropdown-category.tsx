@@ -12,12 +12,13 @@ export default function DropdownCategoryMenu({
   const searchParams = useSearchParams();
   const current = searchParams.get("category") ?? "";
 
-  const options = categories
-    .filter(
-      (c) =>
-        c.is_active && !["receitas", "despesas"].includes(c.name.toLowerCase()),
-    )
-    .map((c) => ({ label: c.name.toLowerCase(), value: c.id }));
+  const receitas = categories.find((c) => c.name.toLowerCase() === "receitas");
+  const despesas = categories.find((c) => c.name.toLowerCase() === "despesas");
+
+  const children = (parentId: string) =>
+    categories
+      .filter((c) => c.is_active && c.parent?.id === parentId)
+      .map((c) => ({ label: c.name.toLowerCase(), value: c.id }));
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
@@ -37,14 +38,27 @@ export default function DropdownCategoryMenu({
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
-      <option value="" disabled>
+      <option value="">
         categoria
       </option>
-      {options.map(({ label, value }) => (
-        <option key={value} value={value}>
-          {label}
-        </option>
-      ))}
+      {receitas && (
+        <optgroup label="receitas">
+          {children(receitas.id).map(({ label, value }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </optgroup>
+      )}
+      {despesas && (
+        <optgroup label="despesas">
+          {children(despesas.id).map(({ label, value }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </optgroup>
+      )}
     </select>
   );
 }

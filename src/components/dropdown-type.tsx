@@ -31,7 +31,7 @@ export default function DropdownTypeMenu() {
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
-      <option value="" disabled>
+      <option value="">
         tipo
       </option>
       {options.map(({ label, value }) => (

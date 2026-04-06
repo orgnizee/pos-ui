@@ -34,7 +34,7 @@ export default function DropdownBankAccountMenu({
       style={{ textAlignLast: "center" }}
       className={filterClass(current !== "")}
     >
-      <option value="" disabled>
+      <option value="">
         conta
       </option>
       {options.map(({ label, value }) => (
