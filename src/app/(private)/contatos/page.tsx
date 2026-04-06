@@ -79,9 +79,11 @@ export default async function ContatosPage({
 
       {/* Contact List */}
       <div className="grid mt-0 mb-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-1">
-        {contacts.map((contact) => (
-          <ContactCard key={contact.id} contact={contact} />
-        ))}
+        {contacts
+          .filter((contact) => contact.is_active)
+          .map((contact) => (
+            <ContactCard key={contact.id} contact={contact} />
+          ))}
       </div>
     </section>
   );

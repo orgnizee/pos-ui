@@ -4,6 +4,7 @@ import { getSupplierByID } from "@/lib/api/suppliers";
 import { isApiError } from "@/lib/api/types";
 import { formatCPF, formatCNPJ, formatPhone } from "@/lib/utils/format";
 import type { Contact } from "@/lib/api/contacts";
+import DeleteContactButton from "@/components/delete-contact-button";
 
 export default async function ContactPage({
   params,
@@ -53,7 +54,7 @@ export default async function ContactPage({
     <section>
       <BackButton />
 
-      <div className="flex flex-col mb-4 mr-3 sm:mr-0 px-1 pt-1 items-center font-bold">
+      <div className="flex flex-col mb-4 sm:mr-0 px-1 pt-1 items-center font-bold">
         <div className="relative mt-2 py-8 sm:py-0 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full h-fit sm:w-140 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
           {/* Kind */}
           <p className="absolute top-5 text-sm font-light text-tertiary">
@@ -123,6 +124,7 @@ export default async function ContactPage({
             {contact.id}
           </p>
         </div>
+      <DeleteContactButton id={contact.id} kind={contact.kind} />
       </div>
     </section>
   );

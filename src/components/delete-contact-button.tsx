@@ -1,6 +1,5 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
 import {
   deleteCustomerAction,
   CustomerActionState,
@@ -10,6 +9,7 @@ import {
   SupplierActionState,
 } from "@/lib/api/actions/supplier";
 import { useActionState } from "react";
+import { Trash } from "lucide-react";
 
 export default function DeleteContactButton({
   id,
@@ -23,7 +23,7 @@ export default function DeleteContactButton({
       ? deleteCustomerAction.bind(null, id)
       : deleteSupplierAction.bind(null, id);
 
-  const [state, dispatch, pending] = useActionState<
+  const [, dispatch, pending] = useActionState<
     CustomerActionState | SupplierActionState,
     FormData
   >(action, null);
@@ -33,15 +33,14 @@ export default function DeleteContactButton({
       <button
         type="submit"
         disabled={pending}
-        className="flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-md bg-red-500/10 text-red-500 text-sm font-light normal-case disabled:opacity-50"
+        className="mt-5 w-5 h-7 flex justify-center items-center rounded-full bg-red-500 disabled:opacity-50 cursor-pointer"
       >
-        <Trash2 size={13} />
-        excluir
+        <Trash
+          strokeWidth={1.5}
+          size={15}
+          className="text-white translate-y-px"
+        />
       </button>
-
-      {state && "error" in state && (
-        <p className="mt-1 text-xs text-red-500 font-light">{state.message}</p>
-      )}
     </form>
   );
 }
