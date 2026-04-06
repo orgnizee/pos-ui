@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function SearchInput() {
+export default function SearchInput({ endpoint }: { endpoint: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -17,7 +17,7 @@ export default function SearchInput() {
       params.delete("search");
     }
 
-    router.push(`/caixa?${params.toString()}`);
+    router.push(`/${endpoint}?${params.toString()}`);
   }, 300);
 
   return (

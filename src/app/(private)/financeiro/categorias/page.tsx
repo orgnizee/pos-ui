@@ -61,7 +61,7 @@ export default async function CategoriesPage() {
         </div>
       ))}
 
-      {orphans.length > 0 && (
+      {/* {orphans.length > 0 && (
         <div>
           <div className="relative mt-8 ml-auto mr-auto flex items-start justify-start w-full sm:w-150">
             <p className="text-6xl text-start font-light normal-case">ocultas</p>
@@ -79,7 +79,7 @@ export default async function CategoriesPage() {
             </ul>
           </div>
         </div>
-      )}
+      )} */}
     </section>
   );
 }

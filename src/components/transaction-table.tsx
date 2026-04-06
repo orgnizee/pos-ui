@@ -24,11 +24,11 @@ export default function TransactionTable({
           <div className="mt-2 w-full overflow-hidden">
             <table className="w-full table-fixed border-separate border-spacing-y-2">
               <colgroup>
-                <col className="w-20 sm:w-10" />
-                <col className="w-32" />
+                <col className="w-10 sm:w-10" />
+                <col className="w-32 sm:w-22" />
+                <col className="hidden sm:table-column w-42" />
                 <col className="hidden sm:table-column w-32" />
-                <col className="hidden sm:table-column w-32" />
-                <col className="w-32" />
+                <col className="w-22" />
                 <col className="hidden sm:table-column w-48" />
               </colgroup>
 

@@ -154,7 +154,7 @@ export default async function CaixaPage({
       <p className="mt-8 ml-0.5 font-bold text-lg">histórico</p>
 
       <div className="mr-3">
-        <SearchInput />
+        <SearchInput endpoint="caixa" />
       </div>
 
       {/* Filter Buttons */}
