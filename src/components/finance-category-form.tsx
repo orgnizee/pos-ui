@@ -28,7 +28,6 @@ export default function CreateFinanceCategoryForm({
       className="flex flex-col items-start"
       autoComplete="off"
     >
-      <p className="normal-case font-light">adicionar nova categoria</p>
 
       <div className="mt-2 w-75 h-10 text-sm font-light rounded-md bg-background">
         <input

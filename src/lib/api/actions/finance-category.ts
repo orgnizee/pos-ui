@@ -26,5 +26,5 @@ export async function submitFinanceCategoryFormAction(
     return { error: true, message: res.message, details: res.details };
   }
 
-  redirect("/caixa");
+  redirect("/financeiro/categorias");
 }
