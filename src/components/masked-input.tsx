@@ -8,6 +8,7 @@ interface MaskedInputProps {
   formatter: (value: string) => string;
   maxLength?: number;
   required?: boolean;
+  defaultValue?: string;
 }
 
 export default function MaskedInput({
@@ -16,8 +17,11 @@ export default function MaskedInput({
   formatter,
   maxLength,
   required,
+  defaultValue = "",
 }: MaskedInputProps) {
-  const [display, setDisplay] = useState("");
+  const [display, setDisplay] = useState(() =>
+    defaultValue ? formatter(defaultValue) : "",
+  );
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const formatted = formatter(e.target.value);

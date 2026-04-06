@@ -5,6 +5,7 @@ import { isApiError } from "@/lib/api/types";
 import { formatCPF, formatCNPJ, formatPhone } from "@/lib/utils/format";
 import type { Contact } from "@/lib/api/contacts";
 import DeleteContactButton from "@/components/delete-contact-button";
+import Link from "next/link";
 
 export default async function ContactPage({
   params,
@@ -61,6 +62,13 @@ export default async function ContactPage({
             {contact.kind === "customer" ? "cliente" : "fornecedor"}
           </p>
 
+          <Link
+            href={`/contatos/${id}/editar`}
+            className="absolute top-4.5 right-5 text-sm font-light normal-case text-primary/75 bg-secondary/20 rounded-full px-1.5 pt-0.5"
+          >
+            editar
+          </Link>
+
           {/* Hero */}
           <div className="mt-10 sm:mt-15 flex flex-col items-center gap-1 mb-6">
             <p className="text-3xl font-bold">{fullName}</p>
@@ -110,9 +118,7 @@ export default async function ContactPage({
 
             {/* Notes becomes always visible too */}
             <div className="relative mt-4 w-full px-2 py-3 flex flex-col gap-1 rounded-md bg-secondary/15">
-              <p className="text-sm font-light normal-case mb-1">
-                observações
-              </p>
+              <p className="text-sm font-light normal-case mb-1">observações</p>
               <p className="text-sm font-light normal-case text-tertiary">
                 {dash(contact.notes)}
               </p>
@@ -124,7 +130,7 @@ export default async function ContactPage({
             {contact.id}
           </p>
         </div>
-      <DeleteContactButton id={contact.id} kind={contact.kind} />
+        <DeleteContactButton id={contact.id} kind={contact.kind} />
       </div>
     </section>
   );

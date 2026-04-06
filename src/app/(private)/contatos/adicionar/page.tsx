@@ -1,27 +1,7 @@
 import BackButton from "@/components/back-button";
-import { isApiError } from "@/lib/api/types";
-import { getAccounts } from "@/lib/api/bank-accounts";
-import { getFinanceCategories } from "@/lib/api/finance-category";
-import { getCustomers } from "@/lib/api/customers";
 import ContactForm from "@/components/contact-form";
 
 export default async function TransactionCreditPage() {
-  const accounts = await getAccounts();
-  const categories = await getFinanceCategories();
-  const customers = await getCustomers();
-
-  if (isApiError(accounts)) {
-    return <p>{accounts.message}</p>;
-  }
-
-  if (isApiError(categories)) {
-    return <p>{categories.message}</p>;
-  }
-
-  if (isApiError(customers)) {
-    return <p>{customers.message}</p>;
-  }
-
   return (
     <section>
       <BackButton />
