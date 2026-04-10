@@ -54,7 +54,7 @@ export default function CategoryPickerModal({
         tabIndex={0}
         onClick={() => setOpen(true)}
         onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
-        className={`w-full h-full p-2 flex items-center cursor-pointer outline-none focus:border focus:border-tertiary focus:rounded-md text-sm font-light ${
+        className={`w-full h-full p-2 flex items-center cursor-pointer outline-none normal-case focus:border focus:border-tertiary focus:rounded-md text-sm font-light ${
           !selected ? "text-tertiary/75" : "text-black"
         }`}
       >

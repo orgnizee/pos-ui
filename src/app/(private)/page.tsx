@@ -48,7 +48,7 @@ export default async function Home() {
               description={["fiados"]}
               year="ver contas a receber"
               where=""
-              link="/"
+              link="/receber"
             />
 
             <Card
