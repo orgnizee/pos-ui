@@ -56,7 +56,7 @@ export default async function Home() {
               description={["contas"]}
               year="ver contas a pagar"
               where=""
-              link="/"
+              link="/pagar"
             />
 
             <Card

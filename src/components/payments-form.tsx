@@ -64,7 +64,7 @@ export default function PaymentForm({
       {/* Main info */}
       <Section label="informações">
         <Row>
-          <DateField name="issued_at" required />
+          {/* <DateField name="issued_at" required /> */}
           <DateField name="due_at" required />
         </Row>
         <div className="flex-1 h-10 text-sm font-light rounded-md bg-background">

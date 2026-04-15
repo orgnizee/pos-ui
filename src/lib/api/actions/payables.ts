@@ -2,30 +2,31 @@
 
 import { redirect } from "next/navigation";
 import { isApiError } from "@/lib/api/types";
+
 import {
-  createPayment,
-  updatePayment,
-  deletePayment,
+  createPayable,
+  updatePayable,
+  deletePayable,
   PaymentType,
-  PaymentStatus,
+  PayableStatus,
   RecurrenceOption,
   Weekday,
-} from "../payments";
+} from "../payable";
 
-export type PaymentActionState = {
+export type PayableActionState = {
   error: true;
   message: string;
   details?: unknown;
 } | null;
 
-export async function createPaymentAction(
+export async function createPayableAction(
   _: unknown,
   formData: FormData,
-): Promise<PaymentActionState> {
+): Promise<PayableActionState> {
   const installment_count = formData.get("installment_count");
   const due_day_of_month = formData.get("due_day_of_month");
 
-  const res = await createPayment({
+  const res = await createPayable({
     contact: formData.get("contact") as string,
     category: (formData.get("category") as string) || undefined,
     issued_at: new Date().toISOString().split("T")[0],
@@ -45,18 +46,18 @@ export async function createPaymentAction(
     return { error: true, message: res.message, details: res.details };
   }
 
-  redirect("/receber");
+  redirect("/pagar");
 }
 
-export async function updatePaymentAction(
+export async function updatePayableAction(
   id: string,
   _: unknown,
   formData: FormData,
-): Promise<PaymentActionState> {
+): Promise<PayableActionState> {
   const installment_count = formData.get("installment_count");
   const due_day_of_month = formData.get("due_day_of_month");
 
-  const res = await updatePayment(id, {
+  const res = await updatePayable(id, {
     contact: (formData.get("contact") as string) || undefined,
     category: (formData.get("category") as string) || null,
     issued_at: (formData.get("issued_at") as string) || undefined,
@@ -64,7 +65,7 @@ export async function updatePaymentAction(
     total_amount: (formData.get("total_amount") as string) || undefined,
     amount_paid: (formData.get("amount_paid") as string) || undefined,
     payment_type: (formData.get("payment_type") as PaymentType) || undefined,
-    status: (formData.get("status") as PaymentStatus) || undefined,
+    status: (formData.get("status") as PayableStatus) || undefined,
     paid_at: (formData.get("paid_at") as string) || null,
     payment_method: (formData.get("payment_method") as string) || null,
     recurrence: (formData.get("recurrence") as RecurrenceOption) || undefined,
@@ -79,17 +80,17 @@ export async function updatePaymentAction(
     return { error: true, message: res.message, details: res.details };
   }
 
-  redirect("/receber");
+  redirect("/pagar");
 }
 
-export async function deletePaymentAction(
+export async function deletePayableAction(
   id: string,
-): Promise<PaymentActionState> {
-  const res = await deletePayment(id);
+): Promise<PayableActionState> {
+  const res = await deletePayable(id);
 
   if (isApiError(res)) {
     return { error: true, message: res.message, details: res.details };
   }
 
-  redirect("/receber");
+  redirect("/pagar");
 }

@@ -62,7 +62,7 @@ export default function ContactForm() {
             </Row>
             <Row>
               <MaskedInput name="cpf" placeholder="cpf" formatter={formatCPF} />
-              <Field name="code" placeholder="código" required />
+              <Field name="code" placeholder="código" />
             </Row>
             <div className="w-full sm:w-1/2 pr-0 sm:pr-1">
               <SelectField name="gender" placeholder="gênero">
