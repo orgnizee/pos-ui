@@ -26,6 +26,9 @@ export default async function PaymentsPage({
   const isOverdue = status === "overdue";
   const isPaid = status === "paid";
   const isPartiallyPaid = status === "partially_paid";
+  const isToday = date === "today";
+  const isWeek = date === "week";
+  const isMonth = date === "month";
 
   const payments = await getPayments({
     type: paymentType,
@@ -54,8 +57,8 @@ export default async function PaymentsPage({
   const title = paymentType === "payable" ? "a pagar" : "a receber";
 
   return (
-    <section>
-      <div className="flex items-center justify-between mr-3 sm:mr-10">
+    <section className="mr-4 sm:mr-8">
+      <div className="flex items-center justify-between sm:mr-2">
         <h1 className="text-5xl sm:text-6xl normal-case">{title}</h1>
         <Link
           href={`${basePath}/adicionar`}
@@ -96,67 +99,85 @@ export default async function PaymentsPage({
         </div>
       </div>
 
-      <div className="mr-3">
+      <div className="mt-6">
         <SearchInput endpoint={basePath.replace("/", "")} />
       </div>
 
-      <div className="mt-2 mr-3">
-        <DateFilter
-          endpoint={basePath.replace("/", "")}
-          resolvedParams={resolvedParams}
-        />
-      </div>
-
-      {/* Filter Buttons */}
-      <div className="mb-10 overflow-hidden">
-        <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-2 font-bold items-center">
-            <Link
-              href={basePath}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isAll)}>tudo</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { status: "pending" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isPending)}>pendente</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { status: "overdue" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isOverdue)}>em atraso</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, {
-                status: "partially_paid",
-              })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isPartiallyPaid)}>parcial</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { status: "paid" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isPaid)}>pago</p>
-            </Link>
+      {/* Date + Filters Row */}
+      <div className="mt-2 mb-2 flex items-center gap-3">
+        {/* Fixed DateFilter */}
+        <div className="shrink-0">
+          <DateFilter endpoint="receber" resolvedParams={resolvedParams} />
+        </div>
+        {/* Scrollable Filter Buttons */}
+        <div className="overflow-hidden">
+          <div className="overflow-auto flex">
+            <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-1 gap-2 font-bold items-center">
+              <Link
+                href={basePath}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isAll)}>tudo</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { status: "pending" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isPending)}>pendente</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { status: "overdue" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isOverdue)}>em atraso</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, {
+                  status: "partially_paid",
+                })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isPartiallyPaid)}>parcial</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { status: "paid" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isPaid)}>pago</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { date: "today" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isToday)}>hoje</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { date: "week" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isWeek)}>essa semana</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { date: "month" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isMonth)}>esse mês</p>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Payment List */}
-      <section className="sm:mr-8 mr-3">
+      <section className="sm:mr-8 w-full">
         <div className="w-full overflow-hidden">
           <table className="w-full table-fixed border-separate border-spacing-y-2">
             <colgroup>
-              <col className="w-6" />
-              <col className="w-32 sm:w-28" />
+              <col className="w-full sm:w-6" />
+              <col className="hidden sm:table-column sm:w-28" />
               <col className="hidden sm:table-column w-46" />
-              <col className="w-28" />
-              <col className="hidden sm:table-column w-36" />
+              <col className="hidden sm:table-column w-28" />
+              <col className="hidden sm:table-column sm:w-36" />
               <col className="hidden sm:table-column" />
             </colgroup>
             <tbody>

@@ -15,7 +15,7 @@ export default async function Home() {
   }
 
   if (isApiError(totalBalance)) {
-    return <p>{totalBalance.message}</p>;
+    return <p className="ml-4 sm:ml-10">{totalBalance.message}</p>;
   }
 
   return (
