@@ -1,9 +1,8 @@
-import Card from "@/components/card";
-import ArrowRight from "@/icons/ArrowRight";
 import { getUser } from "@/lib/api/user";
 import { isApiError } from "@/lib/api/types";
 import { getTotalBalance } from "@/lib/api/bank-accounts";
 import { formatBRL } from "@/lib/utils/format";
+import MainHomeCard from "@/components/main-home-cards";
 
 export default async function Home() {
   const res = await getUser();
@@ -24,66 +23,100 @@ export default async function Home() {
         oi, @{name}
       </h1>
 
-      <div className="overflow-hidden">
+      <div className="grid sm:grid-cols-4 gap-2 grid-cols-2 mb-5 mr-2 sm:mr-10">
+        {/* Full width on mobile, 3-cols on sm */}
+        <div className="col-span-2 sm:col-span-3 grid pt-1 pb-2 font-bold">
+          <MainHomeCard
+            title="saldo em caixa"
+            description={[formatBRL(totalBalance.total_balance)]}
+            year="f"
+            where=""
+            link="/caixa"
+          />
+        </div>
+
+        {/* 1 col on mobile, 1 col on sm — sits beside nothing on mobile row */}
+        <div className="grid pt-1 pb-2 font-bold">
+          <MainHomeCard
+            title="vendas hoje"
+            description={["01"]}
+            year="v"
+            where=""
+            link="/entrar"
+          />
+        </div>
+
+        {/* These two will naturally pair side-by-side on mobile */}
+        <div className="grid pt-1 pb-2 font-bold">
+          <MainHomeCard
+            title="a receber"
+            description={["fiados"]}
+            year="r"
+            where=""
+            link="/receber"
+          />
+        </div>
+
+        <div className="grid pt-1 pb-2 font-bold">
+          <MainHomeCard
+            title="contas"
+            description={["pagar"]}
+            year="p"
+            where=""
+            link="/pagar"
+          />
+        </div>
+
+        {/* Full width on mobile */}
+        <div className="col-span-2 sm:col-span-1 grid pt-1 pb-2 font-bold">
+          <MainHomeCard
+            title="pesquisar"
+            description={["contatos"]}
+            year="c"
+            where=""
+            link="/contatos"
+          />
+        </div>
+
+        <div className="col-span-2 sm:col-span-1 grid pt-1 pb-2 font-bold">
+          <MainHomeCard
+            title="pesquisar"
+            description={["produtos"]}
+            year="s"
+            where=""
+            link="/"
+          />
+        </div>
+      </div>
+
+      {/* <div className="overflow-hidden">
         <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold">
+          <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-2 gap-4 font-bold">
             <Card
-              title="vendas hoje"
-              description={["01"]}
-              year="fazer venda"
-              where=""
-              link="/entrar"
-            />
-
-            <Card
-              title="saldo em caixa"
-              description={[formatBRL(totalBalance.total_balance)]}
-              year="ver caixa"
-              where=""
-              link="/caixa"
-            />
-
-            <Card
-              title="a receber"
-              description={["fiados"]}
-              year="ver contas a receber"
-              where=""
-              link="/receber"
-            />
-
-            <Card
-              title="a pagar"
-              description={["contas"]}
-              year="ver contas a pagar"
-              where=""
-              link="/pagar"
-            />
-
-            <Card
-              title="clientes & fornecedores"
-              description={["pesquisar"]}
+              title="pesquisar"
+              description={["contatos"]}
               year="cadastar • editar"
               where=""
               link="/contatos"
             />
 
             <Card
-              title="produtos"
-              description={["pesquisar"]}
+              title="pesquisar"
+              description={["produtos"]}
               year="cadastar • editar"
               where=""
-              link="/termos"
+              link="/"
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="relative h-10 w-full block sm:hidden">
+      {/* <div className="relative h-10 w-full block sm:hidden">
         <ArrowRight
           className="absolute right-0 h-full text-secondary"
           strokeWidth={0.5}
         />
-      </div>
+      </div> */}
     </main>
   );
 }
