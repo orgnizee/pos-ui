@@ -29,8 +29,7 @@ export default async function Home() {
           <MainHomeCard
             title="saldo em caixa"
             description={[formatBRL(totalBalance.total_balance)]}
-            year="f"
-            where=""
+            notes="s"
             link="/caixa"
           />
         </div>
@@ -40,8 +39,7 @@ export default async function Home() {
           <MainHomeCard
             title="vendas hoje"
             description={["01"]}
-            year="v"
-            where=""
+            notes="v"
             link="/entrar"
           />
         </div>
@@ -51,8 +49,7 @@ export default async function Home() {
           <MainHomeCard
             title="a receber"
             description={["fiados"]}
-            year="r"
-            where=""
+            notes="r"
             link="/receber"
           />
         </div>
@@ -61,8 +58,7 @@ export default async function Home() {
           <MainHomeCard
             title="contas"
             description={["pagar"]}
-            year="p"
-            where=""
+            notes="p"
             link="/pagar"
           />
         </div>
@@ -72,8 +68,7 @@ export default async function Home() {
           <MainHomeCard
             title="pesquisar"
             description={["contatos"]}
-            year="c"
-            where=""
+            notes="c"
             link="/contatos"
           />
         </div>
@@ -82,8 +77,7 @@ export default async function Home() {
           <MainHomeCard
             title="pesquisar"
             description={["produtos"]}
-            year="s"
-            where=""
+            notes="s"
             link="/"
           />
         </div>
@@ -95,16 +89,14 @@ export default async function Home() {
             <Card
               title="pesquisar"
               description={["contatos"]}
-              year="cadastar • editar"
-              where=""
+              notes="cadastar • editar"
               link="/contatos"
             />
 
             <Card
               title="pesquisar"
               description={["produtos"]}
-              year="cadastar • editar"
-              where=""
+              notes="cadastar • editar"
               link="/"
             />
           </div>

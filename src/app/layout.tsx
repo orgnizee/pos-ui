@@ -3,6 +3,7 @@ import { lekton } from "./fonts";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
+import KeyboardNav from "@/components/keyboard-nav";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body
         className={`bg-background ${lekton.className} uppercase antialiased`}
       >
+        <KeyboardNav />
         {children}
       </body>
     </html>

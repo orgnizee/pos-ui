@@ -4,8 +4,7 @@ import Link from "next/link";
 interface MainHomeCardProps {
   title: string;
   description: string[];
-  year: string;
-  where: string;
+  notes: string;
   link: string;
   bg?: string;
   text?: string;
@@ -14,8 +13,7 @@ interface MainHomeCardProps {
 export default function MainHomeCard({
   title,
   description,
-  year,
-  where,
+  notes,
   link,
   bg = "bg-secondary/10",
   text = "text-primary/75",
@@ -28,7 +26,7 @@ export default function MainHomeCard({
       <p className={`absolute top-4 left-4 text-xl ${text}`}>{title}</p>
 
       <p
-        className={`absolute top-14 left-4 pr-2 sm:pr-0 text-4xl sm:text-5xl font-light ${text} ${quicksand.className}`}
+        className={`absolute top-14 left-4 pr-2 sm:pr-0 text-4xl sm:text-4xl font-light ${text} ${quicksand.className}`}
       >
         {description.map((line, i) => (
           <span key={i} className="block">
@@ -38,26 +36,27 @@ export default function MainHomeCard({
       </p>
 
       <p className={`absolute bottom-4 left-4 text-sm ${text} normal-case font-light`}>
-        {year} • {where}
+        {notes}
       </p>
 
-      <div
+      {/* <div
         className={`grid absolute bottom-5 right-4 gap-4`}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
+            width="15"
+            height="15"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="text-tertiary"
           >
             <path d="M7 7h10v10" />
             <path d="M7 17 17 7" />
           </svg>
-      </div>
+      </div> */}
     </Link>
   );
 }
