@@ -6,7 +6,7 @@ export type Customer = {
   id: string;
   name: string;
   alias: string | null;
-  code: string | null;
+  code: string;
   cpf: string | null;
   gender: "male" | "female" | "unkown" | null;
   is_active: boolean;

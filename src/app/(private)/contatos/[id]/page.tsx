@@ -82,7 +82,7 @@ export default async function ContactPage({
           <div className="w-full sm:w-100">
             <Row label={documentLabel} value={document ?? "..."} first />
 
-            <Row label="código" value={dash(contact.code)} />
+            <Row label="código" value={contact.code} />
 
             <Row
               label="telefone"

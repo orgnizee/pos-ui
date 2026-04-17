@@ -6,7 +6,7 @@ export type Supplier = {
   id: string;
   legal_name: string;
   trade_name: string | null;
-  code: string | null;
+  code: string;
   cnpj: string | null;
   ie: string | null;
   im: string | null;
