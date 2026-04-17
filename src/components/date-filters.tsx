@@ -91,39 +91,44 @@ export default function DateFilter({
             />
             {/* calendar */}
             <div className="absolute left-0 top-full mt-1 z-50 rounded-xl bg-background border border-tertiary shadow-sm p-3">
-              <style>{`
-    .rdp-root {
-      --rdp-accent-color: #2563eb;
-      --rdp-accent-background-color: #eff6ff;
-      --rdp-day-height: 32px;
-      --rdp-day-width: 32px;
-      --rdp-font-family: inherit;
-      font-size: 13px;
-      color: var(--color-text-primary);
-    }
-    .rdp-month_caption { font-size: 13px; font-weight: 500; margin-bottom: 8px; text-transform: capitalize; }
-    .rdp-weekday { font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); text-transform: capitalize; }
-    .rdp-day { border-radius: 6px; font-weight: 300; }
-    .rdp-day:hover:not([disabled]) { background: #eff6ff; }
-    .rdp-range_start .rdp-day_button,
-    .rdp-range_end .rdp-day_button {
-      background: #2563eb;
-      color: #ffffff;
-      border-radius: 999px;
-    }
-    .rdp-range_middle .rdp-day_button {
-      background: #eff6ff;
-      color: #3b82f6;
-      border-radius: 0;
-    }
-    .rdp-selected .rdp-day_button {
-      background: #2563eb;
-      color: #ffffff;
-      border-radius: 999px;
-    }
-    .rdp-nav button { color: var(--color-text-secondary); }
-    .rdp-nav button:hover { color: var(--color-text-primary); }
-  `}</style>
+              <style>
+                {`
+                .rdp-root {
+                  --rdp-accent-color: #2563eb;
+                  --rdp-accent-background-color: #eff6ff;
+                  --rdp-day-height: 32px;
+                  --rdp-day-width: 32px;
+                  --rdp-font-family: inherit;
+                  font-size: 13px;
+                  color: var(--color-text-primary);
+                }
+                .rdp-month_caption { font-size: 16px; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; margin-left: 10px;}
+                .rdp-weekday { font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); text-transform: normal-case; }
+                .rdp-day { border-radius: 6px; font-weight: 300; }
+                .rdp-day:hover:not([disabled]) { background: #bcb8b1ff; border-radius: 999px;}
+                .rdp-range_start .rdp-day_button,
+                .rdp-range_end .rdp-day_button {
+                  background: #2563eb;
+                  color: #ffffff;
+                  border-radius: 999px;
+                }
+                .rdp-range_middle .rdp-day_button {
+                  background: #eff6ff;
+                  color: #3b82f6;
+                  border-radius: 0;
+                }
+                .rdp-selected .rdp-day_button {
+                  background: #2563eb;
+                  color: #ffffff;
+                  border-radius: 999px;
+                  margin: 2px;
+                }
+                .rdp-nav button { color: var(--color-text-secondary); }
+                .rdp-nav button:hover { color: var(--color-text-primary); }
+                .rdp-nav button svg { width: 14px; height: 14px; }
+                .rdp-nav button svg path { stroke-width: 1; }
+                `}
+              </style>
               <DayPicker
                 mode="range"
                 locale={ptBR}

@@ -23,7 +23,7 @@ export default async function Home() {
         oi, @{name}
       </h1>
 
-      <div className="grid sm:grid-cols-4 gap-2 grid-cols-2 mb-5 mr-2 sm:mr-10">
+      <div className="grid sm:grid-cols-4 gap-2 grid-cols-2 mb-6 sm:mb-5 mr-2 sm:mr-10">
         {/* Full width on mobile, 3-cols on sm */}
         <div className="col-span-2 sm:col-span-3 grid pt-1 pb-2 font-bold">
           <MainHomeCard
