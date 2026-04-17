@@ -113,12 +113,12 @@ export default async function PaymentsPage({
         <div className="overflow-hidden">
           <div className="overflow-auto flex">
             <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-1 gap-2 font-bold items-center">
-              <Link
+              <a
                 href={basePath}
                 className="grid items-center justify-center shrink-0 rounded-md"
               >
                 <p className={filterClass(isAll)}>tudo</p>
-              </Link>
+              </a>
               <Link
                 href={buildFilterHref(resolvedParams, { status: "pending" })}
                 className="grid items-center justify-center shrink-0 rounded-md"
