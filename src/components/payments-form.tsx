@@ -171,7 +171,7 @@ function Section({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-xs font-light text-tertiary/60 uppercase tracking-widest">
+      <p className="text-sm font-light text-primary uppercase tracking-widest">
         {label}
       </p>
       {children}
