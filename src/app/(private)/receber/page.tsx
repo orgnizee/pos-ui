@@ -7,7 +7,6 @@ export default async function AReceberPage({
 }) {
   return (
     <PaymentsPage
-      paymentType="receivable"
       resolvedParams={await searchParams}
     />
   );

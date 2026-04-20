@@ -67,13 +67,18 @@ export const getPayments = cache(
       method: "GET",
     });
     if ("error" in res) return res;
+    console.log(res.results);
     return res.results.map((r) => r.payment);
   },
 );
 
 export const getPaymentByID = cache(
   async (id: string): Promise<Payment | ApiError> => {
-    return apiFetch<Payment>(`/receivables/${id}`, { method: "GET" });
+    const res = await apiFetch<{ payment: Payment }>(`/receivables/${id}`, {
+      method: "GET",
+    });
+    if ("error" in res) return res;
+    return res.payment;
   },
 );
 

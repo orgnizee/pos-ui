@@ -43,7 +43,7 @@ type PayableResponse = {
   count: number;
   next: string | null;
   previous: string | null;
-  results: { payable: Payable }[];
+  results: { payment: Payable }[];
 };
 
 export const getPayables = cache(
@@ -67,7 +67,7 @@ export const getPayables = cache(
       method: "GET",
     });
     if ("error" in res) return res;
-    return res.results.map((r) => r.payable);
+    return res.results.map((r) => r.payment);
   },
 );
 

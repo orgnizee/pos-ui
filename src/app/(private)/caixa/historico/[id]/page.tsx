@@ -37,7 +37,7 @@ export default async function TransactionPage({
 
           <div className="mt-5 w-fit h-fit rounded-full bg-tertiary/10">
             <p className="px-2 py-0.5 text-xs font-light normal-case">
-              {transaction.type !== "transfer" && transaction.category.name.toLowerCase()}
+              {transaction.type !== "transfer" && transaction.category.name?.toLowerCase()}
               {transaction.type === "transfer" && "transferência"}
             </p>
           </div>

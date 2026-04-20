@@ -1,17 +1,14 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import {
-  createPaymentAction,
-  PaymentActionState,
-} from "@/lib/api/actions/payments";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
 import { FinanceCategory } from "@/lib/api/finance-category";
 import { PaymentType, RecurrenceOption } from "@/lib/api/payments";
 import CategoryPickerModal from "@/components/category-picker-modal";
+import { createPayableAction, PayableActionState } from "@/lib/api/actions/payables";
 
-interface PaymentFormProps {
+interface PayableFormProps {
   contacts: Customer[] | Supplier[];
   categories: FinanceCategory[];
   defaultType?: PaymentType;
@@ -21,13 +18,13 @@ function isCustomer(c: Customer | Supplier): c is Customer {
   return "name" in c;
 }
 
-export default function PaymentForm({
+export default function PayableForm({
   contacts,
   categories,
   defaultType = "payable",
-}: PaymentFormProps) {
-  const [state, action, pending] = useActionState<PaymentActionState, FormData>(
-    createPaymentAction,
+}: PayableFormProps) {
+  const [state, action, pending] = useActionState<PayableActionState, FormData>(
+    createPayableAction,
     null,
   );
 

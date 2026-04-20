@@ -1,4 +1,4 @@
-import { getPayments } from "@/lib/api/payments";
+import { getPayables, Payable } from "@/lib/api/payable";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
@@ -6,17 +6,17 @@ import { filterClass } from "@/lib/style-filter-buttons";
 import SearchInput from "@/components/search-input";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { Payment, PaymentStatus } from "@/lib/api/payments";
+import { PaymentStatus } from "@/lib/api/payments";
 import PaymentRow from "./payment-row";
 import DateFilter from "./date-filters";
 
-interface PaymentsPageProps {
+interface PayablePageProps {
   resolvedParams: { [key: string]: string | string[] | undefined };
 }
 
-export default async function PaymentsPage({
+export default async function PayablePage({
   resolvedParams,
-}: PaymentsPageProps) {
+}: PayablePageProps) {
   const { status, search, date, start_date, end_date } = resolvedParams;
 
   const isAll = !status && !search && !date && !start_date && !end_date;
@@ -28,8 +28,8 @@ export default async function PaymentsPage({
   const isWeek = date === "week";
   const isMonth = date === "month";
 
-  const payments = await getPayments({
-    type: "receivable",
+  const payables = await getPayables({
+    type: "payable",
     ...(typeof status === "string" && { status: status as PaymentStatus }),
     ...(typeof search === "string" && { search }),
     ...(typeof date === "string" && { date }),
@@ -37,20 +37,22 @@ export default async function PaymentsPage({
     ...(typeof end_date === "string" && { end_date }),
   });
 
-  if (isApiError(payments)) {
-    return <p>{payments.message}</p>;
+  console.log(payables)
+
+  if (isApiError(payables)) {
+    return <p>{payables.message}</p>;
   }
 
   const byStatus = (s: PaymentStatus) =>
-    payments.filter((p) => p?.status === s);
+    payables.filter((p) => p?.status === s);
 
-  const sumOutstanding = (list: Payment[]) =>
+  const sumOutstanding = (list: Payable[]) =>
     list
       .filter(Boolean)
       .reduce((sum, p) => sum + parseFloat(p.outstanding_balance), 0)
       .toFixed(2);
 
-  const sumPaid = (list: Payment[]) =>
+  const sumPaid = (list: Payable[]) =>
     list
       .filter(Boolean)
       .reduce((sum, p) => sum + parseFloat(p.amount_paid), 0)
@@ -59,9 +61,9 @@ export default async function PaymentsPage({
   return (
     <section className="mr-4 sm:mr-8">
       <div className="flex items-center justify-between sm:mr-2">
-        <h1 className="text-5xl sm:text-6xl normal-case">a receber</h1>
+        <h1 className="text-5xl sm:text-6xl normal-case">a pagar</h1>
         <Link
-          href="/receber/adicionar"
+          href="/pagar/adicionar"
           className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
         >
           <Plus className="text-white" size={16} />
@@ -95,22 +97,22 @@ export default async function PaymentsPage({
       </div>
 
       <div className="mt-6">
-        <SearchInput endpoint="receber" />
+        <SearchInput endpoint="pagar" />
       </div>
 
       <div className="mt-2 mb-2 flex items-center gap-3">
         <div className="shrink-0">
-          <DateFilter endpoint="receber" resolvedParams={resolvedParams} />
+          <DateFilter endpoint="pagar" resolvedParams={resolvedParams} />
         </div>
         <div className="overflow-hidden">
           <div className="overflow-auto flex">
             <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-1 gap-2 font-bold items-center">
-              <Link
-                href="/receber"
+              <a
+                href="/pagar"
                 className="grid items-center justify-center shrink-0 rounded-md"
               >
                 <p className={filterClass(isAll)}>tudo</p>
-              </Link>
+              </a>
               <Link
                 href={buildFilterHref(resolvedParams, { status: "pending" })}
                 className="grid items-center justify-center shrink-0 rounded-md"
@@ -172,7 +174,7 @@ export default async function PaymentsPage({
               <col className="hidden sm:table-column" />
             </colgroup>
             <tbody>
-              {payments.length === 0 && (
+              {payables.length === 0 && (
                 <tr>
                   <td
                     colSpan={6}
@@ -182,11 +184,11 @@ export default async function PaymentsPage({
                   </td>
                 </tr>
               )}
-              {payments.map((payment) => (
+              {payables.map((payable) => (
                 <PaymentRow
-                  key={payment.id}
-                  payment={payment}
-                  basePath="/receber"
+                  key={payable.id}
+                  payment={payable}
+                  basePath="/pagar"
                 />
               ))}
             </tbody>

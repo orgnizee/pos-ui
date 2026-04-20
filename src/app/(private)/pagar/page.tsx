@@ -1,4 +1,4 @@
-import PaymentsPage from "@/components/payment-page";
+import PayablePage from "@/components/payable-page";
 
 export default async function APagarPage({
   searchParams,
@@ -6,8 +6,7 @@ export default async function APagarPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   return (
-    <PaymentsPage
-      paymentType="payable"
+    <PayablePage
       resolvedParams={await searchParams}
     />
   );

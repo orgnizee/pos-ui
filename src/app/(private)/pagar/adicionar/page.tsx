@@ -3,7 +3,7 @@ import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bank-accounts";
 import { getFinanceCategories } from "@/lib/api/finance-category";
 import { getCustomers } from "@/lib/api/customers";
-import PaymentForm from "@/components/payments-form";
+import PayableForm from "@/components/payable-form";
 
 export default async function AddReceberPage() {
   const accounts = await getAccounts();
@@ -30,7 +30,7 @@ export default async function AddReceberPage() {
           <p className="text-6xl text-start font-light normal-case">pagar</p>
         </div>
         <div className="mt-2 py-8 sm:py-0 relative ml-auto mr-auto flex items-center justify-center w-full min-h-65 sm:w-150 sm:min-h-95 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
-          <PaymentForm
+          <PayableForm
             contacts={customers}
             categories={categories}
             defaultType="payable"

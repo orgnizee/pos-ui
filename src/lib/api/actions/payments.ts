@@ -74,10 +74,13 @@ export async function updatePaymentAction(
     reference: (formData.get("reference") as string) || null,
     notes: (formData.get("notes") as string) || undefined,
   });
+  
+  console.log(res)
 
   if (isApiError(res)) {
     return { error: true, message: res.message, details: res.details };
   }
+
 
   redirect("/receber");
 }

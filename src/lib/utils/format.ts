@@ -5,34 +5,28 @@ export const formatBRL = (value: string) =>
   });
 
 export function formatDateTime(dateTime: string): string {
-  const date = new Date(dateTime);
+  const [datePart, timePart] = dateTime.split("T");
 
-  const day = date.toLocaleString("pt-BR", {
-    day: "2-digit",
-    timeZone: "America/Sao_Paulo",
-  });
+  const [year, month, day] = datePart.split("-");
 
-  const month = date
-    .toLocaleString("pt-BR", {
-      month: "short",
-      timeZone: "America/Sao_Paulo",
-    })
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+
+  const formattedDay = String(date.getDate()).padStart(2, "0");
+
+  const formattedMonth = date
+    .toLocaleString("pt-BR", { month: "short" })
     .toUpperCase()
     .replace(".", "");
 
-  const year = date.toLocaleString("pt-BR", {
-    year: "numeric",
-    timeZone: "America/Sao_Paulo",
-  });
+  const formattedYear = date.getFullYear();
 
-  const time = date.toLocaleString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "America/Sao_Paulo",
-    hour12: false,
-  });
+  let time = "";
+  if (timePart) {
+    const [hour, minute] = timePart.split(":");
+    time = ` ${hour}:${minute}`;
+  }
 
-  return `${day} ${month} ${year} ${time}`;
+  return `${formattedDay} ${formattedMonth} ${formattedYear}${time}`;
 }
 
 export function formatCPF(value: string): string {

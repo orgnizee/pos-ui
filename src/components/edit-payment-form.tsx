@@ -2,55 +2,65 @@
 
 import { useActionState, useState } from "react";
 import {
-  createPaymentAction,
+  updatePaymentAction,
   PaymentActionState,
 } from "@/lib/api/actions/payments";
+import { Payment, RecurrenceOption, PaymentStatus } from "@/lib/api/payments";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
 import { FinanceCategory } from "@/lib/api/finance-category";
-import { PaymentType, RecurrenceOption } from "@/lib/api/payments";
 import CategoryPickerModal from "@/components/category-picker-modal";
 
-interface PaymentFormProps {
+interface EditPaymentFormProps {
+  id: string;
+  payment: Payment;
   contacts: Customer[] | Supplier[];
   categories: FinanceCategory[];
-  defaultType?: PaymentType;
 }
 
 function isCustomer(c: Customer | Supplier): c is Customer {
   return "name" in c;
 }
 
-export default function PaymentForm({
+function parseCents(amount: string): number {
+  return Math.round(parseFloat(amount) * 100);
+}
+
+export default function EditPaymentForm({
+  id,
+  payment,
   contacts,
   categories,
-  defaultType = "payable",
-}: PaymentFormProps) {
+}: EditPaymentFormProps) {
+  const boundAction = updatePaymentAction.bind(null, id);
   const [state, action, pending] = useActionState<PaymentActionState, FormData>(
-    createPaymentAction,
+    boundAction,
     null,
   );
 
-  const [recurrence, setRecurrence] = useState<RecurrenceOption>("once");
-  const [categoryValue, setCategoryValue] = useState("");
-  const [cents, setCents] = useState(0);
+  const [recurrence, setRecurrence] = useState<RecurrenceOption>(
+    payment.recurrence,
+  );
+  const [categoryValue, setCategoryValue] = useState(
+    payment.category?.id ?? "",
+  );
+  const [cents, setCents] = useState(() => parseCents(payment.total_amount));
+  const [amountPaidCents, setAmountPaidCents] = useState(() =>
+    parseCents(payment.amount_paid),
+  );
+  const [status, setStatus] = useState<PaymentStatus>(payment.status);
 
-  const displayValue = (cents / 100).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+  const formatBRL = (c: number) =>
+    (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
     <form action={action} className="w-full px-6 py-6 flex flex-col gap-6">
-      {/* Payment type */}
-      <input type="hidden" name="payment_type" value={defaultType} />
-
       {/* Amount */}
       <Section label="valor">
         <input
           type="text"
           inputMode="numeric"
-          value={displayValue}
+          value={formatBRL(cents)}
           onChange={(e) => setCents(Number(e.target.value.replace(/\D/g, "")))}
           className="text-3xl normal-case outline-none"
         />
@@ -64,9 +74,10 @@ export default function PaymentForm({
       {/* Main info */}
       <Section label="informações">
         <Row>
-          {/* <DateField name="issued_at" required /> */}
-          <DateField name="due_at" required />
+          <DateField name="issued_at" defaultValue={payment.issued_at} />
+          <DateField name="due_at" required defaultValue={payment.due_at} />
         </Row>
+
         <div className="flex-1 h-10 text-sm font-light rounded-md bg-background">
           <input type="hidden" name="category" value={categoryValue} />
           <CategoryPickerModal
@@ -75,7 +86,12 @@ export default function PaymentForm({
             onChange={setCategoryValue}
           />
         </div>
-        <SelectField name="contact" placeholder="contato">
+
+        <SelectField
+          name="contact"
+          placeholder="contato"
+          defaultValue={payment.contact.id}
+        >
           {contacts.map((c) => (
             <option key={c.id} value={c.id}>
               {isCustomer(c)
@@ -84,7 +100,12 @@ export default function PaymentForm({
             </option>
           ))}
         </SelectField>
-        <Field name="reference" placeholder="referência" />
+
+        <Field
+          name="reference"
+          placeholder="referência"
+          defaultValue={payment.reference ?? ""}
+        />
       </Section>
 
       {/* Recurrence */}
@@ -92,6 +113,7 @@ export default function PaymentForm({
         <SelectField
           name="recurrence"
           placeholder="tipo"
+          defaultValue={recurrence}
           onChange={(e) => setRecurrence(e.target.value as RecurrenceOption)}
         >
           <option value="once">única</option>
@@ -101,7 +123,12 @@ export default function PaymentForm({
         </SelectField>
 
         {recurrence === "weekly" && (
-          <SelectField name="due_weekday" placeholder="dia da semana" required>
+          <SelectField
+            name="due_weekday"
+            placeholder="dia da semana"
+            defaultValue={payment.due_weekday ?? ""}
+            required
+          >
             <option value="monday">segunda-feira</option>
             <option value="tuesday">terça-feira</option>
             <option value="wednesday">quarta-feira</option>
@@ -117,6 +144,7 @@ export default function PaymentForm({
             name="due_day_of_month"
             placeholder="dia do mês (1–31)"
             type="number"
+            defaultValue={payment.due_day_of_month?.toString() ?? ""}
           />
         )}
 
@@ -126,17 +154,63 @@ export default function PaymentForm({
             placeholder="número de parcelas"
             type="number"
             required
+            defaultValue={payment.installment_count?.toString() ?? ""}
           />
+        )}
+      </Section>
+
+      {/* Status */}
+      <Section label="status">
+        <SelectField
+          name="status"
+          placeholder="status"
+          defaultValue={status}
+          onChange={(e) => setStatus(e.target.value as PaymentStatus)}
+        >
+          <option value="pending">pendente</option>
+          <option value="paid">pago</option>
+          <option value="overdue">vencido</option>
+          <option value="partially_paid">parcialmente pago</option>
+        </SelectField>
+
+        {(status === "paid" || status === "partially_paid") && (
+          <>
+            <DateField name="paid_at" defaultValue={payment.paid_at ?? ""} />
+
+            <div className="flex flex-col gap-1">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={formatBRL(amountPaidCents)}
+                onChange={(e) =>
+                  setAmountPaidCents(Number(e.target.value.replace(/\D/g, "")))
+                }
+                placeholder="valor pago"
+                className="w-full h-10 p-2 text-sm font-light rounded-md bg-background placeholder:text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
+              />
+              <input
+                type="hidden"
+                name="amount_paid"
+                value={(amountPaidCents / 100).toFixed(2)}
+              />
+            </div>
+
+            <Field
+              name="payment_method"
+              placeholder="método de pagamento"
+              defaultValue={payment.payment_method ?? ""}
+            />
+          </>
         )}
       </Section>
 
       {/* Notes */}
       <Section label="observações">
         <textarea
-          required
           name="notes"
           placeholder="anotações..."
           rows={3}
+          defaultValue={payment.notes ?? ""}
           className="w-full p-2 text-sm font-light bg-background rounded-md placeholder:text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md resize-none"
         />
       </Section>
@@ -236,12 +310,14 @@ function SelectField({
   name,
   placeholder,
   required,
+  defaultValue,
   onChange,
   children,
 }: {
   name: string;
   placeholder?: string;
   required?: boolean;
+  defaultValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   children: React.ReactNode;
 }) {
@@ -249,7 +325,7 @@ function SelectField({
     <div className="flex-1 h-10 text-sm font-light rounded-md bg-background">
       <select
         name={name}
-        defaultValue=""
+        defaultValue={defaultValue ?? ""}
         required={required}
         onChange={onChange}
         className="w-full h-full p-2 text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
