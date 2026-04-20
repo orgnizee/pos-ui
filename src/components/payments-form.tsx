@@ -41,7 +41,7 @@ export default function PaymentForm({
   });
 
   return (
-    <form action={action} className="w-full px-6 py-6 flex flex-col gap-6">
+    <form action={action} className="w-full px-6 pt-6 flex flex-col gap-6">
       {/* Payment type */}
       <input type="hidden" name="payment_type" value={defaultType} />
 
@@ -62,7 +62,7 @@ export default function PaymentForm({
       </Section>
 
       {/* Main info */}
-      <Section label="informações">
+      <Section label="">
         <Row>
           {/* <DateField name="issued_at" required /> */}
           <DateField name="due_at" required />
@@ -220,14 +220,19 @@ function DateField({
   defaultValue?: string;
 }) {
   return (
-    <div className="flex-1 h-10 text-sm font-light rounded-md bg-background">
-      <input
-        name={name}
-        type="date"
-        required={required}
-        defaultValue={defaultValue}
-        className="w-full h-full p-2 text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
-      />
+    <div className="flex-1 flex flex-col gap-0.5">
+      <span className="text-xs font-light text-tertiary uppercase tracking-widest pl-0.5">
+        vencimento
+      </span>
+      <div className="h-10 text-sm font-light rounded-md bg-background">
+        <input
+          name={name}
+          type="date"
+          required={required}
+          defaultValue={defaultValue}
+          className="w-full h-full p-2 text-primary outline-none focus:border focus:border-tertiary focus:rounded-md"
+        />
+      </div>
     </div>
   );
 }

@@ -73,9 +73,14 @@ export const getPayables = cache(
 
 export const getPayableByID = cache(
   async (id: string): Promise<Payable | ApiError> => {
-    return apiFetch<Payable>(`/payables/${id}`, { method: "GET" });
+    const res = await apiFetch<{ payment: Payable }>(`/payables/${id}`, {
+      method: "GET",
+    });
+    if ("error" in res) return res;
+    return res.payment;
   },
 );
+
 
 export async function createPayable(data: {
   contact: string;

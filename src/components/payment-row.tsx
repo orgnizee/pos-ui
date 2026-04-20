@@ -18,7 +18,7 @@ const statusLabel: Record<Payment["status"], string> = {
   pending: "pendente",
   paid: "pago",
   overdue: "em atraso",
-  partially_paid: "parcialmente pago",
+  partially_paid: "parcialmente",
 };
 
 export default function PaymentRow({

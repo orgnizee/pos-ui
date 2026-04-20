@@ -1,5 +1,4 @@
 "use client";
-
 import { useActionState, useState } from "react";
 import {
   updatePaymentAction,
@@ -54,7 +53,7 @@ export default function EditPaymentForm({
     (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
-    <form action={action} className="w-full px-6 py-6 flex flex-col gap-6">
+    <form action={action} className="w-full px-6 pt-6 flex flex-col gap-6">
       {/* Amount */}
       <Section label="valor">
         <input
@@ -72,12 +71,20 @@ export default function EditPaymentForm({
       </Section>
 
       {/* Main info */}
-      <Section label="informações">
+      <Section label="">
         <Row>
-          <DateField name="issued_at" defaultValue={payment.issued_at} />
-          <DateField name="due_at" required defaultValue={payment.due_at} />
+          <LabeledDateField
+            name="issued_at"
+            label="emissão"
+            defaultValue={payment.issued_at}
+          />
+          <LabeledDateField
+            name="due_at"
+            label="vencimento"
+            required
+            defaultValue={payment.due_at}
+          />
         </Row>
-
         <div className="flex-1 h-10 text-sm font-light rounded-md bg-background">
           <input type="hidden" name="category" value={categoryValue} />
           <CategoryPickerModal
@@ -86,7 +93,6 @@ export default function EditPaymentForm({
             onChange={setCategoryValue}
           />
         </div>
-
         <SelectField
           name="contact"
           placeholder="contato"
@@ -100,7 +106,6 @@ export default function EditPaymentForm({
             </option>
           ))}
         </SelectField>
-
         <Field
           name="reference"
           placeholder="referência"
@@ -175,8 +180,11 @@ export default function EditPaymentForm({
 
         {(status === "paid" || status === "partially_paid") && (
           <>
-            <DateField name="paid_at" defaultValue={payment.paid_at ?? ""} />
-
+            <LabeledDateField
+              name="paid_at"
+              label="data de pagamento"
+              defaultValue={payment.paid_at ?? ""}
+            />
             <div className="flex flex-col gap-1">
               <input
                 type="text"
@@ -194,7 +202,6 @@ export default function EditPaymentForm({
                 value={(amountPaidCents / 100).toFixed(2)}
               />
             </div>
-
             <Field
               name="payment_method"
               placeholder="método de pagamento"
@@ -222,13 +229,15 @@ export default function EditPaymentForm({
             {state.message}
           </p>
         )}
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex items-center justify-center w-14 px-2 py-0.5 rounded-md bg-black text-sm text-white cursor-pointer disabled:opacity-50"
-        >
-          salvar
-        </button>
+        { payment.status === "pending" &&
+          <button
+            type="submit"
+            disabled={pending}
+            className="flex items-center justify-center w-14 px-2 py-0.5 rounded-md bg-black text-sm text-white cursor-pointer disabled:opacity-50"
+          >
+            salvar
+          </button>
+        }
       </div>
     </form>
   );
@@ -245,7 +254,7 @@ function Section({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm font-light text-primary uppercase tracking-widest">
+      <p className="text-base font-light text-primary uppercase tracking-widest">
         {label}
       </p>
       {children}
@@ -278,30 +287,37 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue}
-        className="w-full h-full p-2 placeholder:text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
+        className="w-full h-full p-2 text-primary outline-none focus:border focus:border-tertiary focus:rounded-md"
       />
     </div>
   );
 }
 
-function DateField({
+function LabeledDateField({
   name,
+  label,
   required,
   defaultValue,
 }: {
   name: string;
+  label: string;
   required?: boolean;
   defaultValue?: string;
 }) {
   return (
-    <div className="flex-1 h-10 text-sm font-light rounded-md bg-background">
-      <input
-        name={name}
-        type="date"
-        required={required}
-        defaultValue={defaultValue}
-        className="w-full h-full p-2 text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
-      />
+    <div className="flex-1 flex flex-col gap-0.5">
+      <span className="text-xs font-light text-tertiary uppercase tracking-widest pl-0.5">
+        {label}
+      </span>
+      <div className="h-10 text-sm font-light rounded-md bg-background">
+        <input
+          name={name}
+          type="date"
+          required={required}
+          defaultValue={defaultValue}
+          className="w-full h-full p-2 text-primary outline-none focus:border focus:border-tertiary focus:rounded-md"
+        />
+      </div>
     </div>
   );
 }
@@ -328,7 +344,7 @@ function SelectField({
         defaultValue={defaultValue ?? ""}
         required={required}
         onChange={onChange}
-        className="w-full h-full p-2 text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
+        className="w-full h-full p-2 text-primary outline-none focus:border focus:border-tertiary focus:rounded-md"
       >
         {placeholder && (
           <option value="" disabled>

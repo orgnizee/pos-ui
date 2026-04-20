@@ -67,7 +67,6 @@ export const getPayments = cache(
       method: "GET",
     });
     if ("error" in res) return res;
-    console.log(res.results);
     return res.results.map((r) => r.payment);
   },
 );
@@ -109,15 +108,7 @@ export async function updatePayment(
     issued_at?: string;
     due_at?: string;
     total_amount?: string;
-    amount_paid?: string;
-    payment_type?: PaymentType;
-    status?: PaymentStatus;
-    paid_at?: string | null;
     payment_method?: string | null;
-    recurrence?: RecurrenceOption;
-    installment_count?: number | null;
-    due_weekday?: Weekday | null;
-    due_day_of_month?: number | null;
     reference?: string | null;
     notes?: string;
   },
