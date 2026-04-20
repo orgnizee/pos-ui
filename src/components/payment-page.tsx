@@ -41,6 +41,10 @@ export default async function PaymentsPage({
     return <p>{payments.message}</p>;
   }
 
+  const paymentsSorted = payments.sort(
+    (a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime(),
+  );
+
   const byStatus = (s: PaymentStatus) =>
     payments.filter((p) => p?.status === s);
 
@@ -182,7 +186,7 @@ export default async function PaymentsPage({
                   </td>
                 </tr>
               )}
-              {payments.map((payment) => (
+              {paymentsSorted.map((payment) => (
                 <PaymentRow
                   key={payment.id}
                   payment={payment}

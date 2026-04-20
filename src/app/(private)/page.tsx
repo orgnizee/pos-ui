@@ -54,14 +54,14 @@ export default async function Home() {
           />
         </div>
 
-        <div className="grid pt-1 pb-2 font-bold">
+        {/* <div className="grid pt-1 pb-2 font-bold">
           <MainHomeCard
             title="contas"
             description={["pagar"]}
             notes="p"
             link="/pagar"
           />
-        </div>
+        </div> */}
 
         {/* Full width on mobile */}
         <div className="col-span-2 sm:col-span-1 grid pt-1 pb-2 font-bold">
@@ -73,14 +73,14 @@ export default async function Home() {
           />
         </div>
 
-        <div className="col-span-2 sm:col-span-1 grid pt-1 pb-2 font-bold">
+        {/* <div className="col-span-2 sm:col-span-1 grid pt-1 pb-2 font-bold">
           <MainHomeCard
             title="pesquisar"
             description={["produtos"]}
             notes="s"
-            link="/"
+            link="/produtos"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* <div className="overflow-hidden">

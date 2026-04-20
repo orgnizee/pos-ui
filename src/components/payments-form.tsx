@@ -128,6 +128,15 @@ export default function PaymentForm({
             required
           />
         )}
+
+        {recurrence === "installments" && (
+          <Field
+            name="due_day_of_month"
+            placeholder="dia do vencimento (1-31)"
+            type="number"
+            required
+          />
+        )}
       </Section>
 
       {/* Notes */}
