@@ -6,8 +6,8 @@ export type FinanceCategory = {
   id: string;
   name: string;
   parent: {
-    id: string,
-    name: string,
+    id: string;
+    name: string;
   };
   is_active: boolean;
 };
@@ -27,7 +27,9 @@ export const getFinanceCategories = cache(
 
     if ("error" in res) return res;
 
-    return res.results.map((r) => r.category);
+    return res.results
+      .filter((r) => r.category.is_active)
+      .map((r) => r.category);
   },
 );
 

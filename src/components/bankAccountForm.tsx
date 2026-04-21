@@ -7,6 +7,7 @@ import {
   submitUpdateBankAccountFormAction,
 } from "@/lib/api/actions/bank-accounts";
 import { Account } from "@/lib/api/bank-accounts";
+import { InputField } from "./inputField";
 
 export default function BankAccountForm() {
   const [state, action, pending] = useActionState<
@@ -17,20 +18,12 @@ export default function BankAccountForm() {
   return (
     <form
       action={action}
-      className="flex flex-col items-start"
+      className="flex flex-col items-start min-w-lg"
       autoComplete="off"
     >
-      <div className="mt-2 w-75 h-10 text-sm font-light rounded-md bg-background">
-        <input
-          required
-          name="bank"
-          placeholder="conta"
-          type="text"
-          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
-        />
-      </div>
+      <InputField label="conta" name="bank" type="text" />
 
-      <div className="mt-1 relative h-5 w-full max-w-xs">
+      <div className="mt-1 relative h-5 w-full max-w-xl">
         {state && "error" in state && (
           <p className="text-end text-xs font-light normal-case text-red-500">
             {state.message}
@@ -38,11 +31,11 @@ export default function BankAccountForm() {
         )}
       </div>
 
-      <div className="relative w-14 px-2 py-0.5 rounded-md bg-black cursor-pointer">
+      <div className="w-full h-fit py-1 border cursor-pointer">
         <button
           type="submit"
           disabled={pending}
-          className="flex items-center justify-center w-full text-sm text-white cursor-pointer"
+          className="flex items-center justify-center w-full text-sm cursor-pointer uppercase"
         >
           salvar
         </button>
@@ -62,43 +55,41 @@ export function UpdateBankAccountForm({ account }: { account: Account }) {
   return (
     <form
       action={action}
-      className="flex flex-col items-start"
+      className="flex flex-col items-start w-full"
       autoComplete="off"
     >
-      <p className="normal-case font-light">atualizar dados da conta</p>
+      <p className="mb-4 font-light">atualizar dados da conta</p>
 
-      <div className="mt-2 w-75 h-10 text-sm font-light rounded-md bg-background">
-        <input
-          name="bank"
-          defaultValue={account.name.toLowerCase()}
-          placeholder={account.name.toLowerCase()}
-          type="text"
-          className="w-full h-full p-2 placeholder:text-tertiary outline-none focus:border focus:border-tertiary focus:rounded-md"
-        />
-      </div>
+      <InputField
+        label="conta"
+        name="bank"
+        defaultValue={account.name.toUpperCase()}
+        type="text"
+      />
 
-      <label className="mt-4 flex items-center gap-2 text-sm normal-case font-light cursor-pointer">
+      <label className="mt-4 flex items-center gap-2 text-sm font-light cursor-pointer">
         <input
           type="checkbox"
           name="is_active"
           defaultChecked={!account.is_active}
+          className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
         />
         ocultar conta
       </label>
 
       <div className="mt-1 relative h-5 w-full max-w-xs">
         {state && "error" in state && (
-          <p className="text-end text-xs font-light normal-case text-red-500">
+          <p className="text-end text-xs font-light text-red-500">
             {state.message}
           </p>
         )}
       </div>
 
-      <div className="w-14 px-2 py-0.5 rounded-md bg-black cursor-pointer">
+      <div className="w-full h-fit py-1 border cursor-pointer">
         <button
           type="submit"
           disabled={pending}
-          className="flex items-center justify-center w-full text-sm text-white cursor-pointer"
+          className="flex items-center justify-center w-full text-sm cursor-pointer uppercase"
         >
           salvar
         </button>

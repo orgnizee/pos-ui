@@ -4,16 +4,12 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const keyMap: Record<string, string> = {
-  i: "/",
-  s: "/caixa",
-  v: "/vender",
-  r: "/receber",
-  p: "/pagar",
-  c: "/contatos",
-  l: "/produtos",
+  e: "/caixa/entrada",
+  s: "/caixa/saida",
+  t: "/caixa/transferencia",
 };
 
-export default function KeyboardNav() {
+export default function KeyboardNavCaixa() {
   const router = useRouter();
 
   useEffect(() => {

@@ -1,5 +1,5 @@
-import BackButton from "@/components/back-button";
-import { getFinanceCategories } from "@/lib/api/finance-category";
+import BackButton from "@/components/backButton";
+import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { isApiError } from "@/lib/api/types";
 import { Plus } from "lucide-react";
 import Link from "next/link";

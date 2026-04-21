@@ -1,9 +1,9 @@
 "use client";
-import { filterClass } from "@/lib/style-filter-buttons";
+import { filterClass } from "@/lib/styleFilterButtons";
 import { Account } from "@/lib/api/bank-accounts";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function DropdownBankAccountMenu({
+export default function SelectBankAccountInput({
   accounts,
 }: {
   accounts: Account[];
@@ -13,7 +13,7 @@ export default function DropdownBankAccountMenu({
   const current = searchParams.get("bank") ?? "";
 
   const options = [
-    ...accounts.map((a) => ({ label: a.name.toLowerCase(), value: a.id })),
+    ...accounts.map((a) => ({ label: a.name.toUpperCase(), value: a.id })),
   ];
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -24,17 +24,19 @@ export default function DropdownBankAccountMenu({
     } else {
       params.delete("bank");
     }
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}`, {scroll: false});
   }
 
   return (
     <select
       value={current}
       onChange={handleChange}
-      style={{ textAlignLast: "center" }}
-      className={filterClass(current !== "")}
+      style={{ textAlignLast: "end" }}
+      className={`${filterClass(current !== "")}`}
     >
-      <option value="">conta</option>
+      <option disabled value="">
+        CONTA
+      </option>
       {options.map(({ label, value }) => (
         <option key={value} value={value}>
           {label}

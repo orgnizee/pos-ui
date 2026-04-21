@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { isApiError } from "@/lib/api/types";
-import { createFinanceCategory } from "../finance-category";
+import { createFinanceCategory } from "../financeCategory";
 
 export type FinanceCategoryActionState = {
   error: true;

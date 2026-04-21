@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Pagination({ count }: { count: number }) {
   const router = useRouter();
@@ -23,21 +23,21 @@ export default function Pagination({ count }: { count: number }) {
       <button
         onClick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
-        className="flex items-center justify-center w-7 h-7 rounded-md bg-secondary/20 disabled:opacity-30"
+        className="flex items-center justify-start w-7 h-7 rounded-md disabled:opacity-30"
       >
-        <ChevronLeft size={14} />
+        <ArrowLeft size={14} />
       </button>
 
-      <p className="text-sm normal-case">
+      <p className="text-sm justify-center normal-case">
         {currentPage} / {totalPages}
       </p>
 
       <button
         onClick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="flex items-center justify-center w-7 h-7 rounded-md bg-secondary/20 disabled:opacity-30"
+        className="flex items-center justify-start w-7 h-7 rounded-md disabled:opacity-30"
       >
-        <ChevronRight size={14} />
+        <ArrowRight size={14} />
       </button>
     </div>
   );

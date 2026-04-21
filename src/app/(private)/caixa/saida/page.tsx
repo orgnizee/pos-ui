@@ -1,14 +1,14 @@
-import TransactionForm from "@/components/transaction-form";
-import BackButton from "@/components/back-button";
+import TransactionForm from "@/components/transactionForm";
+import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bank-accounts";
-import { getFinanceCategories } from "@/lib/api/finance-category";
-import { getSuppliers } from "@/lib/api/suppliers";
+import { getFinanceCategories } from "@/lib/api/financeCategory";
+import { getCustomers } from "@/lib/api/customers";
 
-export default async function Acompanhe() {
+export default async function AddDebitPage() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
-  const suppliers = await getSuppliers();
+  const customers = await getCustomers();
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
@@ -18,25 +18,22 @@ export default async function Acompanhe() {
     return <p>{categories.message}</p>;
   }
 
-  if (isApiError(suppliers)) {
-    return <p>{suppliers.message}</p>;
+  if (isApiError(customers)) {
+    return <p>{customers.message}</p>;
   }
 
   return (
-    <section>
+    <section className="mt-6">
       <BackButton />
-      <div className="flex flex-col mr-3 sm:mr-0 mt-10 sm:mt-8 px-1 pt-1 items-center font-bold">
-        <div className="relative ml-auto mr-auto flex items-start justify-start w-full sm:w-150">
-          <p className="text-6xl text-start font-light normal-case">saída</p>
-        </div>
-        <div className="mt-2 py-8 sm:py-0 relative ml-auto mr-auto flex items-center justify-center w-full min-h-65 sm:w-150 sm:min-h-95 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
-          <TransactionForm
-            type="debit"
-            categories={categories}
-            accounts={accounts.filter((a) => a.is_active)}
-            contacts={suppliers}
-          />
-        </div>
+      <p className="mt-8 text-6xl text-start font-light">saída</p>
+
+      <div className="relative flex items-center justify-center mt-2 ml-auto mr-auto w-full">
+        <TransactionForm
+          type="debit"
+          categories={categories}
+          accounts={accounts.filter((a) => a.is_active)}
+          contacts={customers}
+        />
       </div>
     </section>
   );

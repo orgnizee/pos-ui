@@ -1,16 +1,16 @@
 "use client";
-import { filterClass } from "@/lib/style-filter-buttons";
+import { filterClass } from "@/lib/styleFilterButtons";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function DropdownTypeMenu() {
+export default function SelectTypeInput() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const current = searchParams.get("type") ?? "";
 
   const options = [
-    { label: "entrada", value: "credit" },
-    { label: "saída", value: "debit" },
-    { label: "transferência", value: "transfer" },
+    { label: "ENTRADA", value: "credit" },
+    { label: "SAÍDA", value: "debit" },
+    { label: "TRANSFERÊNCIA", value: "transfer" },
   ];
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -21,19 +21,21 @@ export default function DropdownTypeMenu() {
     } else {
       params.delete("type");
     }
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}`, {scroll: false});
   }
 
   return (
     <select
       value={current}
       onChange={handleChange}
-      style={{ textAlignLast: "center" }}
-      className={filterClass(current !== "")}
+      style={{ textAlignLast: "end" }}
+      className={`${filterClass(current !== "")}`}
     >
-      <option value="">tipo</option>
+      <option disabled value="">
+        TIPO
+      </option>
       {options.map(({ label, value }) => (
-        <option key={value} value={value}>
+        <option key={value} value={value} className="uppercase">
           {label}
         </option>
       ))}

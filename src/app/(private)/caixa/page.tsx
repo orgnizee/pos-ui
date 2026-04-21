@@ -1,18 +1,18 @@
-import DropdownTypeMenu from "@/components/dropdown-type";
-import TransactionTable from "@/components/transaction-table";
+import TransactionTable from "@/components/transactionTable";
 import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
 import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
-import { ArrowRightLeft, Eye, EyeClosed, Minus, Plus } from "lucide-react";
+import { ArrowRightLeft, Minus, Plus } from "lucide-react";
 import Link from "next/link";
-import { filterClass } from "../../../lib/style-filter-buttons";
-import DropdownCategoryMenu from "@/components/dropdown-category";
-import { getFinanceCategories } from "@/lib/api/finance-category";
-import DropdownBankAccountMenu from "@/components/dropdown-bank";
-import SearchInput from "@/components/search-input";
+import { filterClass } from "../../../lib/styleFilterButtons";
+import { getFinanceCategories } from "@/lib/api/financeCategory";
+import SearchInput from "@/components/searchInput";
 import Pagination from "@/components/pagination";
+import SelectTypeInput from "@/components/selecTypeInput";
+import SelectCategoryInput from "@/components/selectCategoryInput";
+import SelectBankAccountInput from "@/components/SelectBankAccountInput";
 
 export default async function CaixaPage({
   searchParams,
@@ -61,60 +61,70 @@ export default async function CaixaPage({
     : accounts.filter((a) => a.is_active);
 
   return (
-    <section>
-      <div className="flex items-center justify-between mr-3 sm:mr-10">
-        <h1 className="text-5xl sm:text-6xl normal-case">caixa</h1>
+    <section className="mt-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-8xl font-light">caixa</h1>
 
-        {/* Transaction Buttons */}
+        {/* Add Transaction Buttons */}
         <div className="flex gap-2">
           <Link
             href={"caixa/entrada"}
-            className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
+            className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
           >
-            <Plus className="text-white" size={16} />
+            <Plus className="text-primary" size={16} />
           </Link>
           <Link
             href={"caixa/saida"}
-            className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
+            className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
           >
-            <Minus className="text-white" size={16} />
+            <Minus className="text-primary" size={16} />
           </Link>
           <Link
             href={"caixa/transferencia"}
-            className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
+            className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
           >
-            <ArrowRightLeft className="text-white" size={16} />
+            <ArrowRightLeft className="text-primary" size={16} />
           </Link>
         </div>
       </div>
 
+      {/* Saldo Total */}
+      <div className="ml-1">
+        <p className="mt-8 text-start text-lg font-light">saldo total</p>
+        <p className="text-start text-5xl font-normal">
+          {formatBRL(totalBalance.total_balance)}
+        </p>
+      </div>
+
+      {/* Show All Accounts */}
+      <Link
+        href={showAllAccount ? "/caixa" : "/caixa?inativas=true"}
+        className="flex mt-8 ml-1 w-fit h-fit"
+      >
+        <div className="text-tertiary text-xs">
+          {showAllAccount ? <p>todas</p> : <p>ativas</p>}
+        </div>
+      </Link>
+
       {/* Bank Account Cards */}
-      <div className="mt-8 overflow-hidden">
+      <div className="overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold items-center">
-            <div className="grid items-center justify-center shrink-0 rounded-md overflow-hidden">
-              <p className="text-center text-sm normal-case font-light">
-                saldo total
-              </p>
-              <p className="w-40 h-fit px-1 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20">
-                {formatBRL(totalBalance.total_balance)}
-              </p>
-            </div>
-
             {filtered.map((account) => (
               <Link
                 href={`/caixa/conta/${account.id}`}
                 key={account.id}
-                className={`relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full hover:bg-secondary/5 overflow-hidden ${!account.is_active ? "ring-2 ring-secondary/10" : "bg-secondary/10"}`}
+                className={`relative flex items-center justify-center min-w-50 min-h-55 shrink-0 overflow-hidden border ${!account.is_active ? "border-secondary text-secondary" : "border-primary text-primary"}`}
               >
                 <p
-                  className={`text-center text-2xl ${Number(account.balance) < 0 ? "text-red-500" : "text-primary"}`}
+                  className={`text-center text-xl font-normal ${Number(account.balance) < 0 && "text-red-500"}`}
                 >
-                  {account.is_active
-                    ? formatBRL(account.balance)
-                    : "conta inativa"}
+                  {account.is_active ? formatBRL(account.balance) : "/"}
                 </p>
-                <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
+                <p
+                  className={`absolute bottom-0 left-1/2 -translate-x-1/2 px-2.5 py-1 text-center text-lg normal-case font-light`}
+                >
                   {account.name.toLowerCase()}
                 </p>
               </Link>
@@ -122,77 +132,59 @@ export default async function CaixaPage({
 
             <Link
               href={"/caixa/conta"}
-              className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full ring-2 ring-secondary/10 bg- hover:bg-secondary/5 overflow-hidden cursor-pointer"
+              className={`relative flex items-center justify-center min-w-50 min-h-55 shrink-0 overflow-hidden`}
             >
-              <div className="text-center text-2xl text-tertiary">
-                <Plus strokeWidth={1} size={50} />
+              <div className="text-primary">
+                <Plus strokeWidth={0.8} size={35} />
               </div>
-              <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
-                adicionar conta
-              </p>
-            </Link>
-
-            <Link
-              href={showAllAccount ? "/caixa" : "/caixa?inativas=true"}
-              className="relative flex items-center justify-center min-w-77 min-h-45 sm:min-w-100 sm:min-h-55 shrink-0 rounded-full ring-2 ring-secondary/10 bg- hover:bg-secondary/5 overflow-hidden cursor-pointer"
-            >
-              <div className="text-center text-2xl text-tertiary">
-                {showAllAccount ? (
-                  <EyeClosed strokeWidth={1} size={50} />
-                ) : (
-                  <Eye strokeWidth={1} size={50} />
-                )}
-              </div>
-              <p className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-2.5 py-1 text-sm normal-case font-light text-tertiary">
-                {showAllAccount ? "ocultar inativas" : "mostrar inativas"}
-              </p>
             </Link>
           </div>
         </div>
       </div>
 
-      <p className="mt-8 ml-0.5 font-bold text-lg">histórico</p>
+      <p className="mt-8 text-start text-lg font-light">histórico</p>
 
-      <div className="mr-3">
+      {/* Filter Date */}
+      <div className="flex overflow-x-auto scrollbar-hidden gap-6 pt-1 pb-5 justify-start items-center text-center">
+        <Link scroll={false} href="/caixa" className="shrink-0 block">
+          <p className={filterClass(isAll)}>tudo</p>
+        </Link>
+
+        <Link
+          scroll={false}
+          href={buildFilterHref(resolvedParams, { date: "today" })}
+          className="shrink-0 block"
+        >
+          <p className={filterClass(isToday)}>hoje</p>
+        </Link>
+
+        <Link
+          scroll={false}
+          href={buildFilterHref(resolvedParams, { date: "week" })}
+          className="shrink-0 block"
+        >
+          <p className={filterClass(isWeek)}>essa semana</p>
+        </Link>
+
+        <Link
+          scroll={false}
+          href={buildFilterHref(resolvedParams, { date: "month" })}
+          className="shrink-0 block"
+        >
+          <p className={filterClass(isMonth)}>esse mês</p>
+        </Link>
+      </div>
+
+      <div className="flex justify-end mt-4 mr-3">
         <SearchInput endpoint="caixa" />
       </div>
 
-      {/* Filter Buttons */}
-      <div className="mt-2 mb-10 overflow-hidden">
-        <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-2 font-bold items-center">
-            <Link
-              href={"/caixa"}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isAll)}>tudo</p>
-            </Link>
-
-            <Link
-              href={buildFilterHref(resolvedParams, { date: "today" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isToday)}>hoje</p>
-            </Link>
-
-            <Link
-              href={buildFilterHref(resolvedParams, { date: "week" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isWeek)}>essa semana</p>
-            </Link>
-
-            <Link
-              href={buildFilterHref(resolvedParams, { date: "month" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isMonth)}>esse mês</p>
-            </Link>
-
-            <DropdownTypeMenu />
-            <DropdownCategoryMenu categories={categories} />
-            <DropdownBankAccountMenu accounts={accounts} />
-          </div>
+      {/* Filter Fields */}
+      <div className="flex w-full">
+        <div className="ml-auto mt-4 mr-3 w-fit flex flex-col gap-3">
+          <SelectTypeInput />
+          <SelectCategoryInput categories={categories} />
+          <SelectBankAccountInput accounts={accounts} />
         </div>
       </div>
 

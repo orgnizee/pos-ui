@@ -1,6 +1,6 @@
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/backButton";
 import CreateFinanceCategoryForm from "@/components/finance-category-form";
-import { getFinanceCategories } from "@/lib/api/finance-category";
+import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { isApiError } from "@/lib/api/types";
 
 export default async function AddCategoriesPage() {

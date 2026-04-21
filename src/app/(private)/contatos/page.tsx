@@ -1,8 +1,8 @@
 import { isApiError } from "@/lib/api/types";
 import buildFilterHref from "@/lib/utils/search-params";
 import Link from "next/link";
-import { filterClass } from "@/lib/style-filter-buttons";
-import SearchInput from "@/components/search-input";
+import { filterClass } from "@/lib/styleFilterButtons";
+import SearchInput from "@/components/searchInput";
 import { Plus, Square } from "lucide-react";
 import { getContacts, searchContacts, Contact } from "@/lib/api/contacts";
 import { formatCPF, formatCNPJ, formatPhone } from "@/lib/utils/format";

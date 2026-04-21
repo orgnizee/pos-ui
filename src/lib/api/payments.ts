@@ -2,7 +2,7 @@ import { cache } from "react";
 import { apiFetch } from "./client";
 import { ApiError } from "./types";
 
-import { FinanceCategory } from "./finance-category";
+import { FinanceCategory } from "./financeCategory";
 import { Customer } from "./customers";
 
 export type PaymentStatus = "pending" | "paid" | "overdue" | "partially_paid";

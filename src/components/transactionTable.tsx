@@ -2,7 +2,13 @@
 
 import { Transaction } from "@/lib/api/transaction";
 import { formatBRL } from "@/lib/utils/format";
-import { ArrowDown, ArrowRightLeft, ArrowUp } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRightLeft,
+  ArrowUp,
+  DollarSign,
+  Square,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TransactionTableProps {
@@ -16,13 +22,13 @@ export default function TransactionTable({
   const router = useRouter();
 
   return (
-    <section className="sm:mr-10 mr-3">
+    <section className="mt-12">
       {Object.entries(grouped).map(([label, group]) => (
         <div key={label}>
           <p>{label}</p>
 
           <div className="mt-2 w-full overflow-hidden">
-            <table className="w-full table-fixed border-separate border-spacing-y-2">
+            <table className="w-full table-fixed">
               <colgroup>
                 <col className="w-10 sm:w-10" />
                 <col className="w-32 sm:w-22" />
@@ -36,39 +42,36 @@ export default function TransactionTable({
                 {group.map((transaction) => (
                   <tr
                     key={transaction.id}
-                    className="h-15 bg-secondary/10 cursor-pointer"
+                    className="h-15 cursor-pointer "
                     onClick={() =>
                       router.push(`/caixa/historico/${transaction.id}`)
                     }
                   >
-                    <td className="pl-3 rounded-l-lg">
+                    <td className="border-b border-secondary/50">
                       {transaction.type === "credit" && (
-                        <ArrowDown
-                          strokeWidth={1.2}
-                          className="text-green-600"
-                        />
+                        <div className="w-2 h-2 bg-green-500"></div>
                       )}
                       {transaction.type === "debit" && (
-                        <ArrowUp strokeWidth={1.2} className="text-red-600" />
+                        <div className="w-2 h-2 bg-red-500"></div>
                       )}
                       {transaction.type === "transfer" && (
-                        <ArrowRightLeft strokeWidth={1.2} />
+                        <div className="w-2 h-2 bg-primary"></div>
                       )}
                     </td>
-                    <td className="px-2 text-start font-bold">
+                    <td className="px-2 text-start border-b border-secondary/50">
                       {formatBRL(transaction.amount)}
                     </td>
-                    <td className="hidden sm:table-cell px-2 truncate text-start normal-case">
+                    <td className="hidden sm:table-cell px-2 text-start border-b border-secondary/50">
                       {transaction.contact.name ?? "-"}
                     </td>
-                    <td className="px-2 pr-4 text-end sm:text-start normal-case rounded-r-lg">
-                      {transaction.account.name.toLowerCase()}
+                    <td className="px-2 pr-4 text-end sm:text-start border-b border-secondary/50">
+                      {transaction.account.name}
                     </td>
-                    <td className="hidden sm:table-cell px-2 pr-4 text-end sm:text-start normal-case rounded-r-lg">
-                      {transaction.category?.name?.toLowerCase() ?? "-"}
+                    <td className="hidden sm:table-cell px-2 pr-4 text-end sm:text-start border-b border-secondary/50">
+                      {transaction.category?.name ?? "-"}
                     </td>
-                    <td className="hidden sm:table-cell pr-4 text-right truncate normal-case rounded-r-lg">
-                      {transaction.description.toLowerCase()}
+                    <td className="hidden sm:table-cell pr-4 text-right border-b border-secondary/50">
+                      {transaction.description}
                     </td>
                   </tr>
                 ))}

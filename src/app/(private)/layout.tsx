@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LogoutButton } from "@/components/logout-button";
+import { logoutAction } from "@/lib/api/actions/auth";
+import { LogOut } from "lucide-react";
 
 const now = () =>
   new Date()
@@ -18,22 +19,22 @@ export default function PrivateLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main>
-      <div className="p-4 sm:px-10">
-        <header className="top-0 left-0 right-0 p-1 rounded-md bg-secondary/15">
-          <div className="grid grid-cols-3 items-center px-1 text-primary font-bold">
+    <main className="px-6 py-2">
+      <div>
+        <header className="top-0 left-0 right-0">
+          <div className="grid grid-cols-3 items-center">
             <Link href={"/"}>
-              <p className="text-xs sm:text-sm justify-self-start text-tertiary">
-                :)
-              </p>
+              <p className="pt-1.5 text-lg justify-self-start">/</p>
             </Link>
 
-            <p className="text-xs sm:text-sm justify-self-center text-tertiary">
-              {now()}
-            </p>
+            <p className="text-lg justify-self-center">{now()}</p>
 
-            <div className="justify-self-end">
-              <LogoutButton />
+            <div className="pt-1 justify-self-end">
+              <form action={logoutAction}>
+                <button type="submit" className="text-lg cursor-pointer">
+                  <LogOut strokeWidth={1.2} size={20} />
+                </button>
+              </form>
             </div>
           </div>
         </header>

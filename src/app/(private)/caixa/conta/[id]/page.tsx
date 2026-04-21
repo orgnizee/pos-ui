@@ -1,7 +1,7 @@
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccountByID } from "@/lib/api/bank-accounts";
-import { UpdateBankAccountForm } from "@/components/bank-account-form";
+import { UpdateBankAccountForm } from "@/components/bankAccountForm";
 
 export default async function UpdateBankAccount({
   params,
@@ -16,15 +16,14 @@ export default async function UpdateBankAccount({
   }
 
   return (
-    <section>
+    <section className="mt-6">
       <BackButton />
-      <div className="flex flex-col mr-3 sm:mr-0 mt-10 sm:mt-8 px-1 pt-1 items-center font-bold">
-        <div className="relative ml-auto mr-auto flex items-start justify-start w-full sm:w-150">
-          <p className="text-6xl text-start font-light normal-case">
-            {account.name.toLowerCase()}
-          </p>
-        </div>
-        <div className="mt-2 py-8 sm:py-0 relative ml-auto mr-auto flex items-center justify-center w-full min-h-65 sm:w-150 sm:min-h-95 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
+      <p className="mt-8 text-6xl text-start font-light">
+        {account.name.toLowerCase()}
+      </p>
+
+      <div className="flex flex-col items-center">
+        <div className="mt-2 relative ml-auto mr-auto flex items-center justify-center sm:w-150 sm:min-h-95">
           <UpdateBankAccountForm account={account} />
         </div>
       </div>

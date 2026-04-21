@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { FinanceCategory } from "@/lib/api/finance-category";
+import { FinanceCategory } from "@/lib/api/financeCategory";
 import { Plus, X } from "lucide-react";
 import Link from "next/link";
 

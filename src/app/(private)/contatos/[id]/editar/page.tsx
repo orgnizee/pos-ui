@@ -1,4 +1,4 @@
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/backButton";
 import { getCustomerByID, Customer } from "@/lib/api/customers";
 import { getSupplierByID, Supplier } from "@/lib/api/suppliers";
 import { Contact } from "@/lib/api/contacts";

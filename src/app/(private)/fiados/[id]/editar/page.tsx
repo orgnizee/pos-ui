@@ -1,8 +1,8 @@
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/backButton";
 import EditPaymentForm from "@/components/edit-payment-form";
 import { getPaymentByID } from "@/lib/api/payments";
 import { getCustomers } from "@/lib/api/customers";
-import { getFinanceCategories } from "@/lib/api/finance-category";
+import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { isApiError } from "@/lib/api/types";
 
 export default async function EditPaymentPage({

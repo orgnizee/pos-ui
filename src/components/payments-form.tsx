@@ -7,7 +7,7 @@ import {
 } from "@/lib/api/actions/payments";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
-import { FinanceCategory } from "@/lib/api/finance-category";
+import { FinanceCategory } from "@/lib/api/financeCategory";
 import { PaymentType, RecurrenceOption } from "@/lib/api/payments";
 import CategoryPickerModal from "@/components/category-picker-modal";
 

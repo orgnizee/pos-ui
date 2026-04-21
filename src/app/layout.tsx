@@ -1,11 +1,8 @@
 import "./globals.css";
-import { lekton } from "./fonts";
+import { quicksand } from "./fonts";
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
-import KeyboardNav from "@/components/keyboard-nav";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+import KeyboardNav from "@/components/keyboardNav"
 
 export const metadata: Metadata = {
   title: "Nizee + Frigorífico Saraiva",
@@ -27,12 +24,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("scroll-smooth", "font-sans", inter.variable)}
+      className={cn("scroll-smooth", "font-sans", quicksand.className)}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
       <body
-        className={`bg-background ${lekton.className} uppercase antialiased`}
+        className={`bg-white ${quicksand.className} uppercase antialiased`}
       >
         <KeyboardNav />
         {children}

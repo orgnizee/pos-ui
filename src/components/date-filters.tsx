@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
-import { filterClass } from "@/lib/style-filter-buttons";
+import { filterClass } from "@/lib/styleFilterButtons";
 import { DayPicker } from "react-day-picker";
 import { ptBR } from "react-day-picker/locale";
 import "react-day-picker/style.css";
