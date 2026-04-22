@@ -13,6 +13,7 @@ import Pagination from "@/components/pagination";
 import SelectTypeInput from "@/components/selecTypeInput";
 import SelectCategoryInput from "@/components/selectCategoryInput";
 import SelectBankAccountInput from "@/components/SelectBankAccountInput";
+import DateRange from "@/components/dateRangePicker";
 
 export default async function CaixaPage({
   searchParams,
@@ -25,7 +26,8 @@ export default async function CaixaPage({
 
   const resolvedParams = await searchParams;
 
-  const { bank, date, type, search, category, inativas } = resolvedParams;
+  const { bank, date, type, search, category, inativas, start_date, end_date } =
+    resolvedParams;
   const isAll = !date && !type && !bank && !category;
   const isToday = date === "today";
   const isWeek = date === "week";
@@ -37,6 +39,8 @@ export default async function CaixaPage({
     ...(typeof type === "string" && { type }),
     ...(typeof search === "string" && { search }),
     ...(typeof category === "string" && { category }),
+    ...(typeof start_date === "string" && { start_date }),
+    ...(typeof end_date === "string" && { end_date }),
   });
 
   if (isApiError(accounts)) {
@@ -108,7 +112,7 @@ export default async function CaixaPage({
       </Link>
 
       {/* Bank Account Cards */}
-      <div className="overflow-hidden">
+      <div className="">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold items-center">
             {filtered.map((account) => (
@@ -145,34 +149,37 @@ export default async function CaixaPage({
       <p className="mt-8 text-start text-lg font-light">histórico</p>
 
       {/* Filter Date */}
-      <div className="flex overflow-x-auto scrollbar-hidden gap-6 pt-1 pb-5 justify-start items-center text-center">
-        <Link scroll={false} href="/caixa" className="shrink-0 block">
-          <p className={filterClass(isAll)}>tudo</p>
-        </Link>
+      <div className="flex gap-6 overflow-visible">
+        <DateRange />
+        <div className="flex overflow-x-auto scrollbar-hidden gap-6 justify-start items-center text-center">
+          <Link scroll={false} href="/caixa" className="shrink-0 block">
+            <p className={filterClass(isAll)}>tudo</p>
+          </Link>
 
-        <Link
-          scroll={false}
-          href={buildFilterHref(resolvedParams, { date: "today" })}
-          className="shrink-0 block"
-        >
-          <p className={filterClass(isToday)}>hoje</p>
-        </Link>
+          <Link
+            scroll={false}
+            href={buildFilterHref(resolvedParams, { date: "today" })}
+            className="shrink-0 block"
+          >
+            <p className={filterClass(isToday)}>hoje</p>
+          </Link>
 
-        <Link
-          scroll={false}
-          href={buildFilterHref(resolvedParams, { date: "week" })}
-          className="shrink-0 block"
-        >
-          <p className={filterClass(isWeek)}>essa semana</p>
-        </Link>
+          <Link
+            scroll={false}
+            href={buildFilterHref(resolvedParams, { date: "week" })}
+            className="shrink-0 block"
+          >
+            <p className={filterClass(isWeek)}>essa semana</p>
+          </Link>
 
-        <Link
-          scroll={false}
-          href={buildFilterHref(resolvedParams, { date: "month" })}
-          className="shrink-0 block"
-        >
-          <p className={filterClass(isMonth)}>esse mês</p>
-        </Link>
+          <Link
+            scroll={false}
+            href={buildFilterHref(resolvedParams, { date: "month" })}
+            className="shrink-0 block"
+          >
+            <p className={filterClass(isMonth)}>esse mês</p>
+          </Link>
+        </div>
       </div>
 
       <div className="flex justify-end mt-4 mr-3">

@@ -1,4 +1,4 @@
-import DateFilter from "@/components/dateFilters";
+import DateRange from "@/components/dateRangePicker";
 import ReceivableTable from "@/components/receivableTable";
 import SearchInput from "@/components/searchInput";
 import { getReceivables, PaymentStatus } from "@/lib/api/receivables";
@@ -56,34 +56,36 @@ export default async function FiadosPage({
       <p className="mt-8 text-start text-lg font-light">histórico</p>
 
       {/* Filter Date Buttons */}
-      <DateFilter endpoint="fiados" resolvedParams={resolvedParams} />
-      <div className="overflow-hidden">
-        <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-1 gap-6 font-bold items-center">
-            <Link
-              href="/fiados"
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isAll)}>tudo</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { date: "today" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isToday)}>hoje</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { date: "week" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isWeek)}>essa semana</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { date: "month" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isMonth)}>esse mês</p>
-            </Link>
+      <div className="flex gap-6">
+        <DateRange />
+        <div className="overflow-hidden">
+          <div className="overflow-auto flex">
+            <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-1 gap-6 font-bold items-center">
+              <Link
+                href="/fiados"
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isAll)}>tudo</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { date: "today" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isToday)}>hoje</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { date: "week" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isWeek)}>essa semana</p>
+              </Link>
+              <Link
+                href={buildFilterHref(resolvedParams, { date: "month" })}
+                className="grid items-center justify-center shrink-0 rounded-md"
+              >
+                <p className={filterClass(isMonth)}>esse mês</p>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
