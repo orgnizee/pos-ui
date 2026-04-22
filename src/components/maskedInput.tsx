@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { InputField } from "./inputField";
 
 interface MaskedInputProps {
+  label: string;
   name: string;
-  placeholder: string;
+  placeholder?: string;
   formatter: (value: string) => string;
   maxLength?: number;
   required?: boolean;
@@ -12,8 +14,8 @@ interface MaskedInputProps {
 }
 
 export default function MaskedInput({
+  label,
   name,
-  placeholder,
   formatter,
   maxLength,
   required,
@@ -29,15 +31,14 @@ export default function MaskedInput({
   }
 
   return (
-    <div className="flex-1 h-10 text-sm font-light rounded-md bg-background relative">
-      <input
+    <div>
+      <InputField
+        label={label}
         type="text"
         value={display}
         onChange={handleChange}
-        placeholder={placeholder}
         maxLength={maxLength}
         required={required}
-        className="w-full h-full p-2 placeholder:text-tertiary/75 outline-none focus:border focus:border-tertiary focus:rounded-md"
       />
       {/* Hidden input sends raw digits to the action */}
       <input type="hidden" name={name} value={display.replace(/\D/g, "")} />

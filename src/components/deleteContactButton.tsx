@@ -9,7 +9,6 @@ import {
   SupplierActionState,
 } from "@/lib/api/actions/supplier";
 import { useActionState } from "react";
-import { Trash } from "lucide-react";
 
 export default function DeleteContactButton({
   id,
@@ -33,13 +32,9 @@ export default function DeleteContactButton({
       <button
         type="submit"
         disabled={pending}
-        className="mt-5 w-5 h-7 flex justify-center items-center rounded-full bg-red-500 disabled:opacity-50 cursor-pointer"
+        className="mt-3 ml-1 flex justify-start items-center cursor-pointer uppercase text-xs"
       >
-        <Trash
-          strokeWidth={1.5}
-          size={15}
-          className="text-white translate-y-px"
-        />
+        excluir
       </button>
     </form>
   );
