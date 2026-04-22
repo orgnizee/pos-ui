@@ -68,7 +68,7 @@ export default function ReceivableTable({
                       {receivable.category?.name ?? "-"}
                     </td>
                     <td className="hidden sm:table-cell pr-4 text-right border-b border-secondary/50">
-                      {receivable.reference ?? receivable.notes ?? "-"}
+                      {receivable.notes}
                     </td>
                   </tr>
                 ))}

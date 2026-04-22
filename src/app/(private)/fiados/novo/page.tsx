@@ -3,7 +3,7 @@ import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { getCustomers } from "@/lib/api/customers";
-import PaymentForm from "@/components/payments-form";
+import ReceivableForm from "@/components/receivableForm";
 
 export default async function AddReceberPage() {
   const accounts = await getAccounts();
@@ -23,19 +23,16 @@ export default async function AddReceberPage() {
   }
 
   return (
-    <section>
+    <section className="mt-6">
       <BackButton />
-      <div className="flex flex-col mr-3 sm:mr-0 mt-10 mb-8 sm:mt-8 px-1 pt-1 items-center font-bold">
-        <div className="relative ml-auto mr-auto flex items-start justify-start w-full sm:w-150">
-          <p className="text-6xl text-start font-light normal-case">receber</p>
-        </div>
-        <div className="mt-2 py-8 sm:py-0 relative ml-auto mr-auto flex items-center justify-center w-full min-h-65 sm:w-150 sm:min-h-95 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
-          <PaymentForm
-            contacts={customers}
-            categories={categories}
-            defaultType="receivable"
-          />
-        </div>
+      <p className="mt-8 text-6xl text-start font-light">novo recebimento</p>
+
+      <div className="relative flex items-center justify-center mt-2 ml-auto mr-auto w-full">
+        <ReceivableForm
+          contacts={customers}
+          categories={categories}
+          defaultType="receivable"
+        />
       </div>
     </section>
   );

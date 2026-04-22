@@ -3,7 +3,13 @@
 import { useActionState, useState, useRef, useEffect } from "react";
 import { Account } from "@/lib/api/bankAccounts";
 import { Receivable } from "@/lib/api/receivables";
-import { settleReceivableAction, SettleReceivableActionState } from "@/lib/api/actions/settleReceivable";
+import {
+  settleReceivableAction,
+  SettleReceivableActionState,
+} from "@/lib/api/actions/settleReceivable";
+import { InputField } from "./inputField";
+import { formatBRL } from "@/lib/utils/format";
+import { SelectInputField } from "./inputFieldSelect";
 
 interface SettlePaymentModalProps {
   payment: Receivable;
@@ -30,6 +36,11 @@ export default function SettlePaymentModal({
   const [cents, setCents] = useState(outstanding);
   const overlayRef = useRef<HTMLDivElement>(null);
 
+  const accountOptions = accounts.map((a) => ({
+    label: a.name.toUpperCase(),
+    value: String(a.id),
+  }));
+
   // close on overlay click
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -39,16 +50,13 @@ export default function SettlePaymentModal({
     return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
-  const formatBRL = (c: number) =>
-    (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
   return (
     <div
       ref={overlayRef}
       onClick={(e) => e.target === overlayRef.current && onClose()}
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/30"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-white/90"
     >
-      <div className="w-full sm:w-120 bg-background rounded-t-3xl sm:rounded-3xl overflow-hidden">
+      <div className="w-full sm:w-120 border bg-white overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <p className="text-sm font-light uppercase tracking-widest text-primary">
@@ -56,7 +64,7 @@ export default function SettlePaymentModal({
           </p>
           <button
             onClick={onClose}
-            className="text-tertiary/60 hover:text-primary text-xs uppercase tracking-widest font-light"
+            className="text-tertiary hover:text-primary text-xs uppercase tracking-widest font-light"
           >
             cancelar
           </button>
@@ -64,12 +72,14 @@ export default function SettlePaymentModal({
 
         {/* Payment summary */}
         <div className="px-6 pb-4 flex flex-col gap-0.5">
-          <p className="text-xs font-light text-tertiary/60 uppercase tracking-widest">
+          <p className="text-xs font-light text-tertiary uppercase tracking-widest">
             saldo devedor
           </p>
-          <p className="text-2xl font-light">{formatBRL(outstanding)}</p>
+          <p className="text-2xl font-light">
+            {formatBRL(payment.outstanding_balance)}
+          </p>
           {payment.reference && (
-            <p className="text-xs font-light text-tertiary/60 normal-case">
+            <p className="text-xs font-light text-tertiary normal-case">
               ref. {payment.reference}
             </p>
           )}
@@ -78,20 +88,15 @@ export default function SettlePaymentModal({
         <form action={action} className="px-6 pb-8 flex flex-col gap-4">
           {/* Amount */}
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs font-light text-tertiary/60 uppercase tracking-widest pl-0.5">
-              valor recebido
-            </span>
-            <div className="h-10 text-sm font-light rounded-md bg-secondary/10">
-              <input
-                type="text"
-                inputMode="numeric"
-                value={formatBRL(cents)}
-                onChange={(e) =>
-                  setCents(Number(e.target.value.replace(/\D/g, "")))
-                }
-                className="w-full h-full p-2 text-primary outline-none focus:border focus:border-tertiary focus:rounded-md"
-              />
-            </div>
+            <InputField
+              label="valor recebido"
+              type="text"
+              inputMode="numeric"
+              value={formatBRL((cents / 100).toFixed(2))}
+              onChange={(e) =>
+                setCents(Number(e.target.value.replace(/\D/g, "")))
+              }
+            />
             <input
               type="hidden"
               name="amount"
@@ -101,26 +106,13 @@ export default function SettlePaymentModal({
 
           {/* Account */}
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs font-light text-tertiary/60 uppercase tracking-widest pl-0.5">
-              conta
-            </span>
-            <div className="h-10 text-sm font-light rounded-md bg-secondary/10">
-              <select
-                name="account"
-                required
-                defaultValue=""
-                className="w-full h-full p-2 text-primary outline-none focus:border focus:border-tertiary focus:rounded-md"
-              >
-                <option value="" disabled>
-                  selecionar conta
-                </option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name.toLocaleLowerCase()}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SelectInputField
+              label="conta"
+              name="account"
+              required
+              defaultValue=""
+              options={accountOptions}
+            />
           </div>
 
           {/* Error */}
@@ -134,7 +126,7 @@ export default function SettlePaymentModal({
           <button
             type="submit"
             disabled={pending || cents === 0}
-            className="w-full py-2 rounded-md bg-black text-sm text-white font-bold cursor-pointer disabled:opacity-50"
+            className="w-full py-2 bg-primary text-sm text-white uppercase cursor-pointer disabled:bg-white disabled:text-primary disabled:border"
           >
             confirmar
           </button>

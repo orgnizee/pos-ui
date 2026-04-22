@@ -50,7 +50,7 @@ export default async function ContactPage({
 
   return (
     <section className="mt-6 mb-4">
-      <section className="mt-6 mb-4 flex items-center justify-between">
+      <div className="mt-6 mb-4 flex items-center justify-between">
         <BackButton />
 
         <Link
@@ -59,7 +59,7 @@ export default async function ContactPage({
         >
           editar
         </Link>
-      </section>
+      </div>
 
       <div className="flex flex-col px-1 pt-1 items-center">
         <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">

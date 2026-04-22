@@ -20,7 +20,10 @@ export type Weekday =
 export type Receivable = {
   id: string;
   contact: Customer;
-  category: FinanceCategory | null;
+  category: {
+    id: string;
+    name: string;
+  } | null;
   issued_at: string;
   due_at: string;
   total_amount: string;

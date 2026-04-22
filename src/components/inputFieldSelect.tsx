@@ -22,7 +22,6 @@ export function SelectInputField({
   return (
     <div className="relative mt-6">
       <select
-        defaultValue=""
         {...props}
         className={`${baseInput} appearance-none ${
           error ? "border-red-500 focus:border-red-500" : ""

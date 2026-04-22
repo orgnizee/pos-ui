@@ -9,8 +9,9 @@ import { Account } from "@/lib/api/bankAccounts";
 import { FinanceCategory } from "@/lib/api/financeCategory";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
-import { OptionGroup, SelectInputField } from "./inputFieldSelect";
+import { SelectInputField } from "./inputFieldSelect";
 import { InputField } from "./inputField";
+import { buildCategoryGroups } from "@/lib/categoryGroups";
 
 interface TransactionFormProps {
   type: string;
@@ -46,24 +47,6 @@ export default function TransactionForm({
     label: a.name.toUpperCase(),
     value: String(a.id),
   }));
-
-  const receitas = categories.find((c) => c.name.toLowerCase() === "receitas");
-  const despesas = categories.find((c) => c.name.toLowerCase() === "despesas");
-
-  const categoryGroups = [
-    receitas && {
-      label: "RECEITAS",
-      options: categories
-        .filter((c) => c.parent?.id === receitas.id)
-        .map((c) => ({ label: c.name.toUpperCase(), value: String(c.id) })),
-    },
-    despesas && {
-      label: "DESPESAS",
-      options: categories
-        .filter((c) => c.parent?.id === despesas.id)
-        .map((c) => ({ label: c.name.toUpperCase(), value: String(c.id) })),
-    },
-  ].filter(Boolean) as OptionGroup[];
 
   const contactOptions = contacts.map((c) => ({
     label: isCustomer(c) ? c.name : c.legal_name,
@@ -109,7 +92,7 @@ export default function TransactionForm({
             <SelectInputField
               label="categoria"
               name="category"
-              groups={categoryGroups}
+              groups={buildCategoryGroups(categories)}
             />
           )}
 

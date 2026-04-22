@@ -24,5 +24,5 @@ export async function settleReceivableAction(
     return { error: true, message: res.message, details: res.details };
   }
 
-  redirect("/receber");
+  redirect("/fiados");
 }

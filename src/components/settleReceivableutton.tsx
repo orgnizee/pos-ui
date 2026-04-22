@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Payment } from "@/lib/api/receivables";
+import { Receivable } from "@/lib/api/receivables";
 import { Account } from "@/lib/api/bankAccounts";
-import SettlePaymentModal from "./settle-payment-moda";
-import { DollarSign } from "lucide-react";
+import SettlePaymentModal from "./settleReceivableModal";
 
 export default function SettleButton({
-  payment,
+  receivable,
   accounts,
 }: {
-  payment: Payment;
+  receivable: Receivable;
   accounts: Account[];
 }) {
   const [open, setOpen] = useState(false);
@@ -19,18 +18,14 @@ export default function SettleButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="mt-5 w-5 h-7 flex justify-center items-center rounded-full bg-green-600 disabled:opacity-50 cursor-pointer"
+        className="mt-3 ml-1 flex justify-start items-center cursor-pointer uppercase text-xs"
       >
-        <DollarSign
-          strokeWidth={1.5}
-          size={15}
-          className="text-white translate-y-px"
-        />
+        receber
       </button>
 
       {open && (
         <SettlePaymentModal
-          payment={payment}
+          payment={receivable}
           accounts={accounts}
           onClose={() => setOpen(false)}
         />
