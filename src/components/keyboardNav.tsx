@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 const keyMap: Record<string, string> = {
   0: "/",
-  1: "/vendas",
+  1: "/pdv",
   2: "/caixa",
   3: "/fiados",
   4: "/contatos",
