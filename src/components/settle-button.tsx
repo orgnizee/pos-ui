@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Payment } from "@/lib/api/payments";
-import { Account } from "@/lib/api/bank-accounts";
+import { Payment } from "@/lib/api/receivables";
+import { Account } from "@/lib/api/bankAccounts";
 import SettlePaymentModal from "./settle-payment-moda";
 import { DollarSign } from "lucide-react";
 

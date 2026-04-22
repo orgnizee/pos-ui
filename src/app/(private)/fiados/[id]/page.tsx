@@ -1,7 +1,7 @@
 import BackButton from "@/components/backButton";
-import DeletePaymentButton from "@/components/delete-payment-button";
-import { getPaymentByID, PaymentStatus } from "@/lib/api/payments";
-import { getAccounts } from "@/lib/api/bank-accounts";
+import DeletePaymentButton from "@/components/deletePaymentButton";
+import { getReceivableByID, PaymentStatus } from "@/lib/api/receivables";
+import { getAccounts } from "@/lib/api/bankAccounts";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL, formatDateTime } from "@/lib/utils/format";
 import SettleButton from "@/components/settle-button";
@@ -14,7 +14,7 @@ export default async function TransactionPage({
   const { id } = await params;
 
   const [payment, accounts] = await Promise.all([
-    getPaymentByID(id),
+    getReceivableByID(id),
     getAccounts(),
   ]);
 

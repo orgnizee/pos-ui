@@ -1,12 +1,12 @@
 import { apiFetch } from "./client";
 import { ApiError } from "./types";
 
-export type SettlePaymentData = {
+export type SettleReceivableData = {
   amount: string;
   account: string;
 };
 
-export type SettlePaymentResponse = {
+export type SettleReceivableResponse = {
   transaction: {
     id: string;
     amount: string;
@@ -20,10 +20,10 @@ export type SettlePaymentResponse = {
   };
 };
 
-export async function settlePayment(
+export async function settleReceivable(
   id: string,
-  data: SettlePaymentData,
-): Promise<SettlePaymentResponse | ApiError> {
+  data: SettleReceivableData,
+): Promise<SettleReceivableResponse | ApiError> {
   return apiFetch(`/receivables/${id}/settle`, {
     method: "POST",
     body: JSON.stringify(data),

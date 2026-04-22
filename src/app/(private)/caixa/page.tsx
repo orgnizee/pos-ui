@@ -1,5 +1,5 @@
 import TransactionTable from "@/components/transactionTable";
-import { getAccounts, getTotalBalance } from "@/lib/api/bank-accounts";
+import { getAccounts, getTotalBalance } from "@/lib/api/bankAccounts";
 import { getTransactions } from "@/lib/api/transaction";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";

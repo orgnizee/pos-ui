@@ -5,7 +5,7 @@ import {
   submitTransactionFormAction,
   TransactionActionState,
 } from "@/lib/api/actions/transaction";
-import { Account } from "@/lib/api/bank-accounts";
+import { Account } from "@/lib/api/bankAccounts";
 import { FinanceCategory } from "@/lib/api/financeCategory";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";

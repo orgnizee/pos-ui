@@ -1,6 +1,6 @@
 import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
-import { getAccountByID } from "@/lib/api/bank-accounts";
+import { getAccountByID } from "@/lib/api/bankAccounts";
 import { UpdateBankAccountForm } from "@/components/bankAccountForm";
 
 export default async function UpdateBankAccount({

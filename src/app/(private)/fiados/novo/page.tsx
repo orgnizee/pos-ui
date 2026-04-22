@@ -1,6 +1,6 @@
 import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
-import { getAccounts } from "@/lib/api/bank-accounts";
+import { getAccounts } from "@/lib/api/bankAccounts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { getCustomers } from "@/lib/api/customers";
 import PaymentForm from "@/components/payments-form";

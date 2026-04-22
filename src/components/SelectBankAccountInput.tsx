@@ -1,6 +1,6 @@
 "use client";
 import { filterClass } from "@/lib/styleFilterButtons";
-import { Account } from "@/lib/api/bank-accounts";
+import { Account } from "@/lib/api/bankAccounts";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SelectBankAccountInput({
@@ -24,7 +24,7 @@ export default function SelectBankAccountInput({
     } else {
       params.delete("bank");
     }
-    router.push(`?${params.toString()}`, {scroll: false});
+    router.push(`?${params.toString()}`, { scroll: false });
   }
 
   return (

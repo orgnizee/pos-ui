@@ -1,4 +1,3 @@
-import { getPayments } from "@/lib/api/payments";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
@@ -6,9 +5,13 @@ import { filterClass } from "@/lib/styleFilterButtons";
 import SearchInput from "@/components/searchInput";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { Payment, PaymentStatus } from "@/lib/api/payments";
+import {
+  getReceivables,
+  PaymentStatus,
+  Receivable,
+} from "@/lib/api/receivables";
 import PaymentRow from "./payment-row";
-import DateFilter from "./date-filters";
+import DateFilter from "./dateFilters";
 
 interface PaymentsPageProps {
   resolvedParams: { [key: string]: string | string[] | undefined };
@@ -28,7 +31,7 @@ export default async function PaymentsPage({
   const isWeek = date === "week";
   const isMonth = date === "month";
 
-  const payments = await getPayments({
+  const payments = await getReceivables({
     type: "receivable",
     ...(typeof status === "string" && { status: status as PaymentStatus }),
     ...(typeof search === "string" && { search }),
@@ -48,13 +51,13 @@ export default async function PaymentsPage({
   const byStatus = (s: PaymentStatus) =>
     payments.filter((p) => p?.status === s);
 
-  const sumOutstanding = (list: Payment[]) =>
+  const sumOutstanding = (list: Receivable[]) =>
     list
       .filter(Boolean)
       .reduce((sum, p) => sum + parseFloat(p.outstanding_balance), 0)
       .toFixed(2);
 
-  const sumPaid = (list: Payment[]) =>
+  const sumPaid = (list: Receivable[]) =>
     list
       .filter(Boolean)
       .reduce((sum, p) => sum + parseFloat(p.amount_paid), 0)

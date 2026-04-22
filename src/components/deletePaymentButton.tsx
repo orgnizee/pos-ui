@@ -2,14 +2,15 @@
 
 import { useTransition } from "react";
 import { Trash } from "lucide-react";
-import { deletePaymentAction } from "@/lib/api/actions/payments";
+import { deleteReceivableAction } from "@/lib/api/actions/receivables";
+
 
 export default function DeletePaymentButton({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition();
 
   function handleDelete() {
     startTransition(async () => {
-      await deletePaymentAction(id);
+      await deleteReceivableAction(id);
     });
   }
 
@@ -19,7 +20,11 @@ export default function DeletePaymentButton({ id }: { id: string }) {
       disabled={isPending}
       className="mt-5 w-5 h-7 flex justify-center items-center rounded-full bg-red-500 disabled:opacity-50 cursor-pointer"
     >
-      <Trash strokeWidth={1.5} size={15} className="text-white translate-y-px" />
+      <Trash
+        strokeWidth={1.5}
+        size={15}
+        className="text-white translate-y-px"
+      />
     </button>
   );
 }

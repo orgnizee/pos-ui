@@ -3,8 +3,12 @@ import { useActionState, useState } from "react";
 import {
   updatePaymentAction,
   PaymentActionState,
-} from "@/lib/api/actions/payments";
-import { Payment, RecurrenceOption, PaymentStatus } from "@/lib/api/payments";
+} from "@/lib/api/actions/receivables";
+import {
+  Payment,
+  RecurrenceOption,
+  PaymentStatus,
+} from "@/lib/api/receivables";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
 import { FinanceCategory } from "@/lib/api/financeCategory";

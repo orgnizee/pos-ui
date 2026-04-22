@@ -72,7 +72,7 @@ export default function DateFilter({
       return range.from.toLocaleDateString("pt-BR");
     }
 
-    return "data";
+    return "DATA";
   }
 
   return (

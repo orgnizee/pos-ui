@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { isApiError } from "@/lib/api/types";
-import { createBankAccount, updateBankAccount } from "../bank-accounts";
+import { createBankAccount, updateBankAccount } from "../bankAccounts";
 
 export type BankAccountActionState = {
   error: true;
@@ -32,10 +32,10 @@ export async function submitUpdateBankAccountFormAction(
   _: unknown,
   formData: FormData,
 ): Promise<BankAccountActionState> {
-  let isActive = false
+  let isActive = false;
 
   if (formData.get("is_active") !== "on") {
-    isActive = true
+    isActive = true;
   }
 
   const res = await updateBankAccount(id, {

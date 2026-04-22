@@ -2,13 +2,6 @@
 
 import { Transaction } from "@/lib/api/transaction";
 import { formatBRL } from "@/lib/utils/format";
-import {
-  ArrowDown,
-  ArrowRightLeft,
-  ArrowUp,
-  DollarSign,
-  Square,
-} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TransactionTableProps {

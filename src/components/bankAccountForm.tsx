@@ -6,7 +6,7 @@ import {
   submitBankAccountFormAction,
   submitUpdateBankAccountFormAction,
 } from "@/lib/api/actions/bank-accounts";
-import { Account } from "@/lib/api/bank-accounts";
+import { Account } from "@/lib/api/bankAccounts";
 import { InputField } from "./inputField";
 
 export default function BankAccountForm() {

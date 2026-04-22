@@ -17,7 +17,7 @@ export type Weekday =
   | "saturday"
   | "sunday";
 
-export type Payment = {
+export type Receivable = {
   id: string;
   contact: Customer;
   category: FinanceCategory | null;
@@ -39,14 +39,14 @@ export type Payment = {
   updated_at: string;
 };
 
-type PaymentsResponse = {
+type ReceivableResponse = {
   count: number;
   next: string | null;
   previous: string | null;
-  results: { payment: Payment }[];
+  results: { payment: Receivable }[];
 };
 
-export const getPayments = cache(
+export const getReceivables = cache(
   async (filters?: {
     type?: PaymentType;
     status?: PaymentStatus;
@@ -54,7 +54,7 @@ export const getPayments = cache(
     date?: string; // "today" | "week" | "month" | "YYYY-MM-DD"
     start_date?: string;
     end_date?: string;
-  }): Promise<Payment[] | ApiError> => {
+  }): Promise<Receivable[] | ApiError> => {
     const params = new URLSearchParams();
     if (filters?.type) params.set("type", filters.type);
     if (filters?.status) params.set("status", filters.status);
@@ -63,7 +63,7 @@ export const getPayments = cache(
     if (filters?.start_date) params.set("start_date", filters.start_date);
     if (filters?.end_date) params.set("end_date", filters.end_date);
     const query = params.size ? `?${params.toString()}` : "";
-    const res = await apiFetch<PaymentsResponse>(`/receivables${query}`, {
+    const res = await apiFetch<ReceivableResponse>(`/receivables${query}`, {
       method: "GET",
     });
     if ("error" in res) return res;
@@ -71,9 +71,9 @@ export const getPayments = cache(
   },
 );
 
-export const getPaymentByID = cache(
-  async (id: string): Promise<Payment | ApiError> => {
-    const res = await apiFetch<{ payment: Payment }>(`/receivables/${id}`, {
+export const getReceivableByID = cache(
+  async (id: string): Promise<Receivable | ApiError> => {
+    const res = await apiFetch<{ payment: Receivable }>(`/receivables/${id}`, {
       method: "GET",
     });
     if ("error" in res) return res;
@@ -81,7 +81,7 @@ export const getPaymentByID = cache(
   },
 );
 
-export async function createPayment(data: {
+export async function createReceivable(data: {
   contact: string;
   category?: string;
   issued_at: string;
@@ -93,14 +93,14 @@ export async function createPayment(data: {
   due_day_of_month?: number;
   reference?: string;
   notes?: string;
-}): Promise<Payment | ApiError> {
+}): Promise<Receivable | ApiError> {
   return apiFetch("/receivables", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-export async function updatePayment(
+export async function updateReceivable(
   id: string,
   data: {
     contact?: string;
@@ -112,13 +112,13 @@ export async function updatePayment(
     reference?: string | null;
     notes?: string;
   },
-): Promise<Payment | ApiError> {
+): Promise<Receivable | ApiError> {
   return apiFetch(`/receivables/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });
 }
 
-export async function deletePayment(id: string): Promise<void | ApiError> {
+export async function deleteReceivable(id: string): Promise<void | ApiError> {
   return apiFetch(`/receivables/${id}`, { method: "DELETE" });
 }

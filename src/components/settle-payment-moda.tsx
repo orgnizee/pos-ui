@@ -1,15 +1,12 @@
 "use client";
 
 import { useActionState, useState, useRef, useEffect } from "react";
-import {
-  settlePaymentAction,
-  SettlePaymentActionState,
-} from "@/lib/api/actions/settle-payment";
-import { Payment } from "@/lib/api/payments";
-import { Account } from "@/lib/api/bank-accounts";
+import { Account } from "@/lib/api/bankAccounts";
+import { Receivable } from "@/lib/api/receivables";
+import { settleReceivableAction, SettleReceivableActionState } from "@/lib/api/actions/settleReceivable";
 
 interface SettlePaymentModalProps {
-  payment: Payment;
+  payment: Receivable;
   accounts: Account[];
   onClose: () => void;
 }
@@ -23,9 +20,9 @@ export default function SettlePaymentModal({
   accounts,
   onClose,
 }: SettlePaymentModalProps) {
-  const boundAction = settlePaymentAction.bind(null, payment.id);
+  const boundAction = settleReceivableAction.bind(null, payment.id);
   const [state, action, pending] = useActionState<
-    SettlePaymentActionState,
+    SettleReceivableActionState,
     FormData
   >(boundAction, null);
 
