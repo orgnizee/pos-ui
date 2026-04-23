@@ -10,7 +10,12 @@ export type OrderStatus =
   | "refunded"
   | "completed";
 
-export type OrderPayment = {
+export type OrderContact = {
+  id: string;
+  name: string;
+};
+
+export type OrderPaymentMethod = {
   id: string;
   method: string;
   amount: string;
@@ -32,12 +37,10 @@ export type OrderItem = {
 
 export type Order = {
   id: string;
-  business: string;
+  items: OrderItem[];
+  payment_methods: OrderPaymentMethod[];
   order_number: number;
   operation_type: string | null;
-  customer: string;
-  operator: string;
-  category: string | null;
   subtotal: string;
   discount_amount: string | null;
   ipi_amount: string | null;
@@ -47,15 +50,59 @@ export type Order = {
   created_at: string;
   notes: string | null;
   status: OrderStatus;
-  payments?: OrderPayment[];
-  items?: OrderItem[];
+  customer: OrderContact;
+  operator: OrderContact;
+  category: {
+    id: string;
+    name: string;
+  } | null;
+};
+
+export type CreateOrderInput = {
+  items: {
+    product: string;
+    quantity: number;
+    price: string;
+    discount: string;
+  }[];
+  customer: string;
+  payment_methods: {
+    method: string;
+    amount: string;
+    due_at: string;
+  }[];
+  discount_amount?: string;
+  order_date: string;
+  notes?: string;
+  status: OrderStatus;
+  category?: string | null;
+};
+
+export type UpdateOrderInput = {
+  items?: {
+    product: string;
+    quantity: number;
+    price: string;
+    discount: string;
+  }[];
+  customer?: string;
+  payment_methods?: {
+    method: string;
+    amount: string;
+    due_at: string;
+  }[];
+  discount_amount?: string;
+  order_date?: string;
+  notes?: string;
+  status?: OrderStatus;
+  category?: string | null;
 };
 
 type OrdersResponse = {
   count: number;
   next: string | null;
   previous: string | null;
-  results: { order: Order }[];
+  results: Order[];
 };
 
 export const getOrders = cache(async (): Promise<Order[] | ApiError> => {
@@ -64,16 +111,36 @@ export const getOrders = cache(async (): Promise<Order[] | ApiError> => {
   });
 
   if ("error" in res) return res;
-  return res.results.map((r) => r.order);
+  return res.results;
 });
 
 export const getOrderByID = cache(
   async (id: string): Promise<Order | ApiError> => {
-    const res = await apiFetch<{ order: Order }>(`/orders/${id}`, {
+    return apiFetch<Order>(`/orders/${id}`, {
       method: "GET",
     });
-
-    if ("error" in res) return res;
-    return res.order;
   },
 );
+
+export async function createOrder(
+  data: CreateOrderInput,
+): Promise<Order | ApiError> {
+  return apiFetch("/orders", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateOrder(
+  id: string,
+  data: UpdateOrderInput,
+): Promise<Order | ApiError> {
+  return apiFetch(`/orders/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteOrder(id: string): Promise<void | ApiError> {
+  return apiFetch(`/orders/${id}`, { method: "DELETE" });
+}
