@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Minus, Plus, X, Search } from "lucide-react";
+import { Minus, Plus, X, Search, ChevronDown } from "lucide-react";
 import { Product } from "@/lib/api/products";
+import { Customer } from "@/lib/api/customers";
 import { searchProductsAction } from "@/lib/api/actions/products";
+import { searchCustomersAction } from "@/lib/api/actions/customer";
+import { formatCPF } from "@/lib/utils/format";
 
 type CartItem = {
   product: Product;
@@ -13,6 +16,8 @@ type CartItem = {
 type Props = {
   initialProducts: Product[];
 };
+
+const DEFAULT_CUSTOMER = { id: null, name: "CONSUMIDOR FINAL" };
 
 function formatBRL(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -32,18 +37,38 @@ export default function PdvClient({ initialProducts }: Props) {
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [highlightedIdx, setHighlightedIdx] = useState(-1);
+
+  // Customer
+  const [customer, setCustomer] = useState<{ id: string | null; name: string }>(
+    DEFAULT_CUSTOMER,
+  );
+  const [showCustomerPicker, setShowCustomerPicker] = useState(false);
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [customerResults, setCustomerResults] = useState<Customer[]>([]);
+  const [customerLoading, setCustomerLoading] = useState(false);
+  const [highlightedCustomerIdx, setHighlightedCustomerIdx] = useState(-1);
+  const customerSearchRef = useRef<HTMLInputElement>(null);
+  const customerDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const customerListRef = useRef<HTMLUListElement>(null);
+
   const searchRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Avoid stale closures in the global keydown handler
   const stateRef = useRef({
     showResults,
     results,
     highlightedIdx,
     addToCart: (_: Product) => {},
+    showCustomerPicker,
+    customerResults,
+    highlightedCustomerIdx,
+    selectCustomer: (_: { id: string | null; name: string }) => {},
   });
 
+  // Products search
   const searchProducts = useCallback(async (query: string) => {
     if (!query.trim()) {
       setResults([]);
@@ -96,6 +121,40 @@ export default function PdvClient({ initialProducts }: Props) {
     setCart((prev) => prev.filter((i) => i.product.id !== id));
   };
 
+  // Customer search
+  const searchCustomers = useCallback(async (query: string) => {
+    setCustomerLoading(true);
+    const res = await searchCustomersAction(query);
+    setCustomerLoading(false);
+    setCustomerResults(res);
+    setHighlightedCustomerIdx(-1);
+  }, []);
+
+  const handleCustomerSearchChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const val = e.target.value;
+    setCustomerSearch(val);
+    if (customerDebounceRef.current) clearTimeout(customerDebounceRef.current);
+    customerDebounceRef.current = setTimeout(() => searchCustomers(val), 300);
+  };
+
+  const selectCustomer = (c: { id: string | null; name: string }) => {
+    setCustomer(c);
+    setShowCustomerPicker(false);
+    setHighlightedCustomerIdx(-1);
+    setCustomerSearch("");
+    setCustomerResults([]);
+    searchRef.current?.focus();
+  };
+
+  const openCustomerPicker = () => {
+    setShowCustomerPicker(true);
+    setHighlightedCustomerIdx(-1);
+    searchCustomers("");
+    setTimeout(() => customerSearchRef.current?.focus(), 50);
+  };
+
   const totalItems = cart.length;
   const totalAmount = cart.reduce((s, i) => {
     const price = parseFloat(i.product.price ?? "0");
@@ -104,10 +163,19 @@ export default function PdvClient({ initialProducts }: Props) {
 
   // Keep stateRef current every render
   useEffect(() => {
-    stateRef.current = { showResults, results, highlightedIdx, addToCart };
+    stateRef.current = {
+      showResults,
+      results,
+      highlightedIdx,
+      addToCart,
+      showCustomerPicker,
+      customerResults,
+      highlightedCustomerIdx,
+      selectCustomer,
+    };
   });
 
-  // Scroll highlighted item into view
+  // Scroll highlighted product into view
   useEffect(() => {
     if (highlightedIdx >= 0 && listRef.current) {
       listRef.current.children[highlightedIdx]?.scrollIntoView({
@@ -116,11 +184,56 @@ export default function PdvClient({ initialProducts }: Props) {
     }
   }, [highlightedIdx]);
 
+  // Scroll highlighted customer into view
+  useEffect(() => {
+    if (highlightedCustomerIdx >= 0 && customerListRef.current) {
+      customerListRef.current.children[highlightedCustomerIdx]?.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [highlightedCustomerIdx]);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      const { showResults, results, highlightedIdx, addToCart } =
-        stateRef.current;
+      const {
+        showResults,
+        results,
+        highlightedIdx,
+        addToCart,
+        showCustomerPicker,
+        customerResults,
+        highlightedCustomerIdx,
+        selectCustomer,
+      } = stateRef.current;
 
+      // Customer picker navigation (+1 for "consumidor final" at index 0)
+      const customerListLength = customerResults.length + 1;
+      if (showCustomerPicker) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setHighlightedCustomerIdx((i) =>
+            Math.min(i + 1, customerListLength - 1),
+          );
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setHighlightedCustomerIdx((i) => Math.max(i - 1, 0));
+          return;
+        }
+        if (e.key === "Enter" && highlightedCustomerIdx >= 0) {
+          e.preventDefault();
+          if (highlightedCustomerIdx === 0) {
+            selectCustomer(DEFAULT_CUSTOMER);
+          } else {
+            const c = customerResults[highlightedCustomerIdx - 1];
+            selectCustomer({ id: c.id, name: c.name });
+          }
+          return;
+        }
+      }
+
+      // Product results navigation
       if (showResults && results.length > 0) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
@@ -148,7 +261,9 @@ export default function PdvClient({ initialProducts }: Props) {
       }
       if (e.key === "Escape") {
         setShowResults(false);
+        setShowCustomerPicker(false);
         setHighlightedIdx(-1);
+        setHighlightedCustomerIdx(-1);
       }
     };
     window.addEventListener("keydown", handler);
@@ -200,13 +315,13 @@ export default function PdvClient({ initialProducts }: Props) {
 
                 <div className="mt-7 text-lg flex justify-between gap-2">
                   <button
-                    onClick={() => updateQty(item.product.id, -0.5)}
+                    onClick={() => updateQty(item.product.id, -1)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Minus strokeWidth={0.8} />
                   </button>
                   <button
-                    onClick={() => updateQty(item.product.id, 0.5)}
+                    onClick={() => updateQty(item.product.id, 1)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Plus strokeWidth={0.8} />
@@ -226,12 +341,96 @@ export default function PdvClient({ initialProducts }: Props) {
         </div>
       </div>
 
-      {/* RIGHT: Search */}
+      {/* RIGHT */}
       <div className="flex-1 flex flex-col ml-6">
-        <div className="justify-end flex">
-          <p className="border w-fit p-2">consumidor final</p>
+        {/* Customer picker */}
+        <div className="justify-end flex relative">
+          <button
+            onClick={() =>
+              showCustomerPicker
+                ? setShowCustomerPicker(false)
+                : openCustomerPicker()
+            }
+            className="border w-fit p-2 flex items-center gap-1 cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            <span className={customer.id ? "" : "text-tertiary"}>
+              {customer.name.toUpperCase()}
+            </span>
+            <ChevronDown size={14} strokeWidth={1} />
+          </button>
+
+          {showCustomerPicker && (
+            <>
+              <div
+                className="fixed inset-0 z-10"
+                onClick={() => setShowCustomerPicker(false)}
+              />
+              <div className="absolute top-full right-0 mt-1 border bg-white z-20 w-72 shadow-md">
+                <div className="flex items-center gap-2 border-b px-2">
+                  <Search
+                    size={14}
+                    strokeWidth={1}
+                    className="text-tertiary shrink-0"
+                  />
+                  <input
+                    ref={customerSearchRef}
+                    type="text"
+                    value={customerSearch}
+                    onChange={handleCustomerSearchChange}
+                    placeholder="BUSCAR CLIENTE"
+                    className="w-full py-2 bg-transparent outline-none text-sm placeholder:text-tertiary"
+                    autoComplete="off"
+                  />
+                  {customerLoading && (
+                    <span className="text-tertiary text-xs shrink-0 animate-pulse">
+                      ...
+                    </span>
+                  )}
+                </div>
+                <ul ref={customerListRef} className="max-h-60 overflow-y-auto">
+                  <li>
+                    <button
+                      onClick={() => selectCustomer(DEFAULT_CUSTOMER)}
+                      className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${
+                        highlightedCustomerIdx === 0 ? "bg-gray-50" : ""
+                      } ${customer.id === null ? "font-medium" : "text-tertiary"}`}
+                    >
+                      CONSUMIDOR FINAL
+                    </button>
+                  </li>
+                  {customerResults.map((c, idx) => (
+                    <li key={c.id}>
+                      <button
+                        onClick={() =>
+                          selectCustomer({ id: c.id, name: c.name })
+                        }
+                        className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${
+                          highlightedCustomerIdx === idx + 1 ? "bg-gray-50" : ""
+                        } ${customer.id === c.id ? "font-medium" : ""}`}
+                      >
+                        <span className="block uppercase">{c.name}</span>
+                        {c.cpf && (
+                          <span className="text-xs text-tertiary">
+                            {formatCPF(c.cpf)}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                  {!customerLoading &&
+                    customerResults.length === 0 &&
+                    customerSearch.trim() && (
+                      <li className="px-3 py-2 text-sm text-tertiary">
+                        nenhum cliente encontrado
+                      </li>
+                    )}
+                </ul>
+              </div>
+            </>
+          )}
         </div>
 
+        {/* Product search */}
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="w-full relative">
             <div className="flex items-center gap-2 border-b border-tertiary">
@@ -247,7 +446,7 @@ export default function PdvClient({ initialProducts }: Props) {
                 onChange={handleSearchChange}
                 onFocus={() => results.length > 0 && setShowResults(true)}
                 placeholder="PESQUISAR PRODUTOS"
-                className="w-full text-center bg-transparent outline-none uppercase text-base text-tertiary placeholder:text-tertiary py-1"
+                className="w-full text-center bg-transparent outline-none text-base text-tertiary placeholder:text-tertiary py-1"
                 autoComplete="off"
                 autoFocus
               />
@@ -274,7 +473,7 @@ export default function PdvClient({ initialProducts }: Props) {
                         onClick={() => addToCart(p)}
                         className={`w-full text-left px-3 py-2 transition-colors flex justify-between items-center gap-4 ${
                           idx === highlightedIdx
-                            ? "bg-gray-100"
+                            ? "bg-gray-50"
                             : "hover:bg-gray-50"
                         }`}
                       >
