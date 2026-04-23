@@ -1,11 +1,16 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useActionState } from "react";
 import { Minus, Plus, X, Search, ChevronDown } from "lucide-react";
 import { Product } from "@/lib/api/products";
 import { Customer } from "@/lib/api/customers";
+import { PaymentMethod } from "@/lib/api/paymentMethods";
 import { searchProductsAction } from "@/lib/api/actions/products";
 import { searchCustomersAction } from "@/lib/api/actions/customer";
+import {
+  createOrderAction,
+  CreateOrderActionState,
+} from "@/lib/api/actions/orders";
 import { formatCPF } from "@/lib/utils/format";
 
 type CartItem = {
@@ -15,6 +20,13 @@ type CartItem = {
 
 type Props = {
   initialProducts: Product[];
+  paymentMethods: PaymentMethod[];
+};
+
+type PaymentEntry = {
+  method: string;
+  amount: string;
+  due_at: string;
 };
 
 const DEFAULT_CUSTOMER = { id: null, name: "CONSUMIDOR FINAL" };
@@ -30,7 +42,7 @@ function formatQty(qty: number, unit?: string | null) {
   return `${qty}`;
 }
 
-export default function PdvClient({ initialProducts }: Props) {
+export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<Product[]>(initialProducts);
@@ -56,16 +68,26 @@ export default function PdvClient({ initialProducts }: Props) {
   const searchRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const [showCheckoutDrawer, setShowCheckoutDrawer] = useState(false);
+  const [discountAmount, setDiscountAmount] = useState("0.00");
+  const [notes, setNotes] = useState("");
+  const [status, setStatus] = useState<"open" | "paid" | "completed">("paid");
+  const [amountReceived, setAmountReceived] = useState("");
+  const [payments, setPayments] = useState<PaymentEntry[]>([]);
+  const [orderState, orderAction, pendingOrder] = useActionState<
+    CreateOrderActionState,
+    FormData
+  >(createOrderAction, null);
 
   const stateRef = useRef({
     showResults,
     results,
     highlightedIdx,
-    addToCart: (_: Product) => {},
+    addToCart: () => {},
     showCustomerPicker,
     customerResults,
     highlightedCustomerIdx,
-    selectCustomer: (_: { id: string | null; name: string }) => {},
+    selectCustomer: () => {},
   });
 
   // Products search
@@ -160,6 +182,33 @@ export default function PdvClient({ initialProducts }: Props) {
     const price = parseFloat(i.product.price ?? "0");
     return s + price * i.quantity;
   }, 0);
+  const discount = Number(discountAmount) || 0;
+  const orderTotal = Math.max(totalAmount - discount, 0);
+  const paymentTotal = payments.reduce((sum, payment) => {
+    return sum + (Number(payment.amount) || 0);
+  }, 0);
+  const remaining = orderTotal - paymentTotal;
+  const change = Math.max((Number(amountReceived) || 0) - orderTotal, 0);
+  const canSubmitOrder =
+    cart.length > 0 && payments.length > 0 && Math.abs(remaining) < 0.001;
+
+  const resetCheckout = useCallback(() => {
+    const today = new Date().toISOString().split("T")[0];
+    setPayments(
+      paymentMethods.length > 0
+        ? [{ method: paymentMethods[0].id, amount: "", due_at: today }]
+        : [],
+    );
+    setDiscountAmount("0.00");
+    setNotes("");
+    setStatus("paid");
+    setAmountReceived("");
+  }, [paymentMethods]);
+
+  const openCheckoutDrawer = useCallback(() => {
+    resetCheckout();
+    setShowCheckoutDrawer(true);
+  }, [resetCheckout]);
 
   // Keep stateRef current every render
   useEffect(() => {
@@ -269,6 +318,9 @@ export default function PdvClient({ initialProducts }: Props) {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
+
+
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <section className="mt-4 grid grid-cols-[30%_70%] h-[calc(100vh-75px)]">
@@ -501,12 +553,218 @@ export default function PdvClient({ initialProducts }: Props) {
           <button
             id="btn-receber"
             disabled={cart.length === 0}
+            onClick={openCheckoutDrawer}
             className="border w-fit p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
           >
             receber [r]
           </button>
         </div>
       </div>
+
+      {showCheckoutDrawer && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/20 z-40"
+            onClick={() => setShowCheckoutDrawer(false)}
+          />
+          <aside className="fixed top-0 right-0 h-full w-full max-w-xl bg-white border-l z-50 p-6 overflow-y-auto">
+            <div className="flex justify-between items-center border-b pb-3">
+              <h2 className="text-2xl font-light uppercase">finalizar pedido</h2>
+              <button
+                onClick={() => setShowCheckoutDrawer(false)}
+                className="text-tertiary hover:text-black"
+              >
+                <X size={18} strokeWidth={1} />
+              </button>
+            </div>
+
+            <form action={orderAction} className="mt-4 flex flex-col gap-4">
+              <input type="hidden" name="customer" value={customer.id ?? ""} />
+              <input
+                type="hidden"
+                name="items"
+                value={JSON.stringify(
+                  cart.map((item) => ({
+                    product: item.product.id,
+                    quantity: item.quantity,
+                    price: item.product.price ?? "0",
+                    discount: "0.00",
+                  })),
+                )}
+              />
+              <input
+                type="hidden"
+                name="payment_methods"
+                value={JSON.stringify(payments)}
+              />
+              <input type="hidden" name="order_date" value={today} />
+
+              <div className="border p-3 space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span>subtotal</span>
+                  <span>{formatBRL(totalAmount)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>desconto</span>
+                  <span>{formatBRL(discount)}</span>
+                </div>
+                <div className="flex justify-between text-base font-medium border-t pt-1">
+                  <span>total do pedido</span>
+                  <span>{formatBRL(orderTotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>valor pago</span>
+                  <span>{formatBRL(paymentTotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>troco</span>
+                  <span>{formatBRL(change)}</span>
+                </div>
+              </div>
+
+              <label className="text-xs uppercase text-tertiary">desconto (R$)</label>
+              <input
+                name="discount_amount"
+                value={discountAmount}
+                onChange={(e) => setDiscountAmount(e.target.value)}
+                className="border p-2 outline-none"
+                placeholder="0.00"
+                inputMode="decimal"
+              />
+
+              <label className="text-xs uppercase text-tertiary">status</label>
+              <select
+                name="status"
+                value={status}
+                onChange={(e) =>
+                  setStatus(e.target.value as "open" | "paid" | "completed")
+                }
+                className="border p-2 outline-none"
+              >
+                <option value="open">aberto</option>
+                <option value="paid">pago</option>
+                <option value="completed">concluído</option>
+              </select>
+
+              <label className="text-xs uppercase text-tertiary">valor recebido (R$)</label>
+              <input
+                value={amountReceived}
+                onChange={(e) => setAmountReceived(e.target.value)}
+                className="border p-2 outline-none"
+                placeholder="0.00"
+                inputMode="decimal"
+              />
+
+              <div className="border p-3 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs uppercase text-tertiary">formas de pagamento</p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPayments((prev) => [
+                        ...prev,
+                        {
+                          method: paymentMethods[0]?.id ?? "",
+                          amount: "",
+                          due_at: today,
+                        },
+                      ])
+                    }
+                    className="text-xs border px-2 py-1 uppercase"
+                  >
+                    adicionar
+                  </button>
+                </div>
+
+                {payments.map((payment, idx) => (
+                  <div key={`${payment.method}-${idx}`} className="grid grid-cols-12 gap-2">
+                    <select
+                      value={payment.method}
+                      onChange={(e) =>
+                        setPayments((prev) =>
+                          prev.map((p, i) =>
+                            i === idx ? { ...p, method: e.target.value } : p,
+                          ),
+                        )
+                      }
+                      className="col-span-5 border p-2 text-sm outline-none"
+                    >
+                      {paymentMethods.map((method) => (
+                        <option key={method.id} value={method.id}>
+                          {method.description}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      value={payment.amount}
+                      onChange={(e) =>
+                        setPayments((prev) =>
+                          prev.map((p, i) =>
+                            i === idx ? { ...p, amount: e.target.value } : p,
+                          ),
+                        )
+                      }
+                      placeholder="valor"
+                      inputMode="decimal"
+                      className="col-span-3 border p-2 text-sm outline-none"
+                    />
+
+                    <input
+                      type="date"
+                      value={payment.due_at}
+                      onChange={(e) =>
+                        setPayments((prev) =>
+                          prev.map((p, i) =>
+                            i === idx ? { ...p, due_at: e.target.value } : p,
+                          ),
+                        )
+                      }
+                      className="col-span-3 border p-2 text-sm outline-none"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPayments((prev) => prev.filter((_, i) => i !== idx))
+                      }
+                      className="col-span-1 border flex items-center justify-center"
+                    >
+                      <X size={14} strokeWidth={1} />
+                    </button>
+                  </div>
+                ))}
+
+                {Math.abs(remaining) >= 0.001 && (
+                  <p className="text-xs text-red-500">
+                    a soma dos pagamentos deve ser igual ao total do pedido.
+                  </p>
+                )}
+              </div>
+
+              <label className="text-xs uppercase text-tertiary">observações</label>
+              <textarea
+                name="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={4}
+                className="border p-2 outline-none resize-none"
+              />
+
+              {orderState?.error && (
+                <p className="text-sm text-red-500">{orderState.message}</p>
+              )}
+
+              <button
+                disabled={!canSubmitOrder || pendingOrder}
+                className="border p-2 bg-black text-white uppercase disabled:opacity-40"
+              >
+                {pendingOrder ? "salvando..." : "criar pedido"}
+              </button>
+            </form>
+          </aside>
+        </>
+      )}
     </section>
   );
 }
