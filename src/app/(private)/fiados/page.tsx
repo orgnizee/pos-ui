@@ -72,25 +72,6 @@ export default async function FiadosPage({
 
       <p className="mt-8 text-start text-lg font-light">histórico</p>
 
-      <div className="mt-6 overflow-hidden">
-        <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold items-center">
-            <SummaryCard label="pendente" value={sumOutstanding("pending")} />
-            <SummaryCard
-              label="parcial"
-              value={sumOutstanding("partially_paid")}
-              highlight="orange"
-            />
-            <SummaryCard
-              label="em atraso"
-              value={sumOutstanding("overdue")}
-              highlight="red"
-            />
-            <SummaryCard label="pago" value={sumPaid("paid")} highlight="green" />
-          </div>
-        </div>
-      </div>
-
       {/* Filter Date Buttons */}
       <div className="flex gap-6">
         <DateRange />
@@ -164,6 +145,25 @@ export default async function FiadosPage({
 
       {/* Receivables History */}
       <ReceivableTable receivables={receivables} basePath="fiados" />
+
+      <div className="mt-6 overflow-hidden">
+        <div className="overflow-auto flex">
+          <div className="overflow-x-auto scrollbar-hidden flex w-full justify-between px-1 pt-1 pb-5 gap-4 font-bold items-center">
+            <SummaryCard label="pendente" value={sumOutstanding("pending")} />
+            <SummaryCard
+              label="parcial"
+              value={sumOutstanding("partially_paid")}
+              highlight="orange"
+            />
+            <SummaryCard
+              label="em atraso"
+              value={sumOutstanding("overdue")}
+              highlight="red"
+            />
+            <SummaryCard label="pago" value={sumPaid("paid")} highlight="green" />
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
@@ -188,9 +188,9 @@ function SummaryCard({
 
   return (
     <div className="grid items-center justify-center shrink-0 rounded-md overflow-hidden">
-      <p className="text-center text-sm normal-case font-light">{label}</p>
+      <p className={`text-center text-xs uppercase font-light`}>{label}</p>
       <p
-        className={`w-40 h-fit px-1 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20 ${color}`}
+        className={`w-40 h-fit py-0.5 rounded-md text-center font-medium text-lg uppercase`}
       >
         {formatBRL(value)}
       </p>
