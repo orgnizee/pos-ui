@@ -748,7 +748,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 />
                 <ul
                   ref={listRef}
-                  className="absolute left-0 right-0 top-full mt-1 border bg-white z-20 max-h-72 overflow-y-auto shadow-md"
+                  className="absolute left-0 right-0 top-full mt-1 border bg-white z-20 max-h-62 overflow-y-auto shadow-md"
                 >
                   {results.map((p, idx) => (
                     <li key={p.id}>
