@@ -513,16 +513,6 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   )}
                 </div>
                 <ul ref={customerListRef} className="max-h-60 overflow-y-auto">
-                  <li>
-                    <button
-                      onClick={() => selectCustomer(defaultCustomer)}
-                      className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${
-                        highlightedCustomerIdx === 0 ? "bg-gray-50" : ""
-                      } ${customer.id === defaultCustomer.id ? "font-medium" : "text-tertiary"}`}
-                    >
-                      {defaultCustomer.name.toUpperCase()}
-                    </button>
-                  </li>
                   {customerResults.map((c, idx) => (
                     <li key={c.id}>
                       <button

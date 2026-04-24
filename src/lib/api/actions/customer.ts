@@ -90,7 +90,9 @@ export async function searchCustomersAction(
 ): Promise<Customer[]> {
   const res = await searchContacts(query);
   if (isApiError(res)) return [];
+
   return res
     .filter((c) => c.kind === "customer")
-    .map(({ kind, ...c }) => c as Customer);
+    .map(({ kind, ...c }) => c as Customer)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
