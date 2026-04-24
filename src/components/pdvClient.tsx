@@ -48,11 +48,16 @@ function parseCurrencyToCents(rawValue: string) {
   return Number(digits || "0");
 }
 
-function formatQty(qty: number, unit?: string | null) {
-  if (unit && unit.toLowerCase() !== "un") {
-    return `${qty.toLocaleString("pt-BR", { minimumFractionDigits: 3 })} ${unit}`;
-  }
-  return `${qty}`;
+function formatQty(qty: number) {
+  return qty.toLocaleString("pt-BR", {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  });
+}
+
+function parseQtyInput(rawValue: string) {
+  const digits = rawValue.replace(/\D/g, "");
+  return Number(digits || "0") / 1000;
 }
 
 export default function PdvClient({ initialProducts, paymentMethods }: Props) {
@@ -156,9 +161,23 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setCart((prev) =>
       prev
         .map((i) =>
-          i.product.id === id ? { ...i, quantity: i.quantity + delta } : i,
+          i.product.id === id
+            ? {
+                ...i,
+                quantity: Number((i.quantity + delta).toFixed(3)),
+              }
+            : i,
         )
         .filter((i) => i.quantity > 0),
+    );
+  };
+
+  const updateQtyFromInput = (id: string, rawValue: string) => {
+    const parsedQty = Number(parseQtyInput(rawValue).toFixed(3));
+    setCart((prev) =>
+      prev.map((i) =>
+        i.product.id === id ? { ...i, quantity: parsedQty } : i,
+      ),
     );
   };
 
@@ -452,8 +471,22 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   </div>
                 </div>
 
-                <div className="mt-8 text-lg font-normal flex justify-center gap-2">
-                  <p>{formatQty(item.quantity, item.product.unit)}</p>
+                <div className="mt-8 text-lg font-normal flex justify-center items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={formatQty(item.quantity)}
+                    onChange={(e) =>
+                      updateQtyFromInput(item.product.id, e.target.value)
+                    }
+                    className="w-20 bg-transparent border-b border-tertiary/30 text-center outline-none focus:border-tertiary"
+                    aria-label={`quantidade de ${item.product.name}`}
+                  />
+                  {item.product.unit && (
+                    <span className="text-sm text-tertiary uppercase">
+                      {item.product.unit}
+                    </span>
+                  )}
                 </div>
 
                 <div className="text-lg font-normal flex justify-center gap-2">
