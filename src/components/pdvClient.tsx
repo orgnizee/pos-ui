@@ -218,6 +218,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   );
 
   const handleScaleBarcodeSubmit = useCallback(async () => {
+    const UNIT_CONVERSIONS: Record<string, (qty: number) => number> = {
+      kg: (q) => q,
+      g: (q) => q / 1000,
+      un: (q) => q * 1000, // business rule: 1kg barcode = 1000 units
+    };
+
     const parsed = parseScaleBarcode(search);
     if (!parsed) return false;
 
@@ -234,11 +240,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       return true;
     }
 
-    if (exactMatch.unit?.toLowerCase() === "un") {
-      parsed.weightQty *= 1000
-    }
+    const unit = exactMatch.unit?.toLowerCase() ?? "kg";
+    const convert = UNIT_CONVERSIONS[unit] ?? ((q: number) => q); // fallback = no conversion
+    const finalQty = convert(parsed.weightQty);
 
-    addToCartWithQuantity(exactMatch, parsed.weightQty);
+
+    addToCartWithQuantity(exactMatch, finalQty);
     return true;
   }, [addToCartWithQuantity, search]);
 
