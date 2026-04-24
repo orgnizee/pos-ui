@@ -363,13 +363,18 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           setHighlightedCustomerIdx((i) => Math.max(i - 1, 0));
           return;
         }
-        if (e.key === "Enter" && highlightedCustomerIdx >= 0) {
+        if (e.key === "Enter") {
           e.preventDefault();
           if (highlightedCustomerIdx === 0) {
             selectCustomer(defaultCustomer);
-          } else {
+          } else if (highlightedCustomerIdx > 0) {
             const c = customerResults[highlightedCustomerIdx - 1];
-            selectCustomer({ id: c.id, name: c.name });
+            if (c) {
+              selectCustomer({ id: c.id, name: c.name });
+            }
+          } else if (customerResults.length > 0) {
+            const firstCustomer = customerResults[0];
+            selectCustomer({ id: firstCustomer.id, name: firstCustomer.name });
           }
           return;
         }
@@ -387,9 +392,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           setHighlightedIdx((i) => Math.max(i - 1, 0));
           return;
         }
-        if (e.key === "Enter" && highlightedIdx >= 0) {
+        if (e.key === "Enter") {
           e.preventDefault();
-          addToCart(results[highlightedIdx]);
+          const productToAdd =
+            highlightedIdx >= 0 ? results[highlightedIdx] : results[0];
+          if (productToAdd) {
+            addToCart(productToAdd);
+          }
           return;
         }
       }
