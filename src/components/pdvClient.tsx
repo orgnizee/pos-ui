@@ -83,6 +83,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const customerListRef = useRef<HTMLUListElement>(null);
 
   const searchRef = useRef<HTMLInputElement>(null);
+  const receiveButtonRef = useRef<HTMLButtonElement>(null);
+  const finalizeButtonRef = useRef<HTMLButtonElement>(null);
   const discountInputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -191,12 +193,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     searchRef.current?.focus();
   };
 
-  const openCustomerPicker = () => {
+  const openCustomerPicker = useCallback(() => {
     setShowCustomerPicker(true);
     setHighlightedCustomerIdx(-1);
     searchCustomers("");
     setTimeout(() => customerSearchRef.current?.focus(), 50);
-  };
+  }, [searchCustomers]);
 
   useEffect(() => {
     let isMounted = true;
@@ -374,22 +376,48 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       }
 
       if (
-        e.key === "r" &&
+        e.altKey &&
+        e.key.toLowerCase() === "r" &&
         !(e.target instanceof HTMLInputElement) &&
         !(e.target instanceof HTMLTextAreaElement)
       ) {
-        document.getElementById("btn-receber")?.click();
+        e.preventDefault();
+        receiveButtonRef.current?.click();
+      }
+      if (e.altKey && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+      if (e.altKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        if (showCustomerPicker) {
+          customerSearchRef.current?.focus();
+        } else {
+          openCustomerPicker();
+        }
+      }
+      if (e.altKey && e.key.toLowerCase() === "m" && showCheckoutDrawer) {
+        e.preventDefault();
+        document.getElementById("payment-method-0")?.focus();
+      }
+      if (e.altKey && e.key.toLowerCase() === "f" && showCheckoutDrawer) {
+        e.preventDefault();
+        finalizeButtonRef.current?.focus();
+        if (!finalizeButtonRef.current?.disabled) {
+          finalizeButtonRef.current?.click();
+        }
       }
       if (e.key === "Escape") {
         setShowResults(false);
         setShowCustomerPicker(false);
         setHighlightedIdx(-1);
         setHighlightedCustomerIdx(-1);
+        setShowCheckoutDrawer(false);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [openCustomerPicker, showCheckoutDrawer, showCustomerPicker]);
 
   const today = new Date().toISOString().split("T")[0];
   const discountAmount = formatBRL(discountCents / 100);
@@ -615,11 +643,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         <div className="justify-end flex">
           <button
             id="btn-receber"
+            ref={receiveButtonRef}
             disabled={cart.length === 0}
             onClick={openCheckoutDrawer}
             className="border w-fit p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            receber [r]
+            receber [alt+r]
           </button>
         </div>
       </div>
@@ -740,6 +769,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   >
                     <div className="col-span-6">
                       <SelectInputField
+                        id={`payment-method-${idx}`}
                         label="pagamento"
                         value={payment.method}
                         onChange={(e) =>
@@ -827,10 +857,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
               <div className="absolute bottom-5 w-132">
                 <button
+                  id="btn-finalizar"
+                  ref={finalizeButtonRef}
                   disabled={!canSubmitOrder || pendingOrder}
                   className="border w-full p-2 uppercase disabled:opacity-40"
                 >
-                  {pendingOrder ? "salvando..." : "finalizar"}
+                  {pendingOrder ? "salvando..." : "finalizar [alt+f]"}
                 </button>
               </div>
             </form>
