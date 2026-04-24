@@ -48,11 +48,13 @@ function parseCurrencyToCents(rawValue: string) {
   return Number(digits || "0");
 }
 
-function formatQty(qty: number, unit?: string | null) {
-  if (unit && unit.toLowerCase() !== "un") {
-    return `${qty.toLocaleString("pt-BR", { minimumFractionDigits: 3 })} ${unit}`;
-  }
-  return `${qty}`;
+function formatQty(qty: number) {
+  return Math.max(Math.trunc(qty), 0).toLocaleString("pt-BR");
+}
+
+function parseQtyInput(rawValue: string) {
+  const digits = rawValue.replace(/\D/g, "");
+  return Number(digits || "0");
 }
 
 export default function PdvClient({ initialProducts, paymentMethods }: Props) {
@@ -155,15 +157,34 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const updateQty = (id: string, delta: number) => {
     setCart((prev) =>
       prev
-        .map((i) =>
-          i.product.id === id ? { ...i, quantity: i.quantity + delta } : i,
-        )
+        .map((i) => {
+          if (i.product.id !== id) return i;
+          const nextQuantity = Math.max(Math.trunc(i.quantity + delta), 0);
+          return { ...i, quantity: nextQuantity };
+        })
         .filter((i) => i.quantity > 0),
     );
   };
 
   const removeItem = (id: string) => {
     setCart((prev) => prev.filter((i) => i.product.id !== id));
+  };
+
+  const setItemQty = (id: string, quantity: number) => {
+    setCart((prev) =>
+      prev
+        .map((item) =>
+          item.product.id === id
+            ? { ...item, quantity: Math.max(Math.trunc(quantity), 0) }
+            : item,
+        )
+        .filter((item) => item.quantity > 0),
+    );
+  };
+
+  const handleQtyInputChange = (id: string, rawValue: string) => {
+    const quantity = parseQtyInput(rawValue);
+    setItemQty(id, quantity);
   };
 
   // Customer search
@@ -452,8 +473,20 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   </div>
                 </div>
 
-                <div className="mt-8 text-lg font-normal flex justify-center gap-2">
-                  <p>{formatQty(item.quantity, item.product.unit)}</p>
+                <div className="mt-8 text-lg font-normal flex justify-center items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    aria-label={`Quantidade de ${item.product.name}`}
+                    value={formatQty(item.quantity)}
+                    onChange={(event) =>
+                      handleQtyInputChange(item.product.id, event.target.value)
+                    }
+                    className="w-24 text-center bg-transparent outline-none border-b border-transparent focus:border-tertiary"
+                  />
+                  {item.product.unit && item.product.unit.toLowerCase() !== "un" && (
+                    <span>{item.product.unit}</span>
+                  )}
                 </div>
 
                 <div className="text-lg font-normal flex justify-center gap-2">
@@ -463,13 +496,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
                 <div className="mt-7 text-lg flex justify-between gap-2">
                   <button
-                    onClick={() => updateQty(item.product.id, -0.5)}
+                    onClick={() => updateQty(item.product.id, -1)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Minus strokeWidth={0.8} />
                   </button>
                   <button
-                    onClick={() => updateQty(item.product.id, 0.5)}
+                    onClick={() => updateQty(item.product.id, 1)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Plus strokeWidth={0.8} />
