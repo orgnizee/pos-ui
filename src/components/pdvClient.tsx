@@ -37,7 +37,7 @@ type PaymentEntry = {
   due_at: string;
 };
 
-const DEFAULT_CUSTOMER = { id: null, name: "CONSUMIDOR FINAL" };
+const FALLBACK_DEFAULT_CUSTOMER = { id: null, name: "CONSUMIDOR FINAL" };
 
 function formatBRL(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -65,8 +65,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
   // Customer
   const [customer, setCustomer] = useState<{ id: string | null; name: string }>(
-    DEFAULT_CUSTOMER,
+    FALLBACK_DEFAULT_CUSTOMER,
   );
+  const [defaultCustomer, setDefaultCustomer] = useState<{
+    id: string | null;
+    name: string;
+  }>(FALLBACK_DEFAULT_CUSTOMER);
   const [showCustomerPicker, setShowCustomerPicker] = useState(false);
   const [customerSearch, setCustomerSearch] = useState("");
   const [customerResults, setCustomerResults] = useState<Customer[]>([]);
@@ -104,6 +108,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     customerResults,
     highlightedCustomerIdx,
     selectCustomer: () => {},
+    defaultCustomer: FALLBACK_DEFAULT_CUSTOMER,
   });
 
   // Products search
@@ -193,6 +198,33 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setTimeout(() => customerSearchRef.current?.focus(), 50);
   };
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadDefaultCustomer = async () => {
+      const customers = await searchCustomersAction("");
+      if (!isMounted) return;
+
+      const consumidorFinal = customers.find(
+        (c) => c.name.trim().toLowerCase() === "consumidor final",
+      );
+      if (!consumidorFinal) return;
+
+      const nextDefaultCustomer = {
+        id: consumidorFinal.id,
+        name: consumidorFinal.name,
+      };
+      setDefaultCustomer(nextDefaultCustomer);
+      setCustomer(nextDefaultCustomer);
+    };
+
+    loadDefaultCustomer();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const totalItems = cart.length;
   const totalAmount = cart.reduce((s, i) => {
     const price = parseFloat(i.product.price ?? "0");
@@ -259,6 +291,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       customerResults,
       highlightedCustomerIdx,
       selectCustomer,
+      defaultCustomer,
     };
   });
 
@@ -291,6 +324,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         customerResults,
         highlightedCustomerIdx,
         selectCustomer,
+        defaultCustomer,
       } = stateRef.current;
 
       // Customer picker navigation (+1 for "consumidor final" at index 0)
@@ -311,7 +345,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         if (e.key === "Enter" && highlightedCustomerIdx >= 0) {
           e.preventDefault();
           if (highlightedCustomerIdx === 0) {
-            selectCustomer(DEFAULT_CUSTOMER);
+            selectCustomer(defaultCustomer);
           } else {
             const c = customerResults[highlightedCustomerIdx - 1];
             selectCustomer({ id: c.id, name: c.name });
@@ -481,12 +515,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 <ul ref={customerListRef} className="max-h-60 overflow-y-auto">
                   <li>
                     <button
-                      onClick={() => selectCustomer(DEFAULT_CUSTOMER)}
+                      onClick={() => selectCustomer(defaultCustomer)}
                       className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${
                         highlightedCustomerIdx === 0 ? "bg-gray-50" : ""
-                      } ${customer.id === null ? "font-medium" : "text-tertiary"}`}
+                      } ${customer.id === defaultCustomer.id ? "font-medium" : "text-tertiary"}`}
                     >
-                      CONSUMIDOR FINAL
+                      {defaultCustomer.name.toUpperCase()}
                     </button>
                   </li>
                   {customerResults.map((c, idx) => (
