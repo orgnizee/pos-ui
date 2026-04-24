@@ -957,7 +957,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                       <div className="col-span-12">
                         <label
                           htmlFor={`payment-due-at-${idx}`}
-                          className="text-sm text-tertiary"
+                          className="text-xs text-tertiary"
                         >
                           vencimento
                         </label>
@@ -972,7 +972,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                               ),
                             )
                           }
-                          className="w-full border px-2 py-1 mt-1"
+                          className="w-full"
                         />
                       </div>
                     )}
