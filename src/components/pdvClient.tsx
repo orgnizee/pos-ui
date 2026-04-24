@@ -115,7 +115,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       const selectedMethod = paymentMethods.find(
         (method) => method.id === methodId,
       );
-      return selectedMethod?.description.toLowerCase().includes("fiado") ?? false;
+      return (
+        selectedMethod?.description.toLowerCase().includes("fiado") ?? false
+      );
     },
     [paymentMethods],
   );
@@ -128,8 +130,6 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const listRef = useRef<HTMLUListElement>(null);
   const [showCheckoutDrawer, setShowCheckoutDrawer] = useState(false);
   const [discountCents, setDiscountCents] = useState(0);
-  const [notes, setNotes] = useState("");
-  const [status, setStatus] = useState<"open" | "paid" | "completed">("paid");
   const [amountReceivedCents, setAmountReceivedCents] = useState(0);
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
   const [isPaymentAmountManuallyEdited, setIsPaymentAmountManuallyEdited] =
@@ -139,14 +139,24 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     FormData
   >(createOrderAction, null);
 
-  const stateRef = useRef({
-    showResults,
-    results,
-    highlightedIdx,
+  const stateRef = useRef<{
+    showResults: boolean;
+    results: Product[];
+    highlightedIdx: number;
+    addToCart: (product: Product) => void;
+    showCustomerPicker: boolean;
+    customerResults: Customer[];
+    highlightedCustomerIdx: number;
+    selectCustomer: (c: { id: string | null; name: string }) => void;
+    defaultCustomer: { id: string | null; name: string };
+  }>({
+    showResults: false,
+    results: [],
+    highlightedIdx: -1,
     addToCart: () => {},
-    showCustomerPicker,
-    customerResults,
-    highlightedCustomerIdx,
+    showCustomerPicker: false,
+    customerResults: [],
+    highlightedCustomerIdx: -1,
     selectCustomer: () => {},
     defaultCustomer: FALLBACK_DEFAULT_CUSTOMER,
   });
@@ -354,8 +364,6 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         : [],
     );
     setDiscountCents(0);
-    setNotes("");
-    setStatus("paid");
     setAmountReceivedCents(0);
     setIsPaymentAmountManuallyEdited(false);
   }, [isFiadoMethod, orderTotal, paymentMethods]);
@@ -968,7 +976,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                           onChange={(e) =>
                             setPayments((prev) =>
                               prev.map((p, i) =>
-                                i === idx ? { ...p, due_at: e.target.value } : p,
+                                i === idx
+                                  ? { ...p, due_at: e.target.value }
+                                  : p,
                               ),
                             )
                           }
