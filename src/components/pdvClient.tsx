@@ -48,17 +48,13 @@ function parseCurrencyToCents(rawValue: string) {
   return Number(digits || "0");
 }
 
-function formatQty(qty: number, unit?: string | null) {
-  const formatted = qty.toLocaleString("en-US", {
-    minimumFractionDigits: Number.isInteger(qty) ? 0 : 3,
-    maximumFractionDigits: 3,
-  });
+function formatQty(qty: number) {
+  return Math.max(Math.trunc(qty), 0).toLocaleString("pt-BR");
+}
 
-  if (unit && unit.toLowerCase() !== "un") {
-    return `${formatted} ${unit}`;
-  }
-
-  return formatted;
+function parseQtyInput(rawValue: string) {
+  const digits = rawValue.replace(/\D/g, "");
+  return Number(digits || "0");
 }
 
 export default function PdvClient({ initialProducts, paymentMethods }: Props) {
@@ -161,9 +157,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const updateQty = (id: string, delta: number) => {
     setCart((prev) =>
       prev
-        .map((i) =>
-          i.product.id === id ? { ...i, quantity: i.quantity + delta } : i,
-        )
+        .map((i) => {
+          if (i.product.id !== id) return i;
+          const nextQuantity = Math.max(Math.trunc(i.quantity + delta), 0);
+          return { ...i, quantity: nextQuantity };
+        })
         .filter((i) => i.quantity > 0),
     );
   };
@@ -176,23 +174,16 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.product.id === id ? { ...item, quantity: Math.max(quantity, 0) } : item,
+          item.product.id === id
+            ? { ...item, quantity: Math.max(Math.trunc(quantity), 0) }
+            : item,
         )
         .filter((item) => item.quantity > 0),
     );
   };
 
   const handleQtyInputChange = (id: string, rawValue: string) => {
-    const sanitized = rawValue.replace(/,/g, "").trim();
-
-    if (!sanitized) {
-      setItemQty(id, 0);
-      return;
-    }
-
-    const quantity = Number(sanitized);
-    if (!Number.isFinite(quantity)) return;
-
+    const quantity = parseQtyInput(rawValue);
     setItemQty(id, quantity);
   };
 
@@ -485,7 +476,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 <div className="mt-8 text-lg font-normal flex justify-center items-center gap-2">
                   <input
                     type="text"
-                    inputMode="decimal"
+                    inputMode="numeric"
                     aria-label={`Quantidade de ${item.product.name}`}
                     value={formatQty(item.quantity)}
                     onChange={(event) =>
@@ -505,13 +496,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
                 <div className="mt-7 text-lg flex justify-between gap-2">
                   <button
-                    onClick={() => updateQty(item.product.id, -0.5)}
+                    onClick={() => updateQty(item.product.id, -1)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Minus strokeWidth={0.8} />
                   </button>
                   <button
-                    onClick={() => updateQty(item.product.id, 0.5)}
+                    onClick={() => updateQty(item.product.id, 1)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Plus strokeWidth={0.8} />
