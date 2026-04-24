@@ -184,9 +184,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     searchRef.current?.focus();
   }, []);
 
-  const addToCart = useCallback((product: Product) => {
-    addToCartWithQuantity(product, 1);
-  }, [addToCartWithQuantity]);
+  const addToCart = useCallback(
+    (product: Product) => {
+      addToCartWithQuantity(product, 1);
+    },
+    [addToCartWithQuantity],
+  );
 
   const handleScaleBarcodeSubmit = useCallback(async () => {
     const parsed = parseScaleBarcode(search);
@@ -299,10 +302,14 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   }, []);
 
   const totalItems = cart.length;
-  const totalAmount = cart.reduce((s, i) => {
-    const price = parseFloat(i.product.price ?? "0");
-    return s + price * i.quantity;
-  }, 0);
+  const totalAmount = Number(
+    cart
+      .reduce((s, i) => {
+        const price = parseFloat(i.product.price ?? "0");
+        return s + price * i.quantity;
+      }, 0)
+      .toFixed(2),
+  );
   const discount = discountCents / 100;
   const orderTotal = Math.max(totalAmount - discount, 0);
   const paymentTotal = payments.reduce((sum, payment) => {
@@ -704,7 +711,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
               )}
             </div>
             {scaleBarcodeFeedback && (
-              <p className="mt-2 text-xs text-red-500">{scaleBarcodeFeedback}</p>
+              <p className="mt-2 text-xs text-red-500">
+                {scaleBarcodeFeedback}
+              </p>
             )}
 
             {showResults && results.length > 0 && (
