@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { apiFetch } from "./client";
 import { ApiError } from "./types";
 
@@ -9,135 +10,137 @@ export type OrderStatus =
   | "refunded"
   | "completed";
 
-export interface OrderItem {
+export type OrderContact = {
   id: string;
-  product: string; // product id
-  product_name: string; // denormalized for display
-  sku: string;
-  quantity: number;
-  unit: string;
-  price: string; // decimal string from DRF
-  discount: string;
-  total: string;
-}
+  name: string;
+};
 
-export interface OrderPayment {
+export type OrderPaymentMethod = {
   id: string;
-  method: string; // PaymentMethod id
-  method_name: string; // denormalized for display
-  destination: "receivable" | "finance_account";
-  finance_account: string | null;
+  method: string;
   amount: string;
-  due_at: string; // ISO datetime
-}
+  due_at: string;
+  finance_transaction: string | null;
+};
 
-export interface Order {
+export type OrderItem = {
   id: string;
-  order_number: number;
-  status: OrderStatus;
-  operation_type: string | null;
-  customer: string;
-  customer_name: string;
-  operator: string;
-  operator_name: string;
-  category: string | null;
-  category_name: string | null;
-  subtotal: string;
-  discount_amount: string;
-  ipi_amount: string;
-  icms_amount: string;
-  total_amount: string;
-  order_date: string; // ISO date
-  created_at: string; // ISO datetime
-  notes: string | null;
-  items: OrderItem[];
-  payments: OrderPayment[];
-}
-
-export type OrderListItem = Pick<
-  Order,
-  | "id"
-  | "order_number"
-  | "status"
-  | "customer_name"
-  | "operator_name"
-  | "total_amount"
-  | "order_date"
-  | "created_at"
->;
-
-export interface PaginatedOrders {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: OrderListItem[];
-}
-
-export interface OrderFilters {
-  status?: OrderStatus;
-  date_after?: string;
-  date_before?: string;
-  customer?: string;
-  page?: string;
-}
-
-// ─── Payload types (create / update) ─────────────────────────────────────────
-
-export interface OrderItemPayload {
   product: string;
+  transaction: string | null;
   sku: string;
   quantity: number;
   unit: string;
   price: string;
   discount: string;
   total: string;
-}
+};
 
-export interface OrderPaymentPayload {
-  method: string;
-  amount: string;
-  due_at: string;
-}
+export type Order = {
+  id: string;
+  items: OrderItem[];
+  payment_methods: OrderPaymentMethod[];
+  order_number: number;
+  operation_type: string | null;
+  subtotal: string;
+  discount_amount: string | null;
+  ipi_amount: string | null;
+  icms_amount: string | null;
+  total_amount: string;
+  order_date: string;
+  created_at: string;
+  notes: string | null;
+  status: OrderStatus;
+  customer: OrderContact;
+  operator: OrderContact;
+  category: {
+    id: string;
+    name: string;
+  } | null;
+};
 
-export interface OrderPayload {
+export type CreateOrderInput = {
+  items: {
+    product: string;
+    quantity: number;
+    price: string;
+    discount: string;
+  }[];
   customer: string;
-  category?: string;
-  operation_type?: string;
+  payment_methods: {
+    method: string;
+    amount: string;
+    due_at: string;
+  }[];
+  discount_amount?: string;
   order_date: string;
   notes?: string;
-  subtotal: string;
-  discount_amount: string;
-  ipi_amount: string;
-  icms_amount: string;
-  total_amount: string;
-  items: OrderItemPayload[];
-  payments: OrderPaymentPayload[];
-}
+  status: OrderStatus;
+  category?: string | null;
+};
 
-export async function getOrders(
-  filters: OrderFilters = {},
-): Promise<PaginatedOrders | ApiError> {
-  const params = new URLSearchParams();
-  if (filters.status) params.set("status", filters.status);
-  if (filters.date_after) params.set("order_date_after", filters.date_after);
-  if (filters.date_before) params.set("order_date_before", filters.date_before);
-  if (filters.customer) params.set("customer", filters.customer);
-  if (filters.page) params.set("page", filters.page);
+export type UpdateOrderInput = {
+  items?: {
+    product: string;
+    quantity: number;
+    price: string;
+    discount: string;
+  }[];
+  customer?: string;
+  payment_methods?: {
+    method: string;
+    amount: string;
+    due_at: string;
+  }[];
+  discount_amount?: string;
+  order_date?: string;
+  notes?: string;
+  status?: OrderStatus;
+  category?: string | null;
+};
 
-  const qs = params.toString();
-  const res = apiFetch<PaginatedOrders>(`/orders?${qs ? `?${qs}` : ""}`);
+type OrdersResponse = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Order[];
+};
 
-  console.log(res);
-
-  if ("error" in res) return res;
-  return res;
-}
-
-export async function getOrder(id: string): Promise<Order | ApiError> {
-  const res = await apiFetch<Order>(`/orders/${id}`, {
+export const getOrders = cache(async (): Promise<Order[] | ApiError> => {
+  const res = await apiFetch<OrdersResponse>("/orders", {
     method: "GET",
   });
-  if ("error" in res) return res;
 
-  return res;
+  if ("error" in res) return res;
+  return res.results;
+});
+
+export const getOrderByID = cache(
+  async (id: string): Promise<Order | ApiError> => {
+    return apiFetch<Order>(`/orders/${id}`, {
+      method: "GET",
+    });
+  },
+);
+
+export async function createOrder(
+  data: CreateOrderInput,
+): Promise<Order | ApiError> {
+  return apiFetch("/orders", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateOrder(
+  id: string,
+  data: UpdateOrderInput,
+): Promise<Order | ApiError> {
+  return apiFetch(`/orders/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteOrder(id: string): Promise<void | ApiError> {
+  return apiFetch(`/orders/${id}`, { method: "DELETE" });
 }

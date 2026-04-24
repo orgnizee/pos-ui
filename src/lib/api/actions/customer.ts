@@ -6,7 +6,9 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  Customer,
 } from "../customers";
+import { searchContacts } from "../contacts";
 
 export type CustomerActionState = {
   error: true;
@@ -34,7 +36,7 @@ export async function createCustomerAction(
     notes: (formData.get("notes") as string) || undefined,
   });
 
-  console.log(res)
+  console.log(res);
 
   if (isApiError(res)) {
     return { error: true, message: res.message, details: res.details };
@@ -53,8 +55,7 @@ export async function updateCustomerAction(
     alias: (formData.get("alias") as string) || null,
     code: (formData.get("code") as string) || null,
     cpf: (formData.get("cpf") as string) || null,
-    gender:
-      (formData.get("gender") as "male" | "female" | "unkown") || null,
+    gender: (formData.get("gender") as "male" | "female" | "unkown") || null,
     is_active: formData.get("is_active") === "on",
     phone: (formData.get("phone") as string) || null,
     email: (formData.get("email") as string) || null,
@@ -82,4 +83,16 @@ export async function deleteCustomerAction(
   }
 
   redirect("/contatos");
+}
+
+export async function searchCustomersAction(
+  query: string,
+): Promise<Customer[]> {
+  const res = await searchContacts(query);
+  if (isApiError(res)) return [];
+
+  return res
+    .filter((c) => c.kind === "customer")
+    .map(({ kind, ...c }) => c as Customer)
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

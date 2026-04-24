@@ -1,4 +1,4 @@
-import { Lekton, Quicksand, Orbit } from "next/font/google";
+import { Lekton, Quicksand } from "next/font/google";
 
 export const lekton = Lekton({
   weight: ["400", "700"],
@@ -11,5 +11,3 @@ export const quicksand = Quicksand({
   subsets: ["latin"],
   display: "swap",
 });
-
-export const orbit = Orbit({ weight: ["400"] });

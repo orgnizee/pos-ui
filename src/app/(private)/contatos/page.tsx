@@ -1,11 +1,11 @@
 import { isApiError } from "@/lib/api/types";
 import buildFilterHref from "@/lib/utils/search-params";
 import Link from "next/link";
-import { filterClass } from "@/lib/style-filter-buttons";
-import SearchInput from "@/components/search-input";
-import { Plus, Square } from "lucide-react";
-import { getContacts, searchContacts, Contact } from "@/lib/api/contacts";
-import { formatCPF, formatCNPJ, formatPhone } from "@/lib/utils/format";
+import { filterClass } from "@/lib/styleFilterButtons";
+import SearchInput from "@/components/searchInput";
+import { Plus} from "lucide-react";
+import { getContacts, searchContacts} from "@/lib/api/contacts";
+import ContactCard from "@/components/contactCard";
 
 export default async function ContatosPage({
   searchParams,
@@ -34,25 +34,25 @@ export default async function ContatosPage({
   });
 
   return (
-    <section>
+    <section className="mt-8">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-5xl sm:text-6xl normal-case">contatos</h1>
-        <div className="flex gap-2 mr-0.5 sm:mr-6">
-          <Link
-            href={"contatos/adicionar"}
-            className="flex w-7 h-7 items-center justify-center rounded-md bg-black"
-          >
-            <Plus className="text-white" size={16} />
-          </Link>
-        </div>
+        <h1 className="text-8xl font-light">contatos</h1>
+
+        <Link
+          href={"contatos/novo"}
+          className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
+        >
+          <Plus className="text-primary" size={16} />
+        </Link>
       </div>
 
-      <div className="mt-8">
+      <div className="flex justify-end mt-8">
         <SearchInput endpoint="contatos" />
       </div>
 
       {/* Filter Buttons */}
-      <div className="mt-2 overflow-hidden">
+      <div className="mt-2 ml-1 overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-2 font-bold items-center">
             <Link
@@ -86,58 +86,5 @@ export default async function ContatosPage({
           ))}
       </div>
     </section>
-  );
-}
-
-function ContactCard({ contact }: { contact: Contact }) {
-  const isCustomer = contact.kind === "customer";
-
-  const displayName = isCustomer
-    ? (contact.alias ?? "/")
-    : (contact.trade_name ?? "/");
-  const fullName = isCustomer ? contact.name : contact.legal_name;
-  const document = isCustomer
-    ? contact.cpf
-      ? formatCPF(contact.cpf)
-      : null
-    : contact.cnpj
-      ? formatCNPJ(contact.cnpj)
-      : null;
-
-  return (
-    <div className="p-2 ring-1 ring-black/5 relative rounded-xl bg-background min-h-37.5 w-full">
-      {/* Top row: phone pill + ID */}
-      <div className="flex items-center justify-between h-7.5 w-full rounded-xl mb-1.5">
-        <button className="bg-black/5 w-fit px-4 py-1 rounded-full">
-          <p className="text-nowrap text-xs font-medium tracking-wide text-primary truncate">
-            {contact.phone ? formatPhone(contact.phone) : ""}
-          </p>
-        </button>
-        <div className="text-nowrap text-xs text-primary truncate">
-          <p>{contact.code}</p>
-        </div>
-      </div>
-
-      {/* Main card area */}
-      <Link
-        href={`/contatos/${contact.id}`}
-        className="flex flex-col justify-between items-start bg-black/5 w-full h-32.5 rounded-xl"
-      >
-        <div className="px-3 py-2 w-full">
-          <div className="text-black/30 mb-9">
-            <Square size={16} fill="currentColor" strokeWidth={0} />
-          </div>
-
-          <p className="w-full text-start text-lg font-bold text-primary truncate">
-            {fullName}
-          </p>
-
-          <div className="w-full text-xs text-start text-black/40">
-            <span className="block truncate">{displayName}</span>
-            <span className="block truncate">{document ?? "—"}</span>
-          </div>
-        </div>
-      </Link>
-    </div>
   );
 }

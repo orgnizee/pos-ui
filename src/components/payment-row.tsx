@@ -2,7 +2,7 @@
 
 import { Customer } from "@/lib/api/customers";
 import { Payable } from "@/lib/api/payable";
-import { Payment } from "@/lib/api/payments";
+import { Payment } from "@/lib/api/receivables";
 import { Supplier } from "@/lib/api/suppliers";
 import { formatBRL } from "@/lib/utils/format";
 import { useRouter } from "next/navigation";

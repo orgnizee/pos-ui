@@ -3,11 +3,15 @@ import { useActionState, useState } from "react";
 import {
   updatePaymentAction,
   PaymentActionState,
-} from "@/lib/api/actions/payments";
-import { Payment, RecurrenceOption, PaymentStatus } from "@/lib/api/payments";
+} from "@/lib/api/actions/receivables";
+import {
+  Payment,
+  RecurrenceOption,
+  PaymentStatus,
+} from "@/lib/api/receivables";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
-import { FinanceCategory } from "@/lib/api/finance-category";
+import { FinanceCategory } from "@/lib/api/financeCategory";
 import CategoryPickerModal from "@/components/category-picker-modal";
 
 interface EditPaymentFormProps {
@@ -229,7 +233,7 @@ export default function EditPaymentForm({
             {state.message}
           </p>
         )}
-        { payment.status === "pending" &&
+        {payment.status === "pending" && (
           <button
             type="submit"
             disabled={pending}
@@ -237,7 +241,7 @@ export default function EditPaymentForm({
           >
             salvar
           </button>
-        }
+        )}
       </div>
     </form>
   );

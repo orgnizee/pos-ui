@@ -32,8 +32,12 @@ export const getCustomers = cache(async (): Promise<Customer[] | ApiError> => {
   const res = await apiFetch<CustomersResponse>("/contacts/customers", {
     method: "GET",
   });
+
   if ("error" in res) return res;
-  return res.results.map((r) => r.customer);
+
+  return res.results
+    .map((r) => r.customer)
+    .sort((a, b) => a.name.localeCompare(b.name));
 });
 
 export const getCustomerByID = cache(

@@ -5,7 +5,7 @@ import {
   FinanceCategoryActionState,
   submitFinanceCategoryFormAction,
 } from "@/lib/api/actions/finance-category";
-import { FinanceCategory } from "@/lib/api/finance-category";
+import { FinanceCategory } from "@/lib/api/financeCategory";
 
 export default function CreateFinanceCategoryForm({
   categories,
@@ -28,7 +28,6 @@ export default function CreateFinanceCategoryForm({
       className="flex flex-col items-start"
       autoComplete="off"
     >
-
       <div className="mt-2 w-75 h-10 text-sm font-light rounded-md bg-background">
         <input
           name="category"

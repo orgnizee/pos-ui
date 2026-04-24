@@ -1,0 +1,227 @@
+/* ── Wrapper ─────────────────────────────────────────────────────── */
+.react-daterange-picker {
+  display: inline-flex;
+  align-items: center;
+}
+
+.react-daterange-picker__wrapper {
+  display: flex;
+  align-items: center;
+  border: none;
+  border-bottom: 1px solid #d1d1d1;
+  padding: 2px 0;
+  background: transparent;
+  gap: 2px;
+}
+
+/* ── Inputs ──────────────────────────────────────────────────────── */
+.react-daterange-picker__inputGroup {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 0;
+}
+
+.react-daterange-picker__inputGroup__input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0;
+  caret-color: #000;
+}
+
+.react-daterange-picker__inputGroup__input::placeholder,
+.react-daterange-picker__inputGroup__input:invalid {
+  color: #aaa;
+}
+
+.react-daterange-picker__inputGroup__input::-webkit-outer-spin-button,
+.react-daterange-picker__inputGroup__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.react-daterange-picker__inputGroup__divider,
+.react-daterange-picker__inputGroup__leadingZero {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: #aaa;
+  text-transform: uppercase;
+}
+
+/* ── Range divider ───────────────────────────────────────────────── */
+.react-daterange-picker__range-divider {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 6px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.react-daterange-picker__calendar-button,
+.react-daterange-picker__clear-button {
+  background: transparent;
+  border: none;
+  padding: 0 2px;
+  cursor: pointer;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.react-daterange-picker__calendar-button:hover,
+.react-daterange-picker__clear-button:hover {
+  color: #000;
+}
+
+.react-daterange-picker__calendar-button svg,
+.react-daterange-picker__clear-button svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+}
+
+/* ── Calendar popup ──────────────────────────────────────────────── */
+.react-daterange-picker__calendar {
+  z-index: 50;
+}
+
+.react-calendar {
+  width: 300px;
+  border: 1px solid #000;
+  border-radius: 0;
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 300;
+  padding: 14px;
+  box-shadow: none;
+}
+
+/* ── Navigation ──────────────────────────────────────────────────── */
+.react-calendar__navigation {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  margin-bottom: 8px;
+}
+
+.react-calendar__navigation button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 4px;
+  min-width: 32px;
+}
+
+.react-calendar__navigation button:hover,
+.react-calendar__navigation button:focus,
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background: transparent !important;
+  color: #000 !important;
+  outline: none;
+}
+
+.react-calendar__navigation button:disabled {
+  color: #d1d1d1;
+}
+
+/* ── Weekday labels ──────────────────────────────────────────────── */
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 300;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  cursor: default;
+}
+
+/* ── Day tiles — base ────────────────────────────────────────────── */
+.react-calendar__tile {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 7px 2px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background: #f0f0f0 !important;
+  color: #000 !important;
+  outline: none;
+}
+
+/* ── Today ───────────────────────────────────────────────────────── */
+.react-calendar__tile--now,
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background: transparent !important;
+  color: #000 !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Range highlight ─────────────────────────────────────────────── */
+.react-calendar__tile--range,
+.react-calendar__tile--range:enabled:hover,
+.react-calendar__tile--range:enabled:focus {
+  background: #f0f0f0 !important;
+  color: #000 !important;
+  border-radius: 0;
+}
+
+/* ── Range start & end ───────────────────────────────────────────── */
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeStart:enabled:hover,
+.react-calendar__tile--rangeStart:enabled:focus,
+.react-calendar__tile--rangeEnd,
+.react-calendar__tile--rangeEnd:enabled:hover,
+.react-calendar__tile--rangeEnd:enabled:focus,
+.react-calendar__tile--rangeBothEnds,
+.react-calendar__tile--rangeBothEnds:enabled:hover,
+.react-calendar__tile--rangeBothEnds:enabled:focus {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 0;
+}
+
+/* ── Neighboring month ───────────────────────────────────────────── */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #d1d1d1;
+}
+
+/* ── Disabled ────────────────────────────────────────────────────── */
+.react-calendar__tile:disabled {
+  color: #d1d1d1;
+  cursor: default;
+}

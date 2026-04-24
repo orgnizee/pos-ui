@@ -1,10 +1,10 @@
-import BackButton from "@/components/back-button";
+import BackButton from "@/components/backButton";
 import { getCustomerByID } from "@/lib/api/customers";
 import { getSupplierByID } from "@/lib/api/suppliers";
 import { isApiError } from "@/lib/api/types";
 import { formatCPF, formatCNPJ, formatPhone } from "@/lib/utils/format";
 import type { Contact } from "@/lib/api/contacts";
-import DeleteContactButton from "@/components/delete-contact-button";
+import DeleteContactButton from "@/components/deleteContactButton";
 import Link from "next/link";
 
 export default async function ContactPage({
@@ -15,18 +15,15 @@ export default async function ContactPage({
   const { id } = await params;
 
   const customer = await getCustomerByID(id);
-
   let contact: Contact;
 
   if (!isApiError(customer)) {
     contact = { ...customer, kind: "customer" };
   } else {
     const supplier = await getSupplierByID(id);
-
     if (isApiError(supplier)) {
       return <p>{supplier.message}</p>;
     }
-
     contact = { ...supplier, kind: "supplier" };
   }
 
@@ -49,114 +46,113 @@ export default async function ContactPage({
 
   const documentLabel = contact.kind === "customer" ? "cpf" : "cnpj";
 
-  const dash = (v?: string | null) => (v && v.trim() !== "" ? v : "...");
+  const dash = (v?: string | null) => (v && v.trim() !== "" ? v : "-");
 
   return (
-    <section>
-      <BackButton />
+    <section className="mt-6 mb-4">
+      <div className="mt-6 mb-4 flex items-center justify-between">
+        <BackButton />
 
-      <div className="flex flex-col mb-4 sm:mr-0 px-1 pt-1 items-center font-bold">
-        <div className="relative mt-2 py-8 sm:py-0 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full h-fit sm:w-140 shrink-0 rounded-4xl bg-secondary/10 overflow-hidden">
+        <Link
+          href={`/contatos/${contact.id}/editar`}
+          className="text-xs cursor-pointer mr-2"
+        >
+          editar
+        </Link>
+      </div>
+
+      <div className="flex flex-col px-1 pt-1 items-center">
+        <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">
           {/* Kind */}
-          <p className="absolute top-5 text-sm font-light text-tertiary">
+          <p className="absolute top-5 text-sm font-normal">
             {contact.kind === "customer" ? "cliente" : "fornecedor"}
           </p>
 
-          <Link
-            href={`/contatos/${id}/editar`}
-            className="absolute top-4.5 right-5 text-sm font-light normal-case text-primary/75 bg-secondary/20 rounded-full px-1.5 pt-0.5"
-          >
-            editar
-          </Link>
-
           {/* Hero */}
-          <div className="mt-10 sm:mt-15 flex flex-col items-center gap-1 mb-6">
-            <p className="text-3xl font-bold">{fullName}</p>
+          <p className="mt-10 sm:mt-12 text-4xl text-center">{fullName}</p>
+          <p className="mt-2">{displayName}</p>
 
-            <p className="text-sm font-light normal-case text-tertiary">
-              {displayName}
-            </p>
+          <div className="mt-5 w-fit h-fit border-b border-secondary/50">
+            <p className="py-0.5 text-[12px]">{contact.code}</p>
           </div>
 
           {/* Details */}
-          <div className="w-full sm:w-100">
-            <Row label={documentLabel} value={document ?? "..."} first />
+          <div className="relative w-full sm:w-100 h-5 mt-8 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">{documentLabel}</p>
+            <p className="text-sm font-light">{document ?? "-"}</p>
+          </div>
+          <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
-            <Row label="código" value={contact.code} />
+          <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">telefone</p>
+            <p className="text-sm font-light">
+              {contact.phone ? formatPhone(contact.phone) : "-"}
+            </p>
+          </div>
+          <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
-            <Row
-              label="telefone"
-              value={contact.phone ? formatPhone(contact.phone) : "..."}
-            />
+          <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">e-mail</p>
+            <p className="text-sm font-light">{dash(contact.email)}</p>
+          </div>
+          <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
-            <Row label="e-mail" value={dash(contact.email)} />
+          {contact.kind === "customer" && (
+            <>
+              <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+                <p className="text-sm font-light">gênero</p>
+                <p className="text-sm font-light">{dash(contact.gender)}</p>
+              </div>
+              <hr className="border-t border-tertiary/25 w-full sm:w-100" />
+            </>
+          )}
 
-            {contact.kind === "customer" && (
-              <Row label="gênero" value={dash(contact.gender)} />
-            )}
+          {contact.kind === "supplier" && (
+            <>
+              <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+                <p className="text-sm font-light">inscrição estadual</p>
+                <p className="text-sm font-light">{dash(contact.ie)}</p>
+              </div>
+              <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
-            {contact.kind === "supplier" && (
-              <>
-                <Row label="inscrição estadual" value={dash(contact.ie)} />
-                <Row label="inscrição municipal" value={dash(contact.im)} />
-              </>
-            )}
+              <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+                <p className="text-sm font-light">inscrição municipal</p>
+                <p className="text-sm font-light">{dash(contact.im)}</p>
+              </div>
+              <hr className="border-t border-tertiary/25 w-full sm:w-100" />
+            </>
+          )}
 
-            <Row label="cep" value={dash(contact.postcode)} />
+          <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">cep</p>
+            <p className="text-sm font-light">{dash(contact.postcode)}</p>
+          </div>
+          <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
-            <Row label="endereço" value={dash(contact.address)} />
+          <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">endereço</p>
+            <p className="text-sm font-light">{dash(contact.address)}</p>
+          </div>
+          <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
-            <Row
-              label="cidade"
-              value={
-                contact.city
-                  ? `${contact.city}${contact.state ? ` — ${contact.state}` : ""}`
-                  : "..."
-              }
-              last={!contact.notes}
-            />
-
-            {/* Notes becomes always visible too */}
-            <div className="relative mt-4 w-full px-2 py-3 flex flex-col gap-1 rounded-md bg-secondary/15">
-              <p className="text-sm font-light normal-case mb-1">observações</p>
-              <p className="text-sm font-light normal-case text-tertiary">
-                {dash(contact.notes)}
-              </p>
-            </div>
+          <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">cidade</p>
+            <p className="text-sm font-light">
+              {contact.city
+                ? `${contact.city}${contact.state ? ` — ${contact.state}` : ""}`
+                : "-"}
+            </p>
           </div>
 
-          {/* Footer */}
-          <p className="mt-4 mb-1 text-sm font-light text-tertiary/60">
-            {contact.id}
-          </p>
+          {/* Notes */}
+          <div className="relative mt-4 w-full sm:w-100 px-2 py-3 flex flex-col gap-1">
+            <p className="text-sm text-center font-light">
+              {contact.notes ? `"${contact.notes.toLowerCase()}"` : "-"}
+            </p>
+          </div>
         </div>
-        <DeleteContactButton id={contact.id} kind={contact.kind} />
       </div>
+      <DeleteContactButton id={contact.id} kind={contact.kind} />
     </section>
-  );
-}
-
-function Row({
-  label,
-  value,
-  first,
-  last,
-}: {
-  label: string;
-  value: string;
-  first?: boolean;
-  last?: boolean;
-}) {
-  return (
-    <div
-      className={`relative w-full h-5 px-2 py-5 flex items-center justify-between bg-secondary/15
-        ${!last ? "border-b border-secondary/20" : ""}
-        ${first ? "rounded-t-md" : ""}
-        ${last ? "rounded-b-md" : ""}
-      `}
-    >
-      <p className="text-sm font-light normal-case">{label}</p>
-      <p className="text-sm font-light normal-case text-tertiary">{value}</p>
-    </div>
   );
 }
