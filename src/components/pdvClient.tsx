@@ -64,7 +64,7 @@ function parseScaleBarcode(raw: string) {
   const digits = raw.replace(/\D/g, "");
   if (!digits.startsWith("2") || digits.length !== 13) return null;
 
-  const productCode = digits.slice(1, 7);
+  const productCode = digits.slice(1, 6);
   const weightDigits = digits.slice(7, 12);
   const weightQty = Number(weightDigits) / 1000;
 
