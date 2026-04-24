@@ -110,6 +110,16 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     return d.toISOString().split("T")[0];
   };
 
+  const isFiadoMethod = useCallback(
+    (methodId: string) => {
+      const selectedMethod = paymentMethods.find(
+        (method) => method.id === methodId,
+      );
+      return selectedMethod?.description.toLowerCase().includes("fiado") ?? false;
+    },
+    [paymentMethods],
+  );
+
   const searchRef = useRef<HTMLInputElement>(null);
   const receiveButtonRef = useRef<HTMLButtonElement>(null);
   const finalizeButtonRef = useRef<HTMLButtonElement>(null);
@@ -338,7 +348,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             {
               method: defaultMethodId,
               amount: orderTotal.toFixed(2),
-              due_at: today,
+              due_at: isFiadoMethod(defaultMethodId) ? getDueDate() : today,
             },
           ]
         : [],
@@ -348,7 +358,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setStatus("paid");
     setAmountReceivedCents(0);
     setIsPaymentAmountManuallyEdited(false);
-  }, [orderTotal, paymentMethods]);
+  }, [isFiadoMethod, orderTotal, paymentMethods]);
 
   const openCheckoutDrawer = useCallback(() => {
     resetCheckout();
@@ -896,13 +906,22 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                         id={`payment-method-${idx}`}
                         label="pagamento"
                         value={payment.method}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          const selectedMethodId = e.target.value;
                           setPayments((prev) =>
                             prev.map((p, i) =>
-                              i === idx ? { ...p, method: e.target.value } : p,
+                              i === idx
+                                ? {
+                                    ...p,
+                                    method: selectedMethodId,
+                                    due_at: isFiadoMethod(selectedMethodId)
+                                      ? getDueDate()
+                                      : today,
+                                  }
+                                : p,
                             ),
-                          )
-                        }
+                          );
+                        }}
                         options={paymentMethods.map((m) => ({
                           label: m.description.toUpperCase(),
                           value: m.id,
@@ -934,18 +953,29 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                       />
                     </div>
 
-                    <input
-                      type="hidden"
-                      name="due_at"
-                      value={getDueDate()}
-                      onChange={(e) =>
-                        setPayments((prev) =>
-                          prev.map((p, i) =>
-                            i === idx ? { ...p, due_at: e.target.value } : p,
-                          ),
-                        )
-                      }
-                    />
+                    {isFiadoMethod(payment.method) && (
+                      <div className="col-span-12">
+                        <label
+                          htmlFor={`payment-due-at-${idx}`}
+                          className="text-sm text-tertiary"
+                        >
+                          vencimento
+                        </label>
+                        <input
+                          id={`payment-due-at-${idx}`}
+                          type="date"
+                          value={payment.due_at || getDueDate()}
+                          onChange={(e) =>
+                            setPayments((prev) =>
+                              prev.map((p, i) =>
+                                i === idx ? { ...p, due_at: e.target.value } : p,
+                              ),
+                            )
+                          }
+                          className="w-full border px-2 py-1 mt-1"
+                        />
+                      </div>
+                    )}
 
                     {/* <button
                       type="button"
