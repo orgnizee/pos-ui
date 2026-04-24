@@ -49,12 +49,15 @@ function parseCurrencyToCents(rawValue: string) {
 }
 
 function formatQty(qty: number) {
-  return Math.max(Math.trunc(qty), 0).toLocaleString("pt-BR");
+  return qty.toLocaleString("pt-BR", {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  });
 }
 
 function parseQtyInput(rawValue: string) {
   const digits = rawValue.replace(/\D/g, "");
-  return Number(digits || "0");
+  return Number(digits || "0") / 1000;
 }
 
 export default function PdvClient({ initialProducts, paymentMethods }: Props) {
@@ -157,12 +160,24 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const updateQty = (id: string, delta: number) => {
     setCart((prev) =>
       prev
-        .map((i) => {
-          if (i.product.id !== id) return i;
-          const nextQuantity = Math.max(Math.trunc(i.quantity + delta), 0);
-          return { ...i, quantity: nextQuantity };
-        })
+        .map((i) =>
+          i.product.id === id
+            ? {
+                ...i,
+                quantity: Number((i.quantity + delta).toFixed(3)),
+              }
+            : i,
+        )
         .filter((i) => i.quantity > 0),
+    );
+  };
+
+  const updateQtyFromInput = (id: string, rawValue: string) => {
+    const parsedQty = Number(parseQtyInput(rawValue).toFixed(3));
+    setCart((prev) =>
+      prev.map((i) =>
+        i.product.id === id ? { ...i, quantity: parsedQty } : i,
+      ),
     );
   };
 
@@ -477,15 +492,17 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   <input
                     type="text"
                     inputMode="numeric"
-                    aria-label={`Quantidade de ${item.product.name}`}
                     value={formatQty(item.quantity)}
-                    onChange={(event) =>
-                      handleQtyInputChange(item.product.id, event.target.value)
+                    onChange={(e) =>
+                      updateQtyFromInput(item.product.id, e.target.value)
                     }
-                    className="w-24 text-center bg-transparent outline-none border-b border-transparent focus:border-tertiary"
+                    className="w-20 bg-transparent border-b border-tertiary/30 text-center outline-none focus:border-tertiary"
+                    aria-label={`quantidade de ${item.product.name}`}
                   />
-                  {item.product.unit && item.product.unit.toLowerCase() !== "un" && (
-                    <span>{item.product.unit}</span>
+                  {item.product.unit && (
+                    <span className="text-sm text-tertiary uppercase">
+                      {item.product.unit}
+                    </span>
                   )}
                 </div>
 
