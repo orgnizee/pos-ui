@@ -185,8 +185,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   };
 
   const addToCartWithQuantity = useCallback((product: Product, qty: number) => {
-    const parsedQty = Number(qty.toFixed(3));
+    let parsedQty = Number(qty.toFixed(3));
     if (parsedQty <= 0) return;
+
+    if (product.unit?.toLowerCase() === 'un') {
+      parsedQty = parsedQty * 1000
+    }
 
     setCart((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
