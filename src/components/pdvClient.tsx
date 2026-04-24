@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useActionState } from "react";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useActionState,
+} from "react";
 import { Minus, Plus, X, Search, ChevronDown } from "lucide-react";
 import { Product } from "@/lib/api/products";
 import { Customer } from "@/lib/api/customers";
@@ -12,6 +18,9 @@ import {
   CreateOrderActionState,
 } from "@/lib/api/actions/orders";
 import { formatCPF } from "@/lib/utils/format";
+import { SelectInputField } from "./inputFieldSelect";
+import { InputField } from "./inputField";
+import { InputTextareaField } from "./inputTextAreaField";
 
 type CartItem = {
   product: Product;
@@ -319,7 +328,6 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-
   const today = new Date().toISOString().split("T")[0];
 
   return (
@@ -564,21 +572,42 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       {showCheckoutDrawer && (
         <>
           <div
-            className="fixed inset-0 bg-black/20 z-40"
+            className="fixed inset-0 bg-white/90 z-40"
             onClick={() => setShowCheckoutDrawer(false)}
           />
           <aside className="fixed top-0 right-0 h-full w-full max-w-xl bg-white border-l z-50 p-6 overflow-y-auto">
-            <div className="flex justify-between items-center border-b pb-3">
-              <h2 className="text-2xl font-light uppercase">finalizar pedido</h2>
-              <button
-                onClick={() => setShowCheckoutDrawer(false)}
-                className="text-tertiary hover:text-black"
-              >
-                <X size={18} strokeWidth={1} />
-              </button>
-            </div>
+            <h2 className="text-4xl uppercase">
+              Total {formatBRL(totalAmount)}
+            </h2>
 
-            <form action={orderAction} className="mt-4 flex flex-col gap-4">
+            <form action={orderAction} className="mt-4 flex flex-col gap-1">
+              <div className="flex justify-between">
+                <p className="">desconto</p>
+                <input
+                  name="discount_amount"
+                  onChange={(e) => setDiscountAmount(e.target.value)}
+                  className="text-primary placeholder:text-secondary outline-none text-end"
+                  placeholder="R$ 0.00"
+                  inputMode="decimal"
+                />
+              </div>
+
+              <div className="flex justify-between">
+                <span>valor recebido</span>
+                <input
+                  value={amountReceived}
+                  onChange={(e) => setAmountReceived(e.target.value)}
+                  className="text-primary placeholder:text-secondary outline-none text-end"
+                  placeholder="R$ 0.00"
+                  inputMode="decimal"
+                />
+              </div>
+
+              <div className="flex justify-between">
+                <span>troco</span>
+                <span>{formatBRL(change)}</span>
+              </div>
+
               <input type="hidden" name="customer" value={customer.id ?? ""} />
               <input
                 type="hidden"
@@ -599,40 +628,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
               />
               <input type="hidden" name="order_date" value={today} />
 
-              <div className="border p-3 space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span>subtotal</span>
-                  <span>{formatBRL(totalAmount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>desconto</span>
-                  <span>{formatBRL(discount)}</span>
-                </div>
-                <div className="flex justify-between text-base font-medium border-t pt-1">
-                  <span>total do pedido</span>
-                  <span>{formatBRL(orderTotal)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>valor pago</span>
-                  <span>{formatBRL(paymentTotal)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>troco</span>
-                  <span>{formatBRL(change)}</span>
-                </div>
-              </div>
-
-              <label className="text-xs uppercase text-tertiary">desconto (R$)</label>
-              <input
-                name="discount_amount"
-                value={discountAmount}
-                onChange={(e) => setDiscountAmount(e.target.value)}
-                className="border p-2 outline-none"
-                placeholder="0.00"
-                inputMode="decimal"
-              />
-
-              <label className="text-xs uppercase text-tertiary">status</label>
+              {/* <label className="text-xs uppercase text-tertiary">status</label>
               <select
                 name="status"
                 value={status}
@@ -644,20 +640,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 <option value="open">aberto</option>
                 <option value="paid">pago</option>
                 <option value="completed">concluído</option>
-              </select>
+              </select> */}
 
-              <label className="text-xs uppercase text-tertiary">valor recebido (R$)</label>
-              <input
-                value={amountReceived}
-                onChange={(e) => setAmountReceived(e.target.value)}
-                className="border p-2 outline-none"
-                placeholder="0.00"
-                inputMode="decimal"
-              />
-
+              <p className="mt-8 uppercase text-tertiary">
+                formas de pagamento
+              </p>
               <div className="border p-3 space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs uppercase text-tertiary">formas de pagamento</p>
+                {/* <div className="flex items-center justify-end">
                   <button
                     type="button"
                     onClick={() =>
@@ -670,48 +659,34 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                         },
                       ])
                     }
-                    className="text-xs border px-2 py-1 uppercase"
+                    className="cursor-pointer"
                   >
-                    adicionar
+                    <Plus strokeWidth={0.8} />
                   </button>
-                </div>
+                </div> */}
 
                 {payments.map((payment, idx) => (
-                  <div key={`${payment.method}-${idx}`} className="grid grid-cols-12 gap-2">
-                    <select
-                      value={payment.method}
-                      onChange={(e) =>
-                        setPayments((prev) =>
-                          prev.map((p, i) =>
-                            i === idx ? { ...p, method: e.target.value } : p,
-                          ),
-                        )
-                      }
-                      className="col-span-5 border p-2 text-sm outline-none"
-                    >
-                      {paymentMethods.map((method) => (
-                        <option key={method.id} value={method.id}>
-                          {method.description}
-                        </option>
-                      ))}
-                    </select>
+                  <div
+                    key={`${payment.method}-${idx}`}
+                    className="grid grid-cols-12 gap-2"
+                  >
+                    <div className="col-span-6">
+                      <SelectInputField
+                        label="pagamento"
+                        defaultValue={"-"}
+                        options={paymentMethods.map((m) => ({
+                          label: m.description.toUpperCase(),
+                          value: m.id,
+                        }))}
+                      />
+                    </div>
+
+                    <div className="col-span-6">
+                      <InputField label="valor" defaultValue={orderTotal} />
+                    </div>
 
                     <input
-                      value={payment.amount}
-                      onChange={(e) =>
-                        setPayments((prev) =>
-                          prev.map((p, i) =>
-                            i === idx ? { ...p, amount: e.target.value } : p,
-                          ),
-                        )
-                      }
-                      placeholder="valor"
-                      inputMode="decimal"
-                      className="col-span-3 border p-2 text-sm outline-none"
-                    />
-
-                    <input
-                      type="date"
+                      type="hidden"
                       value={payment.due_at}
                       onChange={(e) =>
                         setPayments((prev) =>
@@ -723,15 +698,15 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                       className="col-span-3 border p-2 text-sm outline-none"
                     />
 
-                    <button
+                    {/* <button
                       type="button"
                       onClick={() =>
                         setPayments((prev) => prev.filter((_, i) => i !== idx))
                       }
-                      className="col-span-1 border flex items-center justify-center"
+                      className="col-span-1 flex items-end justify-end"
                     >
                       <X size={14} strokeWidth={1} />
-                    </button>
+                    </button> */}
                   </div>
                 ))}
 
@@ -742,25 +717,24 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 )}
               </div>
 
-              <label className="text-xs uppercase text-tertiary">observações</label>
-              <textarea
-                name="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={4}
-                className="border p-2 outline-none resize-none"
-              />
+              <InputTextareaField label="observações" name="notes" />
+
+              <div className="absolute bottom-25 right-5">
+                <p className="text-4xl">a pagar {formatBRL(orderTotal)}</p>
+              </div>
 
               {orderState?.error && (
                 <p className="text-sm text-red-500">{orderState.message}</p>
               )}
 
-              <button
-                disabled={!canSubmitOrder || pendingOrder}
-                className="border p-2 bg-black text-white uppercase disabled:opacity-40"
-              >
-                {pendingOrder ? "salvando..." : "criar pedido"}
-              </button>
+              <div className="absolute bottom-5 w-132">
+                <button
+                  disabled={!canSubmitOrder || pendingOrder}
+                  className="border w-full p-2 uppercase disabled:opacity-40"
+                >
+                  {pendingOrder ? "salvando..." : "finalizar"}
+                </button>
+              </div>
             </form>
           </aside>
         </>
