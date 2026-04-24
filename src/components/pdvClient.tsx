@@ -234,7 +234,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       return true;
     }
 
-    addToCartWithQuantity(exactMatch, parsed.weightQty * 1000);
+    if (exactMatch.unit?.toLowerCase() === "un") {
+      parsed.weightQty *= 1000
+    }
+
+    addToCartWithQuantity(exactMatch, parsed.weightQty);
     return true;
   }, [addToCartWithQuantity, search]);
 
