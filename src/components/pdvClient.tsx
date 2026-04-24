@@ -375,20 +375,15 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         }
       }
 
-      if (
-        e.altKey &&
-        e.key.toLowerCase() === "r" &&
-        !(e.target instanceof HTMLInputElement) &&
-        !(e.target instanceof HTMLTextAreaElement)
-      ) {
+      if (e.ctrlKey && e.key === "Enter") {
         e.preventDefault();
         receiveButtonRef.current?.click();
       }
-      if (e.altKey && e.key.toLowerCase() === "p") {
+      if (e.ctrlKey && e.key.toLowerCase() === "p") {
         e.preventDefault();
         searchRef.current?.focus();
       }
-      if (e.altKey && e.key.toLowerCase() === "c") {
+      if (e.ctrlKey && e.key.toLowerCase() === "c") {
         e.preventDefault();
         if (showCustomerPicker) {
           customerSearchRef.current?.focus();
@@ -396,11 +391,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           openCustomerPicker();
         }
       }
-      if (e.altKey && e.key.toLowerCase() === "m" && showCheckoutDrawer) {
+      if (e.ctrlKey && e.key.toLowerCase() === "m" && showCheckoutDrawer) {
         e.preventDefault();
         document.getElementById("payment-method-0")?.focus();
       }
-      if (e.altKey && e.key.toLowerCase() === "f" && showCheckoutDrawer) {
+      if (e.ctrlKey && e.key.toLowerCase() === "f" && showCheckoutDrawer) {
         e.preventDefault();
         finalizeButtonRef.current?.focus();
         if (!finalizeButtonRef.current?.disabled) {
@@ -468,13 +463,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
                 <div className="mt-7 text-lg flex justify-between gap-2">
                   <button
-                    onClick={() => updateQty(item.product.id, -1)}
+                    onClick={() => updateQty(item.product.id, -0.5)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Minus strokeWidth={0.8} />
                   </button>
                   <button
-                    onClick={() => updateQty(item.product.id, 1)}
+                    onClick={() => updateQty(item.product.id, 0.5)}
                     className="hover:opacity-60 transition-opacity cursor-pointer"
                   >
                     <Plus strokeWidth={0.8} />
@@ -547,8 +542,10 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                         onClick={() =>
                           selectCustomer({ id: c.id, name: c.name })
                         }
-                        className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-gray-50 ${
-                          highlightedCustomerIdx === idx + 1 ? "bg-gray-50" : ""
+                        className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-gray-100 ${
+                          highlightedCustomerIdx === idx + 1
+                            ? "bg-gray-100"
+                            : ""
                         } ${customer.id === c.id ? "font-medium" : ""}`}
                       >
                         <span className="block uppercase">{c.name}</span>
@@ -616,8 +613,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                         onClick={() => addToCart(p)}
                         className={`w-full text-left px-3 py-2 transition-colors flex justify-between items-center gap-4 ${
                           idx === highlightedIdx
-                            ? "bg-gray-50"
-                            : "hover:bg-gray-50"
+                            ? "bg-gray-100"
+                            : "hover:bg-gray-100"
                         }`}
                       >
                         <span className="flex flex-col">
@@ -648,7 +645,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             onClick={openCheckoutDrawer}
             className="border w-fit p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            receber [alt+r]
+            receber [ctrl + enter]
           </button>
         </div>
       </div>
@@ -672,7 +669,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   ref={discountInputRef}
                   value={discountAmount}
                   onChange={(e) => {
-                    const nextDiscountCents = parseCurrencyToCents(e.target.value);
+                    const nextDiscountCents = parseCurrencyToCents(
+                      e.target.value,
+                    );
                     setDiscountCents(nextDiscountCents);
 
                     if (!isPaymentAmountManuallyEdited) {
@@ -789,24 +788,21 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     <div className="col-span-6">
                       <input
                         value={formatBRL(Number(payment.amount) || 0)}
-                        onChange={(e) =>
-                          {
-                            setIsPaymentAmountManuallyEdited(true);
-                            setPayments((prev) =>
-                              prev.map((p, i) =>
-                                i === idx
-                                  ? {
-                                      ...p,
-                                      amount: (
-                                        parseCurrencyToCents(e.target.value) /
-                                        100
-                                      ).toFixed(2),
-                                    }
-                                  : p,
-                              ),
-                            );
-                          }
-                        }
+                        onChange={(e) => {
+                          setIsPaymentAmountManuallyEdited(true);
+                          setPayments((prev) =>
+                            prev.map((p, i) =>
+                              i === idx
+                                ? {
+                                    ...p,
+                                    amount: (
+                                      parseCurrencyToCents(e.target.value) / 100
+                                    ).toFixed(2),
+                                  }
+                                : p,
+                            ),
+                          );
+                        }}
                         className="text-primary placeholder:text-secondary outline-none text-end w-full mt-6"
                         placeholder="R$ 0,00"
                         inputMode="numeric"
@@ -862,7 +858,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   disabled={!canSubmitOrder || pendingOrder}
                   className="border w-full p-2 uppercase disabled:opacity-40"
                 >
-                  {pendingOrder ? "salvando..." : "finalizar [alt+f]"}
+                  {pendingOrder ? "salvando..." : "finalizar [ctrl + f]"}
                 </button>
               </div>
             </form>
