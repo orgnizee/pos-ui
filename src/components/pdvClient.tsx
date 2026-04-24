@@ -104,6 +104,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   );
   const customerListRef = useRef<HTMLUListElement>(null);
 
+  const getDueDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    return d.toISOString().split("T")[0];
+  };
+
   const searchRef = useRef<HTMLInputElement>(null);
   const receiveButtonRef = useRef<HTMLButtonElement>(null);
   const finalizeButtonRef = useRef<HTMLButtonElement>(null);
@@ -930,7 +936,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
                     <input
                       type="hidden"
-                      value={payment.due_at}
+                      name="due_at"
+                      value={getDueDate()}
                       onChange={(e) =>
                         setPayments((prev) =>
                           prev.map((p, i) =>
@@ -938,7 +945,6 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                           ),
                         )
                       }
-                      className="col-span-3 border p-2 text-sm outline-none"
                     />
 
                     {/* <button

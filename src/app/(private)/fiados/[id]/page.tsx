@@ -47,11 +47,11 @@ export default async function FiadosPage({
           className={`relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-130 border ${payment.status === "overdue" ? "border-red-500" : payment.status === "paid" ? "border-green-500" : ""}`}
         >
           <p className="absolute top-5 text-sm font-normal">
-            {formatDateTime(payment.due_at)}
+            {formatDateTime(payment.issued_at)}
           </p>
 
           <p
-            className={`mt-10 sm:mt-15 text-5xl ${
+            className={`mt-10 sm:mt-10 text-5xl ${
               parseFloat(payment.total_amount) < 0 ? "text-red-500" : ""
             }`}
           >
@@ -76,6 +76,14 @@ export default async function FiadosPage({
             <p className="text-sm font-light">pago em</p>
             <p className="text-sm font-light">
               {payment.paid_at ? formatDateTime(payment.paid_at) : "-"}
+            </p>
+          </div>
+          <hr className="border-t border-tertiary/25 w-full sm:w-100" />
+
+          <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">vencimento</p>
+            <p className="text-sm font-light">
+              {formatDateTime(payment.due_at)}
             </p>
           </div>
           <hr className="border-t border-tertiary/25 w-full sm:w-100" />
