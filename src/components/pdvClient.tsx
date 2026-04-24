@@ -49,10 +49,16 @@ function parseCurrencyToCents(rawValue: string) {
 }
 
 function formatQty(qty: number, unit?: string | null) {
+  const formatted = qty.toLocaleString("en-US", {
+    minimumFractionDigits: Number.isInteger(qty) ? 0 : 3,
+    maximumFractionDigits: 3,
+  });
+
   if (unit && unit.toLowerCase() !== "un") {
-    return `${qty.toLocaleString("pt-BR", { minimumFractionDigits: 3 })} ${unit}`;
+    return `${formatted} ${unit}`;
   }
-  return `${qty}`;
+
+  return formatted;
 }
 
 export default function PdvClient({ initialProducts, paymentMethods }: Props) {
@@ -164,6 +170,30 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
   const removeItem = (id: string) => {
     setCart((prev) => prev.filter((i) => i.product.id !== id));
+  };
+
+  const setItemQty = (id: string, quantity: number) => {
+    setCart((prev) =>
+      prev
+        .map((item) =>
+          item.product.id === id ? { ...item, quantity: Math.max(quantity, 0) } : item,
+        )
+        .filter((item) => item.quantity > 0),
+    );
+  };
+
+  const handleQtyInputChange = (id: string, rawValue: string) => {
+    const sanitized = rawValue.replace(/,/g, "").trim();
+
+    if (!sanitized) {
+      setItemQty(id, 0);
+      return;
+    }
+
+    const quantity = Number(sanitized);
+    if (!Number.isFinite(quantity)) return;
+
+    setItemQty(id, quantity);
   };
 
   // Customer search
@@ -452,8 +482,20 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   </div>
                 </div>
 
-                <div className="mt-8 text-lg font-normal flex justify-center gap-2">
-                  <p>{formatQty(item.quantity, item.product.unit)}</p>
+                <div className="mt-8 text-lg font-normal flex justify-center items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    aria-label={`Quantidade de ${item.product.name}`}
+                    value={formatQty(item.quantity)}
+                    onChange={(event) =>
+                      handleQtyInputChange(item.product.id, event.target.value)
+                    }
+                    className="w-24 text-center bg-transparent outline-none border-b border-transparent focus:border-tertiary"
+                  />
+                  {item.product.unit && item.product.unit.toLowerCase() !== "un" && (
+                    <span>{item.product.unit}</span>
+                  )}
                 </div>
 
                 <div className="text-lg font-normal flex justify-center gap-2">
