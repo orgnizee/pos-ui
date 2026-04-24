@@ -44,6 +44,22 @@ function formatBRL(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function formatCurrencyInput(rawValue: string) {
+  const digits = rawValue.replace(/\D/g, "");
+  const cents = Number(digits || "0");
+  return formatBRL(cents / 100);
+}
+
+function parseCurrencyInput(maskedValue: string) {
+  const sanitized = maskedValue
+    .replace(/[^\d,.-]/g, "")
+    .replace(/\./g, "")
+    .replace(",", ".");
+
+  const parsed = Number(sanitized);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function formatQty(qty: number, unit?: string | null) {
   if (unit && unit.toLowerCase() !== "un") {
     return `${qty.toLocaleString("pt-BR", { minimumFractionDigits: 3 })} ${unit}`;
@@ -75,10 +91,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const customerListRef = useRef<HTMLUListElement>(null);
 
   const searchRef = useRef<HTMLInputElement>(null);
+  const discountInputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const [showCheckoutDrawer, setShowCheckoutDrawer] = useState(false);
-  const [discountAmount, setDiscountAmount] = useState("0.00");
+  const [discountAmount, setDiscountAmount] = useState("R$ 0,00");
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<"open" | "paid" | "completed">("paid");
   const [amountReceived, setAmountReceived] = useState("");
@@ -191,13 +208,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     const price = parseFloat(i.product.price ?? "0");
     return s + price * i.quantity;
   }, 0);
-  const discount = Number(discountAmount) || 0;
+  const discount = parseCurrencyInput(discountAmount);
   const orderTotal = Math.max(totalAmount - discount, 0);
   const paymentTotal = payments.reduce((sum, payment) => {
     return sum + (Number(payment.amount) || 0);
   }, 0);
   const remaining = orderTotal - paymentTotal;
-  const change = Math.max((Number(amountReceived) || 0) - orderTotal, 0);
+  const change = Math.max(parseCurrencyInput(amountReceived) - orderTotal, 0);
   const canSubmitOrder =
     cart.length > 0 && payments.length > 0 && Math.abs(remaining) < 0.001;
 
@@ -208,16 +225,27 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         ? [{ method: paymentMethods[0].id, amount: "", due_at: today }]
         : [],
     );
-    setDiscountAmount("0.00");
+    setDiscountAmount("R$ 0,00");
     setNotes("");
     setStatus("paid");
-    setAmountReceived("");
+    setAmountReceived("R$ 0,00");
   }, [paymentMethods]);
 
   const openCheckoutDrawer = useCallback(() => {
     resetCheckout();
     setShowCheckoutDrawer(true);
   }, [resetCheckout]);
+
+  useEffect(() => {
+    if (!showCheckoutDrawer) return;
+
+    const timer = setTimeout(() => {
+      discountInputRef.current?.focus();
+      discountInputRef.current?.select();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [showCheckoutDrawer]);
 
   // Keep stateRef current every render
   useEffect(() => {
@@ -584,21 +612,31 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
               <div className="flex justify-between">
                 <p className="">desconto</p>
                 <input
-                  name="discount_amount"
-                  onChange={(e) => setDiscountAmount(e.target.value)}
+                  ref={discountInputRef}
+                  value={discountAmount}
+                  onChange={(e) =>
+                    setDiscountAmount(formatCurrencyInput(e.target.value))
+                  }
                   className="text-primary placeholder:text-secondary outline-none text-end"
-                  placeholder="R$ 0.00"
+                  placeholder="R$ 0,00"
                   inputMode="decimal"
                 />
               </div>
+              <input
+                type="hidden"
+                name="discount_amount"
+                value={parseCurrencyInput(discountAmount).toFixed(2)}
+              />
 
               <div className="flex justify-between">
                 <span>valor recebido</span>
                 <input
                   value={amountReceived}
-                  onChange={(e) => setAmountReceived(e.target.value)}
+                  onChange={(e) =>
+                    setAmountReceived(formatCurrencyInput(e.target.value))
+                  }
                   className="text-primary placeholder:text-secondary outline-none text-end"
-                  placeholder="R$ 0.00"
+                  placeholder="R$ 0,00"
                   inputMode="decimal"
                 />
               </div>
