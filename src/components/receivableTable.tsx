@@ -1,7 +1,7 @@
 "use client";
 
 import { Receivable, PaymentStatus } from "@/lib/api/receivables";
-import { formatBRL } from "@/lib/utils/format";
+import { formatBRL, formatDateTime } from "@/lib/utils/format";
 import { useRouter } from "next/navigation";
 
 interface ReceivableTableProps {
@@ -20,9 +20,9 @@ export default function ReceivableTable({
   receivables,
   basePath,
 }: ReceivableTableProps) {
-  const grouped = groupByDueDate(
+  const grouped = groupByIssuedDate(
     [...receivables].sort(
-      (a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime(),
+      (a, b) => new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime(),
     ),
   );
   
@@ -41,7 +41,8 @@ export default function ReceivableTable({
                 <col className="hidden sm:table-column w-42" />
                 <col className="w-22" />
                 <col className="hidden sm:table-column w-32" />
-                <col className="hidden sm:table-column w-48" />
+                <col className="hidden sm:table-column w-28" />
+                <col className="hidden sm:table-column w-52" />
               </colgroup>
               <tbody>
                 {group.map((receivable) => (
@@ -56,16 +57,19 @@ export default function ReceivableTable({
                       />
                     </td>
                     <td className="px-2 text-start border-b border-secondary/50">
-                      {formatBRL(receivable.outstanding_balance)}
+                      {formatBRL(receivable.total_amount)}
                     </td>
                     <td className="hidden sm:table-cell px-2 text-start border-b border-secondary/50">
                       {receivable.contact.name ?? "-"}
                     </td>
                     <td className="px-2 pr-4 text-end sm:text-start border-b border-secondary/50">
-                      {formatBRL(receivable.total_amount)}
+                      {formatBRL(receivable.outstanding_balance)}
                     </td>
                     <td className="hidden sm:table-cell px-2 pr-4 text-start border-b border-secondary/50">
                       {receivable.category?.name ?? "-"}
+                    </td>
+                    <td className="hidden sm:table-cell px-2 pr-4 text-start border-b border-secondary/50">
+                      {formatDateTime(receivable.due_at)}
                     </td>
                     <td className="hidden sm:table-cell pr-4 text-right border-b border-secondary/50">
                       {receivable.notes}
@@ -96,6 +100,44 @@ const groupByDueDate = (receivables: Receivable[]) => {
 
   for (const receivable of receivables) {
     const [year, month, day] = receivable.due_at
+      .split("T")[0]
+      .split("-")
+      .map(Number);
+    const date = new Date(year, month - 1, day); // local time, no UTC shift
+
+    let label: string;
+    if (isSameDay(date, today)) {
+      label = "hoje";
+    } else if (isSameDay(date, yesterday)) {
+      label = "ontem";
+    } else {
+      label = date
+        .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+        .replace(".", "")
+        .replace(/^\w/, (c) => c.toUpperCase());
+    }
+
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(receivable);
+  }
+
+  return groups;
+};
+
+const groupByIssuedDate = (receivables: Receivable[]) => {
+  const groups: Record<string, Receivable[]> = {};
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isSameDay = (a: Date, b: Date) =>
+    a.getDate() === b.getDate() &&
+    a.getMonth() === b.getMonth() &&
+    a.getFullYear() === b.getFullYear();
+
+  for (const receivable of receivables) {
+    const [year, month, day] = receivable.issued_at
       .split("T")[0]
       .split("-")
       .map(Number);
