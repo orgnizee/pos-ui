@@ -60,6 +60,22 @@ function parseQtyInput(rawValue: string) {
   return Number(digits || "0") / 1000;
 }
 
+function parseScaleBarcode(raw: string) {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits.startsWith("2") || digits.length !== 13) return null;
+
+  const productCode = digits.slice(1, 7);
+  const weightDigits = digits.slice(7, 12);
+  const weightQty = Number(weightDigits) / 1000;
+
+  if (!productCode || Number.isNaN(weightQty) || weightQty <= 0) return null;
+
+  return {
+    productCode,
+    weightQty: Number(weightQty.toFixed(3)),
+  };
+}
+
 export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [search, setSearch] = useState("");
@@ -67,6 +83,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [highlightedIdx, setHighlightedIdx] = useState(-1);
+  const [scaleBarcodeFeedback, setScaleBarcodeFeedback] = useState("");
 
   // Customer
   const [customer, setCustomer] = useState<{ id: string | null; name: string }>(
@@ -136,26 +153,61 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearch(val);
+    setScaleBarcodeFeedback("");
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => searchProducts(val), 300);
   };
 
-  const addToCart = (product: Product) => {
+  const addToCartWithQuantity = useCallback((product: Product, qty: number) => {
+    const parsedQty = Number(qty.toFixed(3));
+    if (parsedQty <= 0) return;
+
     setCart((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i,
+          i.product.id === product.id
+            ? {
+                ...i,
+                quantity: Number((i.quantity + parsedQty).toFixed(3)),
+              }
+            : i,
         );
       }
-      return [...prev, { product, quantity: 1 }];
+      return [...prev, { product, quantity: parsedQty }];
     });
     setSearch("");
     setResults([]);
     setShowResults(false);
     setHighlightedIdx(-1);
+    setScaleBarcodeFeedback("");
     searchRef.current?.focus();
-  };
+  }, []);
+
+  const addToCart = useCallback((product: Product) => {
+    addToCartWithQuantity(product, 1);
+  }, [addToCartWithQuantity]);
+
+  const handleScaleBarcodeSubmit = useCallback(async () => {
+    const parsed = parseScaleBarcode(search);
+    if (!parsed) return false;
+
+    const searchedProducts = await searchProductsAction(parsed.productCode);
+    const exactMatch = searchedProducts.find(
+      (product) =>
+        product.barcode?.trim() === parsed.productCode ||
+        product.sku?.trim() === parsed.productCode,
+    );
+
+    if (!exactMatch) {
+      setScaleBarcodeFeedback("Etiqueta válida, mas produto não encontrado.");
+      setShowResults(false);
+      return true;
+    }
+
+    addToCartWithQuantity(exactMatch, parsed.weightQty);
+    return true;
+  }, [addToCartWithQuantity, search]);
 
   const updateQty = (id: string, delta: number) => {
     setCart((prev) =>
@@ -335,7 +387,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   }, [highlightedCustomerIdx]);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    const handler = async (e: KeyboardEvent) => {
       const {
         showResults,
         results,
@@ -376,6 +428,14 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             const firstCustomer = customerResults[0];
             selectCustomer({ id: firstCustomer.id, name: firstCustomer.name });
           }
+          return;
+        }
+      }
+
+      if (e.key === "Enter" && document.activeElement === searchRef.current) {
+        const handledScaleBarcode = await handleScaleBarcodeSubmit();
+        if (handledScaleBarcode) {
+          e.preventDefault();
           return;
         }
       }
@@ -440,7 +500,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [openCustomerPicker, showCheckoutDrawer, showCustomerPicker]);
+  }, [
+    handleScaleBarcodeSubmit,
+    openCustomerPicker,
+    showCheckoutDrawer,
+    showCustomerPicker,
+  ]);
 
   const today = new Date().toISOString().split("T")[0];
   const discountAmount = formatBRL(discountCents / 100);
@@ -638,6 +703,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 </span>
               )}
             </div>
+            {scaleBarcodeFeedback && (
+              <p className="mt-2 text-xs text-red-500">{scaleBarcodeFeedback}</p>
+            )}
 
             {showResults && results.length > 0 && (
               <>
