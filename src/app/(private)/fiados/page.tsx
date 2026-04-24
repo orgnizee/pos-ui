@@ -4,6 +4,7 @@ import SearchInput from "@/components/searchInput";
 import { getReceivables, PaymentStatus } from "@/lib/api/receivables";
 import { isApiError } from "@/lib/api/types";
 import { filterClass } from "@/lib/styleFilterButtons";
+import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -39,6 +40,22 @@ export default async function FiadosPage({
     return <p>{receivables.message}</p>;
   }
 
+  const byStatus = (paymentStatus: PaymentStatus) =>
+    receivables.filter((receivable) => receivable.status === paymentStatus);
+
+  const sumOutstanding = (status: PaymentStatus) =>
+    byStatus(status)
+      .reduce(
+        (sum, receivable) => sum + parseFloat(receivable.outstanding_balance),
+        0,
+      )
+      .toFixed(2);
+
+  const sumPaid = (status: PaymentStatus) =>
+    byStatus(status)
+      .reduce((sum, receivable) => sum + parseFloat(receivable.amount_paid), 0)
+      .toFixed(2);
+
   return (
     <section className="mt-8">
       {/* Header */}
@@ -54,6 +71,25 @@ export default async function FiadosPage({
       </div>
 
       <p className="mt-8 text-start text-lg font-light">histórico</p>
+
+      <div className="mt-6 overflow-hidden">
+        <div className="overflow-auto flex">
+          <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold items-center">
+            <SummaryCard label="pendente" value={sumOutstanding("pending")} />
+            <SummaryCard
+              label="parcial"
+              value={sumOutstanding("partially_paid")}
+              highlight="orange"
+            />
+            <SummaryCard
+              label="em atraso"
+              value={sumOutstanding("overdue")}
+              highlight="red"
+            />
+            <SummaryCard label="pago" value={sumPaid("paid")} highlight="green" />
+          </div>
+        </div>
+      </div>
 
       {/* Filter Date Buttons */}
       <div className="flex gap-6">
@@ -129,5 +165,35 @@ export default async function FiadosPage({
       {/* Receivables History */}
       <ReceivableTable receivables={receivables} basePath="fiados" />
     </section>
+  );
+}
+
+function SummaryCard({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  highlight?: "red" | "green" | "orange";
+}) {
+  const color =
+    highlight === "red"
+      ? "text-red-500"
+      : highlight === "green"
+        ? "text-green-600"
+        : highlight === "orange"
+          ? "text-orange-400"
+          : "text-primary";
+
+  return (
+    <div className="grid items-center justify-center shrink-0 rounded-md overflow-hidden">
+      <p className="text-center text-sm normal-case font-light">{label}</p>
+      <p
+        className={`w-40 h-fit px-1 py-0.5 pt-1 rounded-md text-center text-sm normal-case bg-secondary/20 ${color}`}
+      >
+        {formatBRL(value)}
+      </p>
+    </div>
   );
 }
