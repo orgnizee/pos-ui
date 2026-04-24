@@ -614,6 +614,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             <form action={orderAction} className="mt-4 flex flex-col gap-1">
               <div className="flex justify-between">
                 <p className="">desconto</p>
+
                 <input
                   ref={discountInputRef}
                   value={discountAmount}
@@ -683,20 +684,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 value={JSON.stringify(payments)}
               />
               <input type="hidden" name="order_date" value={today} />
-
-              {/* <label className="text-xs uppercase text-tertiary">status</label>
-              <select
-                name="status"
-                value={status}
-                onChange={(e) =>
-                  setStatus(e.target.value as "open" | "paid" | "completed")
-                }
-                className="border p-2 outline-none"
-              >
-                <option value="open">aberto</option>
-                <option value="paid">pago</option>
-                <option value="completed">concluído</option>
-              </select> */}
+              <input type="hidden" name="status" value="completed" />
 
               <p className="mt-8 uppercase text-tertiary">
                 formas de pagamento

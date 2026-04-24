@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createOrder, OrderStatus } from "../orders";
 import { isApiError } from "../types";
 
@@ -53,5 +54,5 @@ export async function createOrderAction(
     };
   }
 
-  return { error: false, message: "pedido criado com sucesso." };
+  redirect("/pdv");
 }

@@ -49,7 +49,7 @@ export default function TransactionForm({
   }));
 
   const contactOptions = contacts.map((c) => ({
-    label: isCustomer(c) ? c.name : c.legal_name,
+    label: isCustomer(c) ? c.name.toUpperCase() : c.legal_name.toUpperCase(),
     value: String(c.id),
   }));
 
@@ -83,6 +83,7 @@ export default function TransactionForm({
         <div className="flex flex-col gap-8">
           <SelectInputField
             label={type === "transfer" ? "Origem" : "Conta"}
+            defaultValue={""}
             name="account"
             required
             options={accountOptions}
@@ -91,6 +92,7 @@ export default function TransactionForm({
           {type !== "transfer" && (
             <SelectInputField
               label="categoria"
+              defaultValue={""}
               name="category"
               groups={buildCategoryGroups(categories)}
             />
@@ -99,6 +101,7 @@ export default function TransactionForm({
           {type === "transfer" && (
             <SelectInputField
               label="Destino"
+              defaultValue={""}
               name="send_to"
               required
               options={accountOptions}
@@ -111,6 +114,7 @@ export default function TransactionForm({
           {type !== "transfer" && (
             <SelectInputField
               label="Contato"
+              defaultValue={""}
               name="contact"
               options={contactOptions}
             />
