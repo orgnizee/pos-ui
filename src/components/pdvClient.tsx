@@ -88,6 +88,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [status, setStatus] = useState<"open" | "paid" | "completed">("paid");
   const [amountReceivedCents, setAmountReceivedCents] = useState(0);
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
+  const [isPaymentAmountManuallyEdited, setIsPaymentAmountManuallyEdited] =
+    useState(false);
   const [orderState, orderAction, pendingOrder] = useActionState<
     CreateOrderActionState,
     FormData
@@ -227,6 +229,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setNotes("");
     setStatus("paid");
     setAmountReceivedCents(0);
+    setIsPaymentAmountManuallyEdited(false);
   }, [orderTotal, paymentMethods]);
 
   const openCheckoutDrawer = useCallback(() => {
@@ -614,7 +617,24 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 <input
                   ref={discountInputRef}
                   value={discountAmount}
-                  onChange={(e) => setDiscountCents(parseCurrencyToCents(e.target.value))}
+                  onChange={(e) => {
+                    const nextDiscountCents = parseCurrencyToCents(e.target.value);
+                    setDiscountCents(nextDiscountCents);
+
+                    if (!isPaymentAmountManuallyEdited) {
+                      const nextOrderTotal = Math.max(
+                        totalAmount - nextDiscountCents / 100,
+                        0,
+                      );
+                      setPayments((prev) =>
+                        prev.map((payment, idx) =>
+                          idx === 0
+                            ? { ...payment, amount: nextOrderTotal.toFixed(2) }
+                            : payment,
+                        ),
+                      );
+                    }
+                  }}
                   className="text-primary placeholder:text-secondary outline-none text-end"
                   placeholder="R$ 0,00"
                   inputMode="numeric"
@@ -728,18 +748,22 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                       <input
                         value={formatBRL(Number(payment.amount) || 0)}
                         onChange={(e) =>
-                          setPayments((prev) =>
-                            prev.map((p, i) =>
-                              i === idx
-                                ? {
-                                    ...p,
-                                    amount: (
-                                      parseCurrencyToCents(e.target.value) / 100
-                                    ).toFixed(2),
-                                  }
-                                : p,
-                            ),
-                          )
+                          {
+                            setIsPaymentAmountManuallyEdited(true);
+                            setPayments((prev) =>
+                              prev.map((p, i) =>
+                                i === idx
+                                  ? {
+                                      ...p,
+                                      amount: (
+                                        parseCurrencyToCents(e.target.value) /
+                                        100
+                                      ).toFixed(2),
+                                    }
+                                  : p,
+                              ),
+                            );
+                          }
                         }
                         className="text-primary placeholder:text-secondary outline-none text-end w-full mt-6"
                         placeholder="R$ 0,00"
