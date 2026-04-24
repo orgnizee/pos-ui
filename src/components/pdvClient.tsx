@@ -19,7 +19,6 @@ import {
 } from "@/lib/api/actions/orders";
 import { formatCPF } from "@/lib/utils/format";
 import { SelectInputField } from "./inputFieldSelect";
-import { InputField } from "./inputField";
 import { InputTextareaField } from "./inputTextAreaField";
 
 type CartItem = {
@@ -89,6 +88,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [status, setStatus] = useState<"open" | "paid" | "completed">("paid");
   const [amountReceivedCents, setAmountReceivedCents] = useState(0);
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
+  const [isPaymentAmountManuallyEdited, setIsPaymentAmountManuallyEdited] =
+    useState(false);
   const [orderState, orderAction, pendingOrder] = useActionState<
     CreateOrderActionState,
     FormData
@@ -209,16 +210,27 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
   const resetCheckout = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
+    const dinheiroMethod = paymentMethods.find((method) =>
+      method.description.toLowerCase().includes("dinheiro"),
+    );
+    const defaultMethodId = dinheiroMethod?.id ?? paymentMethods[0]?.id ?? "";
     setPayments(
       paymentMethods.length > 0
-        ? [{ method: paymentMethods[0].id, amount: "", due_at: today }]
+        ? [
+            {
+              method: defaultMethodId,
+              amount: orderTotal.toFixed(2),
+              due_at: today,
+            },
+          ]
         : [],
     );
     setDiscountCents(0);
     setNotes("");
     setStatus("paid");
     setAmountReceivedCents(0);
-  }, [paymentMethods]);
+    setIsPaymentAmountManuallyEdited(false);
+  }, [orderTotal, paymentMethods]);
 
   const openCheckoutDrawer = useCallback(() => {
     resetCheckout();
@@ -605,7 +617,24 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                 <input
                   ref={discountInputRef}
                   value={discountAmount}
-                  onChange={(e) => setDiscountCents(parseCurrencyToCents(e.target.value))}
+                  onChange={(e) => {
+                    const nextDiscountCents = parseCurrencyToCents(e.target.value);
+                    setDiscountCents(nextDiscountCents);
+
+                    if (!isPaymentAmountManuallyEdited) {
+                      const nextOrderTotal = Math.max(
+                        totalAmount - nextDiscountCents / 100,
+                        0,
+                      );
+                      setPayments((prev) =>
+                        prev.map((payment, idx) =>
+                          idx === 0
+                            ? { ...payment, amount: nextOrderTotal.toFixed(2) }
+                            : payment,
+                        ),
+                      );
+                    }
+                  }}
                   className="text-primary placeholder:text-secondary outline-none text-end"
                   placeholder="R$ 0,00"
                   inputMode="numeric"
@@ -700,7 +729,14 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     <div className="col-span-6">
                       <SelectInputField
                         label="pagamento"
-                        defaultValue={"-"}
+                        value={payment.method}
+                        onChange={(e) =>
+                          setPayments((prev) =>
+                            prev.map((p, i) =>
+                              i === idx ? { ...p, method: e.target.value } : p,
+                            ),
+                          )
+                        }
                         options={paymentMethods.map((m) => ({
                           label: m.description.toUpperCase(),
                           value: m.id,
@@ -709,7 +745,30 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     </div>
 
                     <div className="col-span-6">
-                      <InputField label="valor" defaultValue={orderTotal} />
+                      <input
+                        value={formatBRL(Number(payment.amount) || 0)}
+                        onChange={(e) =>
+                          {
+                            setIsPaymentAmountManuallyEdited(true);
+                            setPayments((prev) =>
+                              prev.map((p, i) =>
+                                i === idx
+                                  ? {
+                                      ...p,
+                                      amount: (
+                                        parseCurrencyToCents(e.target.value) /
+                                        100
+                                      ).toFixed(2),
+                                    }
+                                  : p,
+                              ),
+                            );
+                          }
+                        }
+                        className="text-primary placeholder:text-secondary outline-none text-end w-full mt-6"
+                        placeholder="R$ 0,00"
+                        inputMode="numeric"
+                      />
                     </div>
 
                     <input
