@@ -16,14 +16,6 @@ export default function KeyboardNav() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if modifier keys are held
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-      // Ignore if focus is inside any editable element
-      const tag = (e.target as HTMLElement).tagName;
-      const isEditable = (e.target as HTMLElement).isContentEditable;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(tag) || isEditable) return;
-
       const path = keyMap[e.key];
       if (path) router.push(path);
     };
