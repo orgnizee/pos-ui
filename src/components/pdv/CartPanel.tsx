@@ -14,10 +14,10 @@ type Props = {
   totalItems: number;
   totalAmount: number;
   itemDiscountTotal: number;
-  onRemoveItem: (id: string) => void;
-  onUpdateQtyFromInput: (id: string, rawValue: string) => void;
-  onUpdateItemDiscountFromInput: (id: string, rawValue: string) => void;
-  onUpdateQty: (id: string, delta: number) => void;
+  onRemoveItem: (itemId: string) => void;
+  onUpdateQtyFromInput: (itemId: string, rawValue: string) => void;
+  onUpdateItemDiscountFromInput: (itemId: string, rawValue: string) => void;
+  onUpdateQty: (itemId: string, delta: number) => void;
 };
 
 export function CartPanel({
@@ -49,7 +49,7 @@ export function CartPanel({
           const lineTotalCentsValue = Math.max(grossLineTotalCents - lineDiscountCents, 0);
 
           return (
-            <div key={item.product.id} className="border p-1">
+            <div key={item.id} className="border p-1">
               <div className="text-lg flex justify-between border-b">
                 <p className="truncate pr-2">
                   {String(idx + 1).padStart(2, "0")}. {item.product.name}
@@ -57,7 +57,7 @@ export function CartPanel({
                 <div className="flex items-center gap-2 shrink-0">
                   <p>{formatBRL(priceCents / 100)}</p>
                   <button
-                    onClick={() => onRemoveItem(item.product.id)}
+                    onClick={() => onRemoveItem(item.id)}
                     className="text-tertiary hover:text-black transition-colors"
                   >
                     <X size={14} strokeWidth={1} />
@@ -70,7 +70,7 @@ export function CartPanel({
                   type="text"
                   inputMode="numeric"
                   value={formatQty(item.quantity)}
-                  onChange={(e) => onUpdateQtyFromInput(item.product.id, e.target.value)}
+                  onChange={(e) => onUpdateQtyFromInput(item.id, e.target.value)}
                   className="w-20 bg-transparent border-b border-tertiary/30 text-center outline-none focus:border-tertiary"
                   aria-label={`quantidade de ${item.product.name}`}
                 />
@@ -85,16 +85,16 @@ export function CartPanel({
               </div>
 
               <div className="mt-1 text-sm flex items-center justify-center gap-2">
-                <label htmlFor={`item-discount-${item.product.id}`} className="text-tertiary">
+                <label htmlFor={`item-discount-${item.id}`} className="text-tertiary">
                   desconto
                 </label>
                 <input
-                  id={`item-discount-${item.product.id}`}
+                  id={`item-discount-${item.id}`}
                   type="text"
                   inputMode="numeric"
                   value={formatBRL(item.discountCents / 100)}
                   onChange={(e) =>
-                    onUpdateItemDiscountFromInput(item.product.id, e.target.value)
+                    onUpdateItemDiscountFromInput(item.id, e.target.value)
                   }
                   className="w-15 bg-transparent text-tertiary text-center outline-none"
                   aria-label={`desconto de ${item.product.name}`}
@@ -103,13 +103,13 @@ export function CartPanel({
 
               <div className="mt-7 text-lg flex justify-between gap-2">
                 <button
-                  onClick={() => onUpdateQty(item.product.id, -0.5)}
+                  onClick={() => onUpdateQty(item.id, -0.5)}
                   className="hover:opacity-60 transition-opacity cursor-pointer"
                 >
                   <Minus strokeWidth={0.8} />
                 </button>
                 <button
-                  onClick={() => onUpdateQty(item.product.id, 0.5)}
+                  onClick={() => onUpdateQty(item.id, 0.5)}
                   className="hover:opacity-60 transition-opacity cursor-pointer"
                 >
                   <Plus strokeWidth={0.8} />
