@@ -42,7 +42,7 @@ export function CartPanel({
             nenhum produto adicionado
           </p>
         )}
-        {cart.map((item, idx) => {
+        {cart.slice().reverse().map((item, idx) => {
           const priceCents = parsePriceToCents(item.product.price);
           const grossLineTotalCents = lineTotalCents(item.product.price, item.quantity);
           const lineDiscountCents = Math.min(item.discountCents, grossLineTotalCents);
