@@ -2,6 +2,7 @@ import "./globals.css";
 import { quicksand } from "./fonts";
 import type { Metadata, Viewport } from "next";
 import { cn } from "@/lib/utils";
+import KeyboardNav from "@/components/keyboardNav"
 
 export const metadata: Metadata = {
   title: "Nizee + Frigorífico Saraiva",
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={`bg-white ${quicksand.className} uppercase antialiased`}
       >
+        <KeyboardNav />
         {children}
       </body>
     </html>
