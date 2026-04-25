@@ -651,7 +651,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     onChange={(e) =>
                       updateItemDiscountFromInput(item.product.id, e.target.value)
                     }
-                    className="w-28 bg-transparent border-b border-tertiary/30 text-center outline-none focus:border-tertiary"
+                    className="w-15 bg-transparent text-tertiary text-center outline-none"
                     aria-label={`desconto de ${item.product.name}`}
                   />
                 </div>
