@@ -24,6 +24,7 @@ import { InputTextareaField } from "./inputTextAreaField";
 type CartItem = {
   product: Product;
   quantity: number;
+  discountCents: number;
 };
 
 type Props = {
@@ -200,7 +201,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             : i,
         );
       }
-      return [...prev, { product, quantity: parsedQty }];
+      return [...prev, { product, quantity: parsedQty, discountCents: 0 }];
     });
     setSearch("");
     setResults([]);
@@ -269,6 +270,20 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setCart((prev) =>
       prev.map((i) =>
         i.product.id === id ? { ...i, quantity: parsedQty } : i,
+      ),
+    );
+  };
+
+  const updateItemDiscountFromInput = (id: string, rawValue: string) => {
+    const nextDiscountCents = parseCurrencyToCents(rawValue);
+    setCart((prev) =>
+      prev.map((item) =>
+        item.product.id === id
+          ? {
+              ...item,
+              discountCents: Math.min(nextDiscountCents, 99999999),
+            }
+          : item,
       ),
     );
   };
@@ -347,8 +362,17 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       }, 0)
       .toFixed(2),
   );
+  const itemDiscountTotal = Number(
+    (
+      cart.reduce((sum, item) => {
+        const price = parseFloat(item.product.price ?? "0");
+        const maxDiscount = Math.round(price * item.quantity * 100);
+        return sum + Math.min(item.discountCents, maxDiscount);
+      }, 0) / 100
+    ).toFixed(2),
+  );
   const discount = discountCents / 100;
-  const orderTotal = Math.max(totalAmount - discount, 0);
+  const orderTotal = Math.max(totalAmount - itemDiscountTotal - discount, 0);
   const paymentTotal = payments.reduce((sum, payment) => {
     return sum + (Number(payment.amount) || 0);
   }, 0);
@@ -569,7 +593,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           )}
           {cart.map((item, idx) => {
             const price = parseFloat(item.product.price ?? "0");
-            const lineTotal = price * item.quantity;
+            const grossLineTotal = price * item.quantity;
+            const lineDiscount = Math.min(item.discountCents / 100, grossLineTotal);
+            const lineTotal = Math.max(grossLineTotal - lineDiscount, 0);
             return (
               <div key={item.product.id} className="border p-1">
                 <div className="text-lg flex justify-between border-b">
@@ -610,6 +636,26 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                   <p>{formatBRL(lineTotal)}</p>
                 </div>
 
+                <div className="mt-1 text-sm flex items-center justify-center gap-2">
+                  <label
+                    htmlFor={`item-discount-${item.product.id}`}
+                    className="text-tertiary"
+                  >
+                    desconto
+                  </label>
+                  <input
+                    id={`item-discount-${item.product.id}`}
+                    type="text"
+                    inputMode="numeric"
+                    value={formatBRL(item.discountCents / 100)}
+                    onChange={(e) =>
+                      updateItemDiscountFromInput(item.product.id, e.target.value)
+                    }
+                    className="w-28 bg-transparent border-b border-tertiary/30 text-center outline-none focus:border-tertiary"
+                    aria-label={`desconto de ${item.product.name}`}
+                  />
+                </div>
+
                 <div className="mt-7 text-lg flex justify-between gap-2">
                   <button
                     onClick={() => updateQty(item.product.id, -0.5)}
@@ -634,6 +680,10 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           <div className="text-lg flex justify-between">
             <p>{String(totalItems).padStart(2, "0")}</p>
             <p>{formatBRL(totalAmount)}</p>
+          </div>
+          <div className="text-sm flex justify-between text-tertiary">
+            <p>desconto itens</p>
+            <p>- {formatBRL(itemDiscountTotal)}</p>
           </div>
         </div>
       </div>
@@ -880,7 +930,16 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     product: item.product.id,
                     quantity: item.quantity,
                     price: item.product.price ?? "0",
-                    discount: "0.00",
+                    discount: (
+                      Math.min(
+                        item.discountCents,
+                        Math.round(
+                          parseFloat(item.product.price ?? "0") *
+                            item.quantity *
+                            100,
+                        ),
+                      ) / 100
+                    ).toFixed(2),
                   })),
                 )}
               />
