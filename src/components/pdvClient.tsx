@@ -52,13 +52,13 @@ function parseCurrencyToCents(rawValue: string) {
 function parsePriceToCents(price: string | null | undefined) {
   const parsed = Number.parseFloat(price ?? "0");
   if (!Number.isFinite(parsed)) return 0;
-  return Math.round(parsed * 100);
+  return Math.floor(parsed * 100);
 }
 
 function lineTotalCents(price: string | null | undefined, quantity: number) {
   const priceCents = parsePriceToCents(price);
-  const quantityThousandths = Math.round(quantity * 1000);
-  return Math.max(Math.round((priceCents * quantityThousandths) / 1000), 0);
+  const quantityThousandths = Math.floor(quantity * 1000);
+  return Math.max(Math.floor((priceCents * quantityThousandths) / 1000), 0);
 }
 
 function automaticCentDiscountCents(
@@ -450,8 +450,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     0,
   );
   const orderDiscountCents = Math.min(discountCents, payableBeforeOrderDiscountCents);
-  const totalAmount = totalAmountCents / 100;
   const itemDiscountTotal = itemDiscountTotalCents / 100;
+  const totalAmount = totalAmountCents / 100 - itemDiscountTotal;
   const orderTotalCents = Math.max(
     totalAmountCents - itemDiscountTotalCents - orderDiscountCents,
     0,
