@@ -4,11 +4,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const keyMap: Record<string, string> = {
-  "F1": "/",
-  "F2": "/pdv",
-  "F3": "/caixa",
-  "F4": "/fiados",
-  "F5": "/contatos",
+  "F1": "/pdv",
+  "F2": "/caixa",
+  "F3": "/fiados",
+  "F4": "/contatos",
 };
 
 export default function KeyboardNav() {
