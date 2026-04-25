@@ -1,6 +1,7 @@
 import { Product } from "@/lib/api/products";
 
 export type CartItem = {
+  id: string;
   product: Product;
   quantity: number;
   discountCents: number;

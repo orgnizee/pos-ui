@@ -39,6 +39,7 @@ type Props = {
 
 export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const nextCartItemIdRef = useRef(0);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<Product[]>(initialProducts);
   const [loading, setLoading] = useState(false);
@@ -134,37 +135,10 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     if (parsedQty <= 0) return;
 
     setCart((prev) => {
-      const existing = prev.find((i) => i.product.id === product.id);
-      if (existing) {
-        const previousLineTotalCents = lineTotalCents(existing.product.price, existing.quantity);
-        const previousAutomaticDiscountCents = automaticCentDiscountCents(
-          existing.product.price,
-          existing.quantity,
-        );
-        const nextQuantity = Number((existing.quantity + parsedQty).toFixed(3));
-        const nextAutomaticDiscountCents = automaticCentDiscountCents(
-          existing.product.price,
-          nextQuantity,
-        );
-
-        return prev.map((i) =>
-          i.product.id === product.id
-            ? {
-                ...i,
-                quantity: nextQuantity,
-                discountCents:
-                  existing.discountCents === previousAutomaticDiscountCents ||
-                  existing.discountCents > previousLineTotalCents
-                    ? nextAutomaticDiscountCents
-                    : existing.discountCents,
-              }
-            : i,
-        );
-      }
-
       return [
         ...prev,
         {
+          id: `${product.id}-${nextCartItemIdRef.current++}`,
           product,
           quantity: parsedQty,
           discountCents: automaticCentDiscountCents(product.price, parsedQty),
@@ -218,11 +192,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     return true;
   }, [addToCartWithQuantity, search]);
 
-  const updateQty = (id: string, delta: number) => {
+  const updateQty = (itemId: string, delta: number) => {
     setCart((prev) =>
       prev
         .map((i) => {
-          if (i.product.id !== id) return i;
+          if (i.id !== itemId) return i;
 
           const previousLineTotalCents = lineTotalCents(i.product.price, i.quantity);
           const previousAutomaticDiscountCents = automaticCentDiscountCents(
@@ -250,11 +224,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     );
   };
 
-  const updateQtyFromInput = (id: string, rawValue: string) => {
+  const updateQtyFromInput = (itemId: string, rawValue: string) => {
     const parsedQty = Number(parseQtyInput(rawValue).toFixed(3));
     setCart((prev) =>
       prev.map((i) => {
-        if (i.product.id !== id) return i;
+        if (i.id !== itemId) return i;
 
         const previousLineTotalCents = lineTotalCents(i.product.price, i.quantity);
         const previousAutomaticDiscountCents = automaticCentDiscountCents(
@@ -280,11 +254,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     );
   };
 
-  const updateItemDiscountFromInput = (id: string, rawValue: string) => {
+  const updateItemDiscountFromInput = (itemId: string, rawValue: string) => {
     const nextDiscountCents = parseCurrencyToCents(rawValue);
     setCart((prev) =>
       prev.map((item) =>
-        item.product.id === id
+        item.id === itemId
           ? {
               ...item,
               discountCents: Math.min(nextDiscountCents, 99999999),
@@ -294,8 +268,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     );
   };
 
-  const removeItem = (id: string) => {
-    setCart((prev) => prev.filter((i) => i.product.id !== id));
+  const removeItem = (itemId: string) => {
+    setCart((prev) => prev.filter((i) => i.id !== itemId));
   };
 
   const searchCustomers = useCallback(async (query: string) => {
