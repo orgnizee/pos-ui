@@ -31,7 +31,6 @@ export default function RootLayout({
       <body
         className={`bg-white ${quicksand.className} uppercase antialiased`}
       >
-        <KeyboardNav />
         {children}
       </body>
     </html>
