@@ -49,6 +49,25 @@ function parseCurrencyToCents(rawValue: string) {
   return Number(digits || "0");
 }
 
+function parsePriceToCents(price: string | null | undefined) {
+  const parsed = Number.parseFloat(price ?? "0");
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.round(parsed * 100);
+}
+
+function lineTotalCents(price: string | null | undefined, quantity: number) {
+  const priceCents = parsePriceToCents(price);
+  const quantityThousandths = Math.round(quantity * 1000);
+  return Math.max(Math.round((priceCents * quantityThousandths) / 1000), 0);
+}
+
+function automaticCentDiscountCents(
+  price: string | null | undefined,
+  quantity: number,
+) {
+  return lineTotalCents(price, quantity) % 100;
+}
+
 function formatQty(qty: number) {
   return qty.toLocaleString("pt-BR", {
     minimumFractionDigits: 3,
@@ -192,16 +211,42 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setCart((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
+        const previousLineTotalCents = lineTotalCents(
+          existing.product.price,
+          existing.quantity,
+        );
+        const previousAutomaticDiscountCents = automaticCentDiscountCents(
+          existing.product.price,
+          existing.quantity,
+        );
+        const nextQuantity = Number((existing.quantity + parsedQty).toFixed(3));
+        const nextAutomaticDiscountCents = automaticCentDiscountCents(
+          existing.product.price,
+          nextQuantity,
+        );
+
         return prev.map((i) =>
           i.product.id === product.id
             ? {
                 ...i,
-                quantity: Number((i.quantity + parsedQty).toFixed(3)),
+                quantity: nextQuantity,
+                discountCents:
+                  existing.discountCents === previousAutomaticDiscountCents ||
+                  existing.discountCents > previousLineTotalCents
+                    ? nextAutomaticDiscountCents
+                    : existing.discountCents,
               }
             : i,
         );
       }
-      return [...prev, { product, quantity: parsedQty, discountCents: 0 }];
+      return [
+        ...prev,
+        {
+          product,
+          quantity: parsedQty,
+          discountCents: automaticCentDiscountCents(product.price, parsedQty),
+        },
+      ];
     });
     setSearch("");
     setResults([]);
@@ -253,14 +298,31 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const updateQty = (id: string, delta: number) => {
     setCart((prev) =>
       prev
-        .map((i) =>
-          i.product.id === id
-            ? {
-                ...i,
-                quantity: Number((i.quantity + delta).toFixed(3)),
-              }
-            : i,
-        )
+        .map((i) => {
+          if (i.product.id !== id) return i;
+
+          const previousLineTotalCents = lineTotalCents(i.product.price, i.quantity);
+          const previousAutomaticDiscountCents = automaticCentDiscountCents(
+            i.product.price,
+            i.quantity,
+          );
+          const nextQuantity = Number((i.quantity + delta).toFixed(3));
+          const nextLineTotalCents = lineTotalCents(i.product.price, nextQuantity);
+          const nextAutomaticDiscountCents = automaticCentDiscountCents(
+            i.product.price,
+            nextQuantity,
+          );
+
+          return {
+            ...i,
+            quantity: nextQuantity,
+            discountCents:
+              i.discountCents === previousAutomaticDiscountCents ||
+              i.discountCents > previousLineTotalCents
+                ? nextAutomaticDiscountCents
+                : Math.min(i.discountCents, nextLineTotalCents),
+          };
+        })
         .filter((i) => i.quantity > 0),
     );
   };
@@ -268,9 +330,30 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const updateQtyFromInput = (id: string, rawValue: string) => {
     const parsedQty = Number(parseQtyInput(rawValue).toFixed(3));
     setCart((prev) =>
-      prev.map((i) =>
-        i.product.id === id ? { ...i, quantity: parsedQty } : i,
-      ),
+      prev.map((i) => {
+        if (i.product.id !== id) return i;
+
+        const previousLineTotalCents = lineTotalCents(i.product.price, i.quantity);
+        const previousAutomaticDiscountCents = automaticCentDiscountCents(
+          i.product.price,
+          i.quantity,
+        );
+        const nextLineTotalCents = lineTotalCents(i.product.price, parsedQty);
+        const nextAutomaticDiscountCents = automaticCentDiscountCents(
+          i.product.price,
+          parsedQty,
+        );
+
+        return {
+          ...i,
+          quantity: parsedQty,
+          discountCents:
+            i.discountCents === previousAutomaticDiscountCents ||
+            i.discountCents > previousLineTotalCents
+              ? nextAutomaticDiscountCents
+              : Math.min(i.discountCents, nextLineTotalCents),
+        };
+      }),
     );
   };
 
@@ -354,25 +437,26 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   }, []);
 
   const totalItems = cart.length;
-  const totalAmount = Number(
-    cart
-      .reduce((s, i) => {
-        const price = parseFloat(i.product.price ?? "0");
-        return s + price * i.quantity;
-      }, 0)
-      .toFixed(2),
+  const totalAmountCents = cart.reduce(
+    (sum, item) => sum + lineTotalCents(item.product.price, item.quantity),
+    0,
   );
-  const itemDiscountTotal = Number(
-    (
-      cart.reduce((sum, item) => {
-        const price = parseFloat(item.product.price ?? "0");
-        const maxDiscount = Math.round(price * item.quantity * 100);
-        return sum + Math.min(item.discountCents, maxDiscount);
-      }, 0) / 100
-    ).toFixed(2),
+  const itemDiscountTotalCents = cart.reduce((sum, item) => {
+    const maxDiscount = lineTotalCents(item.product.price, item.quantity);
+    return sum + Math.min(item.discountCents, maxDiscount);
+  }, 0);
+  const payableBeforeOrderDiscountCents = Math.max(
+    totalAmountCents - itemDiscountTotalCents,
+    0,
   );
-  const discount = discountCents / 100;
-  const orderTotal = Math.max(totalAmount - itemDiscountTotal - discount, 0);
+  const orderDiscountCents = Math.min(discountCents, payableBeforeOrderDiscountCents);
+  const totalAmount = totalAmountCents / 100;
+  const itemDiscountTotal = itemDiscountTotalCents / 100;
+  const orderTotalCents = Math.max(
+    totalAmountCents - itemDiscountTotalCents - orderDiscountCents,
+    0,
+  );
+  const orderTotal = orderTotalCents / 100;
   const paymentTotal = payments.reduce((sum, payment) => {
     return sum + (Number(payment.amount) || 0);
   }, 0);
@@ -574,7 +658,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   ]);
 
   const today = new Date().toISOString().split("T")[0];
-  const discountAmount = formatBRL(discountCents / 100);
+  const discountAmount = formatBRL(orderDiscountCents / 100);
   const amountReceived = formatBRL(amountReceivedCents / 100);
 
   return (
@@ -592,10 +676,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             </p>
           )}
           {cart.map((item, idx) => {
-            const price = parseFloat(item.product.price ?? "0");
-            const grossLineTotal = price * item.quantity;
-            const lineDiscount = Math.min(item.discountCents / 100, grossLineTotal);
-            const lineTotal = Math.max(grossLineTotal - lineDiscount, 0);
+            const priceCents = parsePriceToCents(item.product.price);
+            const grossLineTotalCents = lineTotalCents(item.product.price, item.quantity);
+            const lineDiscountCents = Math.min(item.discountCents, grossLineTotalCents);
+            const lineTotalCentsValue = Math.max(
+              grossLineTotalCents - lineDiscountCents,
+              0,
+            );
             return (
               <div key={item.product.id} className="border p-1">
                 <div className="text-lg flex justify-between border-b">
@@ -603,7 +690,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     {String(idx + 1).padStart(2, "0")}. {item.product.name}
                   </p>
                   <div className="flex items-center gap-2 shrink-0">
-                    <p>{formatBRL(price)}</p>
+                    <p>{formatBRL(priceCents / 100)}</p>
                     <button
                       onClick={() => removeItem(item.product.id)}
                       className="text-tertiary hover:text-black transition-colors"
@@ -633,7 +720,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
                 <div className="text-lg font-normal flex justify-center gap-2">
                   <p>total</p>
-                  <p>{formatBRL(lineTotal)}</p>
+                  <p>{formatBRL(lineTotalCentsValue / 100)}</p>
                 </div>
 
                 <div className="mt-1 text-sm flex items-center justify-center gap-2">
@@ -862,7 +949,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           />
           <aside className="fixed top-0 right-0 h-full w-full max-w-xl bg-white border-l z-50 p-6 overflow-y-auto">
             <h2 className="text-4xl uppercase">
-              Total {formatBRL(totalAmount)}
+              Total {formatBRL(orderTotal)}
             </h2>
 
             <form action={orderAction} className="mt-4 flex flex-col gap-1">
@@ -876,11 +963,17 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     const nextDiscountCents = parseCurrencyToCents(
                       e.target.value,
                     );
-                    setDiscountCents(nextDiscountCents);
+                    const normalizedDiscountCents = Math.min(
+                      nextDiscountCents,
+                      payableBeforeOrderDiscountCents,
+                    );
+                    setDiscountCents(normalizedDiscountCents);
 
                     if (!isPaymentAmountManuallyEdited) {
                       const nextOrderTotal = Math.max(
-                        totalAmount - nextDiscountCents / 100,
+                        (payableBeforeOrderDiscountCents -
+                          normalizedDiscountCents) /
+                          100,
                         0,
                       );
                       setPayments((prev) =>
@@ -900,7 +993,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
               <input
                 type="hidden"
                 name="discount_amount"
-                value={(discountCents / 100).toFixed(2)}
+                value={(orderDiscountCents / 100).toFixed(2)}
               />
 
               <div className="flex justify-between">
@@ -933,11 +1026,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
                     discount: (
                       Math.min(
                         item.discountCents,
-                        Math.round(
-                          parseFloat(item.product.price ?? "0") *
-                            item.quantity *
-                            100,
-                        ),
+                        lineTotalCents(item.product.price, item.quantity),
                       ) / 100
                     ).toFixed(2),
                   })),
