@@ -22,6 +22,11 @@ export default async function Home() {
         <span className="text-2xl">4</span>
         contatos
       </Link>
+
+      <Link href={"/vendas"} className="text-8xl font-light">
+        <span className="text-2xl">5</span>
+        vendas
+      </Link>
     </main>
   );
 }

@@ -8,6 +8,7 @@ const keyMap: Record<string, string> = {
   "F2": "/caixa",
   "F3": "/fiados",
   "F4": "/contatos",
+  "F5": "/vendas",
 };
 
 export default function KeyboardNav() {
