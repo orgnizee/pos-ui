@@ -1,5 +1,6 @@
 import BackButton from "@/components/backButton";
 import DeleteOrderButton from "@/components/deleteOrderButton";
+import PrintOrderReceiptButton from "@/components/printOrderReceiptButton";
 import { getOrderByID } from "@/lib/api/orders";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL, formatDateTime } from "@/lib/utils/format";
@@ -28,19 +29,23 @@ export default async function VendaPage({
 
   return (
     <section className="mt-6 mb-4">
-      <div className="mt-6 mb-4 flex items-center justify-between">
+      <div className="no-print mt-6 mb-4 flex items-center justify-between">
         <BackButton />
 
-        <Link
-          href={`/vendas/${order.id}/editar`}
-          className="text-xs cursor-pointer mr-2"
-        >
-          editar
-        </Link>
+        <div className="flex items-center">
+          <PrintOrderReceiptButton />
+
+          <Link
+            href={`/vendas/${order.id}/editar`}
+            className="text-xs cursor-pointer mr-2"
+          >
+            editar
+          </Link>
+        </div>
       </div>
 
-      <div className="flex flex-col px-1 pt-1 items-center">
-        <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">
+      <div className="receipt-print-container flex flex-col px-1 pt-1 items-center">
+        <div className="receipt-print relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">
           <p className="absolute top-5 text-sm font-normal">
             venda {order.order_number} {statusLabel[order.status]}
           </p>
@@ -127,7 +132,9 @@ export default async function VendaPage({
         </div>
       </div>
 
-      <DeleteOrderButton id={order.id} />
+      <div className="no-print">
+        <DeleteOrderButton id={order.id} />
+      </div>
     </section>
   );
 }
