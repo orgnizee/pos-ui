@@ -18,7 +18,7 @@ export default function OrderCard({ order }: { order: Order }) {
       className="border border-primary hover:border-tertiary p-3 flex flex-col gap-2"
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs uppercase">pedido #{order.order_number}</p>
+        <p className="text-xs uppercase">venda {order.order_number}</p>
         <p className="text-xs uppercase">{statusLabel[order.status]}</p>
       </div>
 

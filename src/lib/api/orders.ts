@@ -17,7 +17,10 @@ export type OrderContact = {
 
 export type OrderPaymentMethod = {
   id: string;
-  method: string;
+  method: {
+    id: string;
+    description: string;
+  };
   amount: string;
   due_at: string;
   finance_transaction: string | null;
@@ -25,7 +28,10 @@ export type OrderPaymentMethod = {
 
 export type OrderItem = {
   id: string;
-  product: string;
+  product: {
+    id: string;
+    name: string;
+  };
   transaction: string | null;
   sku: string;
   quantity: number;
