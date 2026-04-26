@@ -18,6 +18,10 @@ export default async function TransactionPage({
     return <p>{transaction.message}</p>;
   }
 
+  const canDelete = transaction.description
+    .toLowerCase()
+    .includes("pagamento referente à venda #");
+
   return (
     <section className="mt-6">
       <BackButton />
@@ -89,7 +93,8 @@ export default async function TransactionPage({
           </p>
         </div>
       </div>
-      <DeleteTransactionButton id={transaction.id} />
+
+      {!canDelete && <DeleteTransactionButton id={transaction.id} />}
     </section>
   );
 }
