@@ -21,7 +21,7 @@ export default function PrivateLayout({
   return (
     <main className="px-6 py-2">
       <div>
-        <header className="top-0 left-0 right-0">
+        <header className="top-0 left-0 right-0 no-print">
           <div className="grid grid-cols-3 items-center">
             <Link href={"/"}>
               <p className="pt-1.5 text-lg justify-self-start">/</p>
