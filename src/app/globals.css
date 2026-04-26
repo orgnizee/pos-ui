@@ -33,3 +33,38 @@
 .daterange-hidden .react-daterange-picker__wrapper {
   display: none;
 }
+@media print {
+  @page {
+    size: 80mm 120mm;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 80mm;
+    height: 120mm;
+    background: #fff;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .receipt-print-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .receipt-print {
+    width: 80mm !important;
+    min-height: 120mm;
+    margin: 0 auto !important;
+    padding: 4mm !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #000;
+  }
+}
