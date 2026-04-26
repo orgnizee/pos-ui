@@ -1,11 +1,11 @@
 "use client";
 
+import { OrderActionState } from "@/lib/api/actions/orders";
 import { SelectInputField } from "../inputFieldSelect";
 import { InputTextareaField } from "../inputTextAreaField";
 import { CartItem, CustomerOption, PaymentEntry } from "./types";
 import { formatBRL, lineTotalCents, parseCurrencyToCents } from "./utils";
 import { PaymentMethod } from "@/lib/api/paymentMethods";
-import { CreateOrderActionState } from "@/lib/api/actions/orders";
 
 type Props = {
   showCheckoutDrawer: boolean;
@@ -29,7 +29,7 @@ type Props = {
   paymentMethods: PaymentMethod[];
   setIsPaymentAmountManuallyEdited: (value: boolean) => void;
   remaining: number;
-  orderState: CreateOrderActionState | null;
+  orderState: OrderActionState | null;
   finalizeButtonRef: React.RefObject<HTMLButtonElement | null>;
   canSubmitOrder: boolean;
   pendingOrder: boolean;

@@ -11,7 +11,7 @@ import { searchProductsAction } from "@/lib/api/actions/products";
 import { searchCustomersAction } from "@/lib/api/actions/customer";
 import {
   createOrderAction,
-  CreateOrderActionState,
+  OrderActionState,
 } from "@/lib/api/actions/orders";
 import { Product } from "@/lib/api/products";
 import { Customer } from "@/lib/api/customers";
@@ -74,7 +74,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [isPaymentAmountManuallyEdited, setIsPaymentAmountManuallyEdited] =
     useState(false);
   const [orderState, orderAction, pendingOrder] = useActionState<
-    CreateOrderActionState,
+    OrderActionState,
     FormData
   >(createOrderAction, null);
 
