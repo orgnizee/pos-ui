@@ -27,7 +27,7 @@ export function SelectInputField({
           error ? "border-red-500 focus:border-red-500" : ""
         }`}
       >
-        <option value="" disabled hidden>-</option>
+        <option value="-" hidden>-</option>
         {options?.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
