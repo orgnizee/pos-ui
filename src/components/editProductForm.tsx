@@ -40,19 +40,28 @@ export default function EditProductForm({
       <div className="mb-8">
         <SectionLabel label="identificação" />
         <div className="grid grid-cols-3 gap-x-8 gap-y-8">
-          <InputField label="nome" name="name" required defaultValue={product.name} autoFocus />
-          <InputField label="marca" name="brand" defaultValue={product.brand ?? ""} />
+          <InputField
+            label="nome"
+            name="name"
+            required
+            defaultValue={product.name}
+            autoFocus
+          />
+          <InputField
+            label="marca"
+            name="brand"
+            defaultValue={product.brand ?? ""}
+          />
           <InputField label="sku" name="sku" defaultValue={product.sku ?? ""} />
-          <InputField label="código de barras" name="barcode" defaultValue={product.barcode ?? ""} />
-          <InputField label="unidade" name="unit" defaultValue={product.unit ?? ""} />
-          <SelectInputField
-            label="categoria"
-            name="category"
-            defaultValue={product.category?.name ?? ""}
-            options={categories.map((category) => ({
-              label: category.name.toUpperCase(),
-              value: category.id,
-            }))}
+          <InputField
+            label="código de barras"
+            name="barcode"
+            defaultValue={product.barcode ?? ""}
+          />
+          <InputField
+            label="unidade"
+            name="unit"
+            defaultValue={product.unit ?? ""}
           />
         </div>
       </div>
@@ -60,8 +69,16 @@ export default function EditProductForm({
       <div className="mb-8">
         <SectionLabel label="valores e estoque" />
         <div className="grid grid-cols-3 gap-x-8 gap-y-8">
-          <InputField label="preço" name="price" defaultValue={product.price ?? ""} />
-          <InputField label="custo" name="cost" defaultValue={product.cost ?? ""} />
+          <InputField
+            label="preço"
+            name="price"
+            defaultValue={product.price ?? ""}
+          />
+          <InputField
+            label="custo"
+            name="cost"
+            defaultValue={product.cost ?? ""}
+          />
           <InputField
             label="estoque"
             name="stock"
@@ -70,9 +87,17 @@ export default function EditProductForm({
             step="1"
             defaultValue={String(product.stock ?? 0)}
           />
-          <InputField label="origem" name="origin" defaultValue={product.origin ?? ""} />
+          <InputField
+            label="origem"
+            name="origin"
+            defaultValue={product.origin ?? ""}
+          />
           <InputField label="ncm" name="ncm" defaultValue={product.ncm ?? ""} />
-          <InputField label="cest" name="cest" defaultValue={product.cest ?? ""} />
+          <InputField
+            label="cest"
+            name="cest"
+            defaultValue={product.cest ?? ""}
+          />
         </div>
       </div>
 
@@ -84,7 +109,7 @@ export default function EditProductForm({
               type="checkbox"
               name="track_stock"
               defaultChecked={product.track_stock}
-              className="cursor-pointer"
+              className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
             />
             controlar estoque
           </label>
@@ -93,7 +118,7 @@ export default function EditProductForm({
               type="checkbox"
               name="is_available"
               defaultChecked={product.is_available}
-              className="cursor-pointer"
+              className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
             />
             disponível
           </label>
@@ -102,7 +127,7 @@ export default function EditProductForm({
               type="checkbox"
               name="is_active"
               defaultChecked={product.is_active}
-              className="cursor-pointer"
+              className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
             />
             ativo
           </label>
@@ -111,7 +136,9 @@ export default function EditProductForm({
 
       <div className="mt-10 w-full">
         {error && (
-          <p className="mb-2 text-xs font-light normal-case text-red-500">{error}</p>
+          <p className="mb-2 text-xs font-light normal-case text-red-500">
+            {error}
+          </p>
         )}
         <button
           type="submit"

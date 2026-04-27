@@ -71,7 +71,7 @@ export default async function ProdutosPage({
 
       <div className="mt-2 ml-1 overflow-hidden">
         <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-2 font-bold items-center">
+          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-0 gap-2 font-bold items-center">
             <Link
               href={"/produtos"}
               className="grid items-center justify-center shrink-0 rounded-md"
@@ -97,7 +97,7 @@ export default async function ProdutosPage({
       <div className="mt-0 ml-1 overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
-            <p className="text-xs text-primary/50 shrink-0">ordenar:</p>
+            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
             <Link
               href={buildFilterHref(resolvedParams, { sort: "name" })}
               className="grid items-center justify-center shrink-0 rounded-md"
