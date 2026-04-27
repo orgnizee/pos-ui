@@ -148,6 +148,7 @@ export default function EditOrderForm({
     () =>
       JSON.stringify(
         items.map((item) => ({
+          ...(item.id.startsWith("new-item-") ? {} : { id: item.id }),
           product: item.product,
           quantity: parseQuantity(item.quantity),
           price: formatMoneyInput(parseMoney(item.price)),
@@ -161,6 +162,7 @@ export default function EditOrderForm({
     () =>
       JSON.stringify(
         payments.map((payment) => ({
+          ...(payment.id.startsWith("new-payment-") ? {} : { id: payment.id }),
           method: payment.method,
           amount: formatMoneyInput(Math.max(parseMoney(payment.amount), 0)),
           due_at: payment.due_at,
