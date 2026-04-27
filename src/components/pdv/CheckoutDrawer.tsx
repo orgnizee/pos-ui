@@ -76,6 +76,17 @@ export function CheckoutDrawer({
 
         <form action={orderAction} className="mt-4 flex flex-col gap-1">
           <div className="flex justify-between">
+            <span>valor recebido</span>
+            <input
+              value={amountReceived}
+              onChange={(e) => setAmountReceivedCents(parseCurrencyToCents(e.target.value))}
+              className="text-primary placeholder:text-secondary outline-none text-end"
+              placeholder="R$ 0,00"
+              inputMode="numeric"
+            />
+          </div>
+
+          <div className="flex justify-between">
             <p className="">desconto</p>
 
             <input
@@ -111,17 +122,6 @@ export function CheckoutDrawer({
             name="discount_amount"
             value={(orderDiscountCents / 100).toFixed(2)}
           />
-
-          <div className="flex justify-between">
-            <span>valor recebido</span>
-            <input
-              value={amountReceived}
-              onChange={(e) => setAmountReceivedCents(parseCurrencyToCents(e.target.value))}
-              className="text-primary placeholder:text-secondary outline-none text-end"
-              placeholder="R$ 0,00"
-              inputMode="numeric"
-            />
-          </div>
 
           <div className="flex justify-between">
             <span>troco</span>
