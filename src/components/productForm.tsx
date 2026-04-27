@@ -39,7 +39,7 @@ export default function ProductForm({
           <InputField label="sku" name="sku" required />
           <InputField label="código de barras" name="barcode" />
           <InputField label="unidade" name="unit" />
-          <SelectInputField
+          {/* <SelectInputField
             label="categoria"
             name="category"
             defaultValue=""
@@ -47,7 +47,7 @@ export default function ProductForm({
               label: category.name.toUpperCase(),
               value: category.id,
             }))}
-          />
+          /> */}
         </div>
       </div>
 
@@ -56,7 +56,13 @@ export default function ProductForm({
         <div className="grid grid-cols-3 gap-x-8 gap-y-8">
           <InputField label="preço" name="price" />
           <InputField label="custo" name="cost" />
-          <InputField label="estoque" name="stock" type="number" min={0} step="1" />
+          <InputField
+            label="estoque"
+            name="stock"
+            type="number"
+            min={0}
+            step="1"
+          />
           <InputField label="origem" name="origin" />
           <InputField label="ncm" name="ncm" />
           <InputField label="cest" name="cest" />
@@ -67,15 +73,30 @@ export default function ProductForm({
         <SectionLabel label="status" />
         <div className="grid grid-cols-3 gap-4">
           <label className="flex items-center gap-2 text-sm font-light cursor-pointer">
-            <input type="checkbox" name="track_stock" defaultChecked className="cursor-pointer" />
+            <input
+              type="checkbox"
+              name="track_stock"
+              defaultChecked
+              className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
+            />
             controlar estoque
           </label>
           <label className="flex items-center gap-2 text-sm font-light cursor-pointer">
-            <input type="checkbox" name="is_available" defaultChecked className="cursor-pointer" />
+            <input
+              type="checkbox"
+              name="is_available"
+              defaultChecked
+              className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
+            />
             disponível
           </label>
           <label className="flex items-center gap-2 text-sm font-light cursor-pointer">
-            <input type="checkbox" name="is_active" defaultChecked className="cursor-pointer" />
+            <input
+              type="checkbox"
+              name="is_active"
+              defaultChecked
+              className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
+            />
             ativo
           </label>
         </div>
@@ -83,7 +104,9 @@ export default function ProductForm({
 
       <div className="mt-10 w-full">
         {error && (
-          <p className="mb-2 text-xs font-light normal-case text-red-500">{error}</p>
+          <p className="mb-2 text-xs font-light normal-case text-red-500">
+            {error}
+          </p>
         )}
         <button
           type="submit"
