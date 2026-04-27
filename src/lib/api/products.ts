@@ -18,7 +18,10 @@ export type Product = {
   track_stock: boolean;
   is_available: boolean;
   is_active: boolean;
-  category: string | null;
+  category: {
+    id: string;
+    name: string;
+  };
   supplier: string[];
 };
 

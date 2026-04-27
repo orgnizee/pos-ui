@@ -243,7 +243,7 @@ export function CheckoutDrawer({
               disabled={!canSubmitOrder || pendingOrder}
               className="border w-full bg-black text-white broder p-2 uppercase disabled:opacity-40"
             >
-              {pendingOrder ? "salvando..." : "finalizar [ctrl + f]"}
+              {pendingOrder ? "salvando..." : "finalizar [ctrl + 5]"}
             </button>
           </div>
         </form>

@@ -519,15 +519,15 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         }
       }
 
-      if (e.ctrlKey && e.key === "Enter") {
+      if (e.ctrlKey && e.key === "3") {
         e.preventDefault();
         receiveButtonRef.current?.click();
       }
-      if (e.ctrlKey && e.key.toLowerCase() === "p") {
+      if (e.ctrlKey && e.key.toLowerCase() === "2") {
         e.preventDefault();
         searchRef.current?.focus();
       }
-      if (e.ctrlKey && e.key.toLowerCase() === "c") {
+      if (e.ctrlKey && e.key.toLowerCase() === "1") {
         e.preventDefault();
         if (showCustomerPicker) {
           customerSearchRef.current?.focus();
@@ -535,11 +535,11 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           openCustomerPicker();
         }
       }
-      if (e.ctrlKey && e.key.toLowerCase() === "m" && showCheckoutDrawer) {
+      if (e.ctrlKey && e.key.toLowerCase() === "4" && showCheckoutDrawer) {
         e.preventDefault();
         document.getElementById("payment-method-0")?.focus();
       }
-      if (e.ctrlKey && e.key.toLowerCase() === "f" && showCheckoutDrawer) {
+      if (e.ctrlKey && e.key.toLowerCase() === "5" && showCheckoutDrawer) {
         e.preventDefault();
         finalizeButtonRef.current?.focus();
         if (!finalizeButtonRef.current?.disabled) {
@@ -623,7 +623,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             onClick={openCheckoutDrawer}
             className="border w-fit p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            receber [ctrl + enter]
+            receber [ctrl + 3]
           </button>
         </div>
       </div>

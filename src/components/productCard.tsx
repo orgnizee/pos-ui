@@ -20,12 +20,8 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="px-3 py-2 w-full h-full">
           <p className="w-full text-start text-lg text-primary truncate">{product.name}</p>
 
-          <div className="text-primary/50 mb-0">
-            <span className="block truncate">categoria: {product.category || "/"}</span>
-          </div>
-
           <div className="w-full text-start text-primary/50">
-            <span className="block truncate">preço: {product.price || "/"}</span>
+            <span className="block truncate">preço: {product.price || "-"}</span>
           </div>
 
           <div className="w-full text-start text-primary/50">

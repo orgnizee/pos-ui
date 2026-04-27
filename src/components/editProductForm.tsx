@@ -48,7 +48,7 @@ export default function EditProductForm({
           <SelectInputField
             label="categoria"
             name="category"
-            defaultValue={product.category ?? ""}
+            defaultValue={product.category?.name ?? ""}
             options={categories.map((category) => ({
               label: category.name.toUpperCase(),
               value: category.id,

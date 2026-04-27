@@ -44,7 +44,6 @@ export default async function ProductPage({
           {[
             ["sku", dash(product.sku)],
             ["código de barras", dash(product.barcode)],
-            ["categoria", dash(product.category)],
             ["unidade", dash(product.unit)],
             ["preço", dash(product.price)],
             ["custo", dash(product.cost)],
