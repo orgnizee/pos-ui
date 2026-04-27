@@ -13,11 +13,15 @@ export default async function ProdutosPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedParams = await searchParams;
-  const { search, status } = resolvedParams;
+  const { search, status, sort } = resolvedParams;
 
   const isAll = !status;
   const isAvailable = status === "available";
   const isUnavailable = status === "unavailable";
+  const currentSort = typeof sort === "string" ? sort : "name";
+  const isSortByName = currentSort === "name";
+  const isSortBySku = currentSort === "sku";
+  const isSortByStock = currentSort === "stock";
 
   const allProducts = await getProducts({
     search: typeof search === "string" && search.length >= 3 ? search : undefined,
@@ -28,11 +32,25 @@ export default async function ProdutosPage({
     return <p>{allProducts.message}</p>;
   }
 
-  const products = allProducts.filter((product) => {
-    if (isAvailable) return product.is_available;
-    if (isUnavailable) return !product.is_available;
-    return true;
-  });
+  const products = allProducts
+    .filter((product) => {
+      if (isAvailable) return product.is_available;
+      if (isUnavailable) return !product.is_available;
+      return true;
+    })
+    .sort((a, b) => {
+      if (isSortBySku) {
+        const skuA = a.sku || "";
+        const skuB = b.sku || "";
+        return skuA.localeCompare(skuB, "pt-BR", { sensitivity: "base" });
+      }
+
+      if (isSortByStock) {
+        return b.stock - a.stock;
+      }
+
+      return a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" });
+    });
 
   return (
     <section className="mt-8">
@@ -76,12 +94,36 @@ export default async function ProdutosPage({
         </div>
       </div>
 
+      <div className="mt-0 ml-1 overflow-hidden">
+        <div className="overflow-auto flex">
+          <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
+            <p className="text-xs text-primary/50 shrink-0">ordenar:</p>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "name" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByName)}>nome</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "sku" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortBySku)}>sku</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "stock" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByStock)}>estoque</p>
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <div className="grid mt-0 mb-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-1">
-        {products
-          .filter((product) => product.is_active)
-          .map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </div>
     </section>
   );
