@@ -1,6 +1,7 @@
 import DateRange from "@/components/dateRangePicker";
 import ReceivableTable from "@/components/receivableTable";
 import SearchInput from "@/components/searchInput";
+import { getAccounts } from "@/lib/api/bankAccounts";
 import { getReceivables, PaymentStatus } from "@/lib/api/receivables";
 import { isApiError } from "@/lib/api/types";
 import { filterClass } from "@/lib/styleFilterButtons";
@@ -27,17 +28,24 @@ export default async function FiadosPage({
   const isWeek = date === "week";
   const isMonth = date === "month";
 
-  const receivables = await getReceivables({
-    type: "receivable",
-    ...(typeof status === "string" && { status: status as PaymentStatus }),
-    ...(typeof search === "string" && { search }),
-    ...(typeof date === "string" && { date }),
-    ...(typeof start_date === "string" && { start_date }),
-    ...(typeof end_date === "string" && { end_date }),
-  });
+  const [receivables, accounts] = await Promise.all([
+    getReceivables({
+      type: "receivable",
+      ...(typeof status === "string" && { status: status as PaymentStatus }),
+      ...(typeof search === "string" && { search }),
+      ...(typeof date === "string" && { date }),
+      ...(typeof start_date === "string" && { start_date }),
+      ...(typeof end_date === "string" && { end_date }),
+    }),
+    getAccounts(),
+  ]);
 
   if (isApiError(receivables)) {
     return <p>{receivables.message}</p>;
+  }
+
+  if (isApiError(accounts)) {
+    return <p>{accounts.message}</p>;
   }
 
   const byStatus = (paymentStatus: PaymentStatus) =>
@@ -168,7 +176,11 @@ export default async function FiadosPage({
       </div>
 
       {/* Receivables History */}
-      <ReceivableTable receivables={receivables} basePath="fiados" />
+      <ReceivableTable
+        receivables={receivables}
+        basePath="fiados"
+        accounts={accounts}
+      />
 
       <div className="mt-6 overflow-hidden">
         <div className="overflow-auto flex">
