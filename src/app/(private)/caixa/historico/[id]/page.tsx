@@ -18,9 +18,7 @@ export default async function TransactionPage({
     return <p>{transaction.message}</p>;
   }
 
-  const canDelete = transaction.description
-    .toLowerCase()
-    .includes("pagamento referente à venda #");
+  const canDelete = transaction.order !== null || transaction.payment !== null;
 
   return (
     <section className="mt-6">
@@ -64,7 +62,28 @@ export default async function TransactionPage({
 
           <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
             <p className="text-sm font-light">origem</p>
-            <p className="text-sm font-light">{transaction.payment ?? "-"}</p>
+            <p className="text-sm font-light">
+              {transaction.payment && (
+                <Link href={`/fiados/${transaction.payment}`}>
+                  {transaction.payment}
+                </Link>
+              )}
+              {!transaction.payment && "-"}
+            </p>
+          </div>
+
+          <hr className="border-t border-tertiary/25 w-full sm:w-100" />
+
+          <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
+            <p className="text-sm font-light">venda</p>
+            <p className="text-sm font-light">
+              {transaction.order.id && (
+                <Link href={`/vendas/${transaction.order.id}`}>
+                  venda nº{transaction.order.order_number}
+                </Link>
+              )}
+              {!transaction.order.id && "-"}
+            </p>
           </div>
 
           <hr className="border-t border-tertiary/25 w-full sm:w-100" />
@@ -87,10 +106,6 @@ export default async function TransactionPage({
               {`"${transaction.description.toLowerCase()}"`}
             </p>
           </div>
-
-          <p className="absolute bottom-4 text-sm font-light text-tertiary">
-            {transaction.id}
-          </p>
         </div>
       </div>
 

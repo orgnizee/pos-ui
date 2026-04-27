@@ -21,6 +21,10 @@ export type Transaction = {
     id: string;
     name: string;
   };
+  order: {
+    id: string;
+    order_number: number;
+  };
   payment: string;
   linked: string;
   amount: string;

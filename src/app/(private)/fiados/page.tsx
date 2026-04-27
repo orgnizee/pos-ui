@@ -51,10 +51,34 @@ export default async function FiadosPage({
       )
       .toFixed(2);
 
-  const sumPaid = (status: PaymentStatus) =>
-    byStatus(status)
-      .reduce((sum, receivable) => sum + parseFloat(receivable.amount_paid), 0)
+  const sumTotalAmount= () =>
+    receivables
+      .reduce(
+        (sum, receivable) => sum + parseFloat(receivable.total_amount),
+        0,
+      )
       .toFixed(2);
+
+  const sumTotalOutstanding= () =>
+    receivables
+      .reduce(
+        (sum, receivable) => sum + parseFloat(receivable.outstanding_balance),
+        0,
+      )
+      .toFixed(2);
+
+  const sumTotalPaid= () =>
+    receivables
+      .reduce(
+        (sum, receivable) => sum + parseFloat(receivable.amount_paid),
+        0,
+      )
+      .toFixed(2);
+
+  // const sumPaid = (status: PaymentStatus) =>
+  //   byStatus(status)
+  //     .reduce((sum, receivable) => sum + parseFloat(receivable.amount_paid), 0)
+  //     .toFixed(2);
 
   return (
     <section className="mt-8">
@@ -149,18 +173,14 @@ export default async function FiadosPage({
       <div className="mt-6 overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex w-full justify-between px-1 pt-1 pb-5 gap-4 font-bold items-center">
-            <SummaryCard label="pendente" value={sumOutstanding("pending")} />
-            <SummaryCard
-              label="parcial"
-              value={sumOutstanding("partially_paid")}
-              highlight="orange"
-            />
+            <SummaryCard label="total" value={sumTotalAmount()} />
             <SummaryCard
               label="em atraso"
               value={sumOutstanding("overdue")}
               highlight="red"
             />
-            <SummaryCard label="pago" value={sumPaid("paid")} highlight="green" />
+            <SummaryCard label="pago" value={sumTotalPaid()} highlight="green" />
+            <SummaryCard label="a pagar" value={sumTotalOutstanding()} />
           </div>
         </div>
       </div>
@@ -171,21 +191,11 @@ export default async function FiadosPage({
 function SummaryCard({
   label,
   value,
-  highlight,
 }: {
   label: string;
   value: string;
   highlight?: "red" | "green" | "orange";
 }) {
-  const color =
-    highlight === "red"
-      ? "text-red-500"
-      : highlight === "green"
-        ? "text-green-600"
-        : highlight === "orange"
-          ? "text-orange-400"
-          : "text-primary";
-
   return (
     <div className="grid items-center justify-center shrink-0 rounded-md overflow-hidden">
       <p className={`text-center text-xs uppercase font-light`}>{label}</p>

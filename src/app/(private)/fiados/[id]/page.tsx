@@ -34,6 +34,10 @@ export default async function FiadosPage({
   );
   const canEdit = ["pending", "overdue"].includes(payment.status);
 
+  const canDelete = payment.reference?.toLowerCase().includes("venda")
+  console.log(canDelete)
+  console.log(payment.reference)
+
   return (
     <section className="mt-6">
       <div className="mb-4 flex items-center justify-between">
@@ -114,7 +118,14 @@ export default async function FiadosPage({
 
           <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
             <p className="text-sm font-light">ref</p>
-            <p className="text-sm font-light">{payment.reference ?? "-"}</p>
+            <p className="text-sm font-light">
+              {payment.reference && (
+                <Link href={`/vendas/${payment.reference}`}>
+                  {payment.reference}
+                </Link>
+              )}
+              {!payment.reference && "-"}
+            </p>
           </div>
 
           {payment.notes && (
@@ -128,7 +139,7 @@ export default async function FiadosPage({
       </div>
 
       <div className="flex items-center justify-between">
-        {canEdit && <DeletePaymentButton id={payment.id} />}
+        {!canDelete && <DeletePaymentButton id={payment.id} />}
 
         {canEdit && (
           <Link
