@@ -3,21 +3,33 @@
 import { Order } from "@/lib/api/orders";
 import { formatBRL, formatDateTime } from "@/lib/utils/format";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function PrintOrderReceipt({ order }: { order: Order }) {
   const searchParams = useSearchParams();
   const shouldPrint = searchParams.has("print");
 
+  const router = useRouter();
+
   useEffect(() => {
     if (!shouldPrint) return;
+
+    const handleAfterPrint = () => {
+      router.back();
+    };
+
+    window.addEventListener("afterprint", handleAfterPrint);
 
     const t = setTimeout(() => {
       window.print();
     }, 300);
 
-    return () => clearTimeout(t);
-  }, [shouldPrint]);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("afterprint", handleAfterPrint);
+    };
+  }, [shouldPrint, router]);
 
   return (
     <div className="print-only receipt-thermal">

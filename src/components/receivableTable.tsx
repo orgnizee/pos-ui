@@ -88,8 +88,14 @@ export default function ReceivableTable({
       {selectedCount > 0 && (
         <div className="mb-6 border p-3 flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase">{selectedCount} selecionado(s)</p>
-            <p className="text-sm">total a receber: {formatBRL(totalSelected)}</p>
+            <p className="text-xs uppercase">
+              {selectedCount}{" "}
+              {selectedCount === 1 ? "selecionado" : "selecionados"}
+            </p>
+
+            <p className="text-sm">
+              total a receber: {formatBRL(totalSelected)}
+            </p>
           </div>
 
           <button
@@ -154,13 +160,15 @@ export default function ReceivableTable({
                             checked={selectedIds.includes(receivable.id)}
                             onChange={() => toggleSelected(receivable.id)}
                             onClick={(event) => event.stopPropagation()}
-                            className="cursor-pointer"
+                            className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
                             aria-label={`selecionar fiado ${receivable.id}`}
                           />
                         ) : (
                           <span className="w-4" />
                         )}
-                        <div className={`w-2 h-2 ${statusDot[receivable.status]}`} />
+                        <div
+                          className={`w-2 h-2 ${statusDot[receivable.status]}`}
+                        />
                       </div>
                     </td>
                     <td className="px-2 text-start border-b border-secondary/50">
@@ -264,7 +272,10 @@ function BatchSettleModal({
         </div>
 
         <div className="px-6 pb-4 text-sm">
-          <p>{selectedReceivables.length} fiado(s) selecionado(s)</p>
+          <p>
+            {selectedReceivables.length}{" "}
+            {selectedReceivables.length === 1 ? "selecionado" : "selecionados"}
+          </p>
           <p className="mt-1">total: {formatBRL(total)}</p>
         </div>
 
@@ -305,6 +316,7 @@ function printBatchReceipt(
     account: { name: string };
     contact: { name: string | null };
     timestamp: string;
+    description: string;
   }[],
 ) {
   const printWindow = window.open("", "_blank", "width=420,height=720");
@@ -318,11 +330,11 @@ function printBatchReceipt(
     .map(
       (transaction) => `
         <div style="margin-bottom: 10px; border-bottom: 1px dashed #999; padding-bottom: 8px;">
-          <div style="display:flex; justify-content:space-between;"><span>fiado:</span><span>${transaction.contact.name ?? "-"}</span></div>
+          <div style="display:flex; justify-content:space-between;"><span>cliente:</span><span>${transaction.contact.name ?? "-"}</span></div>
           <div style="display:flex; justify-content:space-between;"><span>conta:</span><span>${transaction.account.name.toLowerCase()}</span></div>
           <div style="display:flex; justify-content:space-between;"><span>valor:</span><span>${formatBRL(transaction.amount)}</span></div>
-          <div style="display:flex; justify-content:space-between;"><span>id:</span><span>${transaction.id}</span></div>
           <div style="display:flex; justify-content:space-between;"><span>data:</span><span>${formatDateTime(transaction.timestamp)}</span></div>
+          <div style="text-align:center; justify-content:center;"><span>${transaction.description}</span></div>
         </div>
       `,
     )
