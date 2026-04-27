@@ -36,7 +36,7 @@ export default function ProductForm({
         <div className="grid grid-cols-3 gap-x-8 gap-y-8">
           <InputField label="nome" name="name" required autoFocus />
           <InputField label="marca" name="brand" />
-          <InputField label="sku" name="sku" />
+          <InputField label="sku" name="sku" required />
           <InputField label="código de barras" name="barcode" />
           <InputField label="unidade" name="unit" />
           <SelectInputField

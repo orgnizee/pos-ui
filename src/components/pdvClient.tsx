@@ -64,7 +64,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const searchRef = useRef<HTMLInputElement>(null);
   const receiveButtonRef = useRef<HTMLButtonElement>(null);
   const finalizeButtonRef = useRef<HTMLButtonElement>(null);
-  const discountInputRef = useRef<HTMLInputElement>(null);
+  const amountPaidInputRef = useRef<HTMLInputElement | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -411,8 +411,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     if (!showCheckoutDrawer) return;
 
     const timer = setTimeout(() => {
-      discountInputRef.current?.focus();
-      discountInputRef.current?.select();
+      amountPaidInputRef.current?.focus();
+      amountPaidInputRef.current?.select();
     }, 0);
 
     return () => clearTimeout(timer);
@@ -632,7 +632,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         showCheckoutDrawer={showCheckoutDrawer}
         orderTotal={orderTotal}
         orderAction={orderAction}
-        discountInputRef={discountInputRef}
+        amountPaidInputRef={amountPaidInputRef}
         discountAmount={discountAmount}
         payableBeforeOrderDiscountCents={payableBeforeOrderDiscountCents}
         isPaymentAmountManuallyEdited={isPaymentAmountManuallyEdited}

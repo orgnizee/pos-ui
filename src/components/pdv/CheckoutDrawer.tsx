@@ -11,7 +11,7 @@ type Props = {
   showCheckoutDrawer: boolean;
   orderTotal: number;
   orderAction: (payload: FormData) => void;
-  discountInputRef: React.RefObject<HTMLInputElement | null>;
+  amountPaidInputRef: React.RefObject<HTMLInputElement | null>;
   discountAmount: string;
   payableBeforeOrderDiscountCents: number;
   isPaymentAmountManuallyEdited: boolean;
@@ -41,7 +41,7 @@ export function CheckoutDrawer({
   showCheckoutDrawer,
   orderTotal,
   orderAction,
-  discountInputRef,
+  amountPaidInputRef,
   discountAmount,
   payableBeforeOrderDiscountCents,
   isPaymentAmountManuallyEdited,
@@ -78,7 +78,8 @@ export function CheckoutDrawer({
           <div className="flex justify-between">
             <span>valor recebido</span>
             <input
-              value={amountReceived}
+              ref={amountPaidInputRef}
+              value={(amountReceived)}
               onChange={(e) => setAmountReceivedCents(parseCurrencyToCents(e.target.value))}
               className="text-primary placeholder:text-secondary outline-none text-end"
               placeholder="R$ 0,00"
@@ -90,7 +91,6 @@ export function CheckoutDrawer({
             <p className="">desconto</p>
 
             <input
-              ref={discountInputRef}
               value={discountAmount}
               onChange={(e) => {
                 const nextDiscountCents = parseCurrencyToCents(e.target.value);
