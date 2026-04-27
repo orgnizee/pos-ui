@@ -48,7 +48,7 @@ export async function createOrderAction(
     };
   }
 
-  redirect("/pdv");
+  redirect(`/vendas/${res.id}?print`);
 }
 
 export async function updateOrderAction(
