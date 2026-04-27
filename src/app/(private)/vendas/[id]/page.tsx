@@ -138,6 +138,7 @@ export default async function VendaPage({
         <DeleteOrderButton id={order.id} />
       </div>
 
+      {/* Print receipt */}
       <div className="print-only receipt-thermal">
         <div className="w-[80mm] mx-auto text-[12px] font-mono">
           <p className="text-center text-lg font-bold">FRIGORÍFICO SARAIVA</p>

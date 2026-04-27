@@ -9,10 +9,7 @@ import {
 } from "react";
 import { searchProductsAction } from "@/lib/api/actions/products";
 import { searchCustomersAction } from "@/lib/api/actions/customer";
-import {
-  createOrderAction,
-  OrderActionState,
-} from "@/lib/api/actions/orders";
+import { createOrderAction, OrderActionState } from "@/lib/api/actions/orders";
 import { Product } from "@/lib/api/products";
 import { Customer } from "@/lib/api/customers";
 import { PaymentMethod } from "@/lib/api/paymentMethods";
@@ -47,7 +44,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [highlightedIdx, setHighlightedIdx] = useState(-1);
   const [scaleBarcodeFeedback, setScaleBarcodeFeedback] = useState("");
 
-  const [customer, setCustomer] = useState<CustomerOption>(FALLBACK_DEFAULT_CUSTOMER);
+  const [customer, setCustomer] = useState<CustomerOption>(
+    FALLBACK_DEFAULT_CUSTOMER,
+  );
   const [defaultCustomer, setDefaultCustomer] = useState<CustomerOption>(
     FALLBACK_DEFAULT_CUSTOMER,
   );
@@ -58,7 +57,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const [highlightedCustomerIdx, setHighlightedCustomerIdx] = useState(-1);
 
   const customerSearchRef = useRef<HTMLInputElement>(null);
-  const customerDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const customerDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const customerListRef = useRef<HTMLUListElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const receiveButtonRef = useRef<HTMLButtonElement>(null);
@@ -80,8 +81,12 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
   const isFiadoMethod = useCallback(
     (methodId: string) => {
-      const selectedMethod = paymentMethods.find((method) => method.id === methodId);
-      return selectedMethod?.description.toLowerCase().includes("fiado") ?? false;
+      const selectedMethod = paymentMethods.find(
+        (method) => method.id === methodId,
+      );
+      return (
+        selectedMethod?.description.toLowerCase().includes("fiado") ?? false
+      );
     },
     [paymentMethods],
   );
@@ -198,13 +203,19 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         .map((i) => {
           if (i.id !== itemId) return i;
 
-          const previousLineTotalCents = lineTotalCents(i.product.price, i.quantity);
+          const previousLineTotalCents = lineTotalCents(
+            i.product.price,
+            i.quantity,
+          );
           const previousAutomaticDiscountCents = automaticCentDiscountCents(
             i.product.price,
             i.quantity,
           );
           const nextQuantity = Number((i.quantity + delta).toFixed(3));
-          const nextLineTotalCents = lineTotalCents(i.product.price, nextQuantity);
+          const nextLineTotalCents = lineTotalCents(
+            i.product.price,
+            nextQuantity,
+          );
           const nextAutomaticDiscountCents = automaticCentDiscountCents(
             i.product.price,
             nextQuantity,
@@ -230,7 +241,10 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       prev.map((i) => {
         if (i.id !== itemId) return i;
 
-        const previousLineTotalCents = lineTotalCents(i.product.price, i.quantity);
+        const previousLineTotalCents = lineTotalCents(
+          i.product.price,
+          i.quantity,
+        );
         const previousAutomaticDiscountCents = automaticCentDiscountCents(
           i.product.price,
           i.quantity,
@@ -280,7 +294,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     setHighlightedCustomerIdx(-1);
   }, []);
 
-  const handleCustomerSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCustomerSearchChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const val = e.target.value;
     setCustomerSearch(val);
     if (customerDebounceRef.current) clearTimeout(customerDebounceRef.current);
@@ -339,8 +355,14 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     const maxDiscount = lineTotalCents(item.product.price, item.quantity);
     return sum + Math.min(item.discountCents, maxDiscount);
   }, 0);
-  const payableBeforeOrderDiscountCents = Math.max(totalAmountCents - itemDiscountTotalCents, 0);
-  const orderDiscountCents = Math.min(discountCents, payableBeforeOrderDiscountCents);
+  const payableBeforeOrderDiscountCents = Math.max(
+    totalAmountCents - itemDiscountTotalCents,
+    0,
+  );
+  const orderDiscountCents = Math.min(
+    discountCents,
+    payableBeforeOrderDiscountCents,
+  );
   const itemDiscountTotal = itemDiscountTotalCents / 100;
   const totalAmount = totalAmountCents / 100 - itemDiscountTotal;
   const orderTotalCents = Math.max(
@@ -348,10 +370,14 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
     0,
   );
   const orderTotal = orderTotalCents / 100;
-  const paymentTotal = payments.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
+  const paymentTotal = payments.reduce(
+    (sum, payment) => sum + (Number(payment.amount) || 0),
+    0,
+  );
   const remaining = orderTotal - paymentTotal;
   const change = Math.max(amountReceivedCents / 100 - orderTotal, 0);
-  const canSubmitOrder = cart.length > 0 && payments.length > 0 && Math.abs(remaining) < 0.001;
+  const canSubmitOrder =
+    cart.length > 0 && payments.length > 0 && Math.abs(remaining) < 0.001;
 
   const resetCheckout = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -440,7 +466,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
       if (showCustomerPicker) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
-          setHighlightedCustomerIdx((i) => Math.min(i + 1, customerListLength - 1));
+          setHighlightedCustomerIdx((i) =>
+            Math.min(i + 1, customerListLength - 1),
+          );
           return;
         }
         if (e.key === "ArrowUp") {
@@ -484,7 +512,8 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         }
         if (e.key === "Enter") {
           e.preventDefault();
-          const productToAdd = highlightedIdx >= 0 ? results[highlightedIdx] : results[0];
+          const productToAdd =
+            highlightedIdx >= 0 ? results[highlightedIdx] : results[0];
           if (productToAdd) addToCart(productToAdd);
           return;
         }
@@ -528,9 +557,13 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [handleScaleBarcodeSubmit, openCustomerPicker, showCheckoutDrawer, showCustomerPicker]);
+  }, [
+    handleScaleBarcodeSubmit,
+    openCustomerPicker,
+    showCheckoutDrawer,
+    showCustomerPicker,
+  ]);
 
-  const today = new Date().toISOString().split("T")[0];
   const discountAmount = formatBRL(orderDiscountCents / 100);
   const amountReceived = formatBRL(amountReceivedCents / 100);
 
@@ -558,7 +591,9 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           customerSearchRef={customerSearchRef}
           customerListRef={customerListRef}
           onToggle={() =>
-            showCustomerPicker ? setShowCustomerPicker(false) : openCustomerPicker()
+            showCustomerPicker
+              ? setShowCustomerPicker(false)
+              : openCustomerPicker()
           }
           onClose={() => setShowCustomerPicker(false)}
           onSearchChange={handleCustomerSearchChange}
@@ -609,7 +644,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         customer={customer}
         cart={cart}
         payments={payments}
-        today={today}
+        today={getDueDate()}
         isFiadoMethod={isFiadoMethod}
         getDueDate={getDueDate}
         paymentMethods={paymentMethods}

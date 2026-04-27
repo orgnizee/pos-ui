@@ -34,9 +34,7 @@ export default async function FiadosPage({
   );
   const canEdit = ["pending", "overdue"].includes(payment.status);
 
-  const canDelete = payment.reference?.toLowerCase().includes("venda")
-  console.log(canDelete)
-  console.log(payment.reference)
+  const canDelete = payment.notes?.toLowerCase().includes("venda")
 
   return (
     <section className="mt-6">

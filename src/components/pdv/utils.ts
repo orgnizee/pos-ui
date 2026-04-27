@@ -18,7 +18,10 @@ export function parsePriceToCents(price: string | null | undefined) {
   return Math.floor(parsed * 100);
 }
 
-export function lineTotalCents(price: string | null | undefined, quantity: number) {
+export function lineTotalCents(
+  price: string | null | undefined,
+  quantity: number,
+) {
   const priceCents = parsePriceToCents(price);
   const quantityThousandths = Math.floor(quantity * 1000);
   return Math.max(Math.floor((priceCents * quantityThousandths) / 1000), 0);
@@ -62,5 +65,14 @@ export function parseScaleBarcode(raw: string) {
 export function getDueDate() {
   const d = new Date();
   d.setDate(d.getDate() + 30);
-  return d.toISOString().split("T")[0];
+
+  return d
+    .toLocaleDateString("pt-BR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .split("/")
+    .reverse()
+    .join("-");
 }

@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { deleteOrderAction, OrderActionState } from "@/lib/api/actions/orders";
 
 export default function DeleteOrderButton({ id }: { id: string }) {
-  const [, dispatch, pending] = useActionState<OrderActionState, FormData>(
+  const [state, dispatch, pending] = useActionState<OrderActionState, FormData>(
     deleteOrderAction.bind(null, id),
     null,
   );
@@ -18,6 +18,7 @@ export default function DeleteOrderButton({ id }: { id: string }) {
       >
         excluir
       </button>
+      <p className="text-xs text-red-500 ml-1">{state?.message}</p>
     </form>
   );
 }

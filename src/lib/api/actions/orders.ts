@@ -4,13 +4,11 @@ import { redirect } from "next/navigation";
 import { createOrder, deleteOrder, OrderStatus, updateOrder } from "../orders";
 import { isApiError } from "../types";
 
-export type OrderActionState =
-  | {
-      error: true;
-      message: string;
-      details?: unknown;
-    }
-  | null;
+export type OrderActionState = {
+  error: true;
+  message: string;
+  details?: unknown;
+} | null;
 
 export async function createOrderAction(
   _: unknown,
@@ -76,7 +74,11 @@ export async function deleteOrderAction(id: string): Promise<OrderActionState> {
   const res = await deleteOrder(id);
 
   if (isApiError(res)) {
-    return { error: true, message: res.message, details: res.details };
+    return {
+      error: true,
+      message: "venda possui contas recebidas",
+      details: res.details,
+    };
   }
 
   redirect("/vendas");
