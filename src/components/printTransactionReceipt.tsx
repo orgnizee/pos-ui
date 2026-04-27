@@ -69,15 +69,6 @@ export default function PrintTransactionReceipt({
         </div>
 
         <div className="flex justify-between">
-          <span>venda</span>
-          <span>
-            {transaction.order.id
-              ? `venda nº${transaction.order.order_number}`
-              : "-"}
-          </span>
-        </div>
-
-        <div className="flex justify-between">
           <span>ref</span>
           <span>{transaction.linked || "-"}</span>
         </div>

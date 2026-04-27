@@ -241,7 +241,7 @@ export function CheckoutDrawer({
               id="btn-finalizar"
               ref={finalizeButtonRef}
               disabled={!canSubmitOrder || pendingOrder}
-              className="border w-full p-2 uppercase disabled:opacity-40"
+              className="border w-full bg-black text-white broder p-2 uppercase disabled:opacity-40"
             >
               {pendingOrder ? "salvando..." : "finalizar [ctrl + f]"}
             </button>

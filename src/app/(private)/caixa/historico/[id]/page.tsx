@@ -83,20 +83,6 @@ export default async function TransactionPage({
             <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
             <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
-              <p className="text-sm font-light">venda</p>
-              <p className="text-sm font-light">
-                {transaction.order.id && (
-                  <Link href={`/vendas/${transaction.order.id}`}>
-                    venda nº{transaction.order.order_number}
-                  </Link>
-                )}
-                {!transaction.order.id && "-"}
-              </p>
-            </div>
-
-            <hr className="border-t border-tertiary/25 w-full sm:w-100" />
-
-            <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
               <p className="text-sm font-light">ref</p>
               {transaction.linked && (
                 <Link

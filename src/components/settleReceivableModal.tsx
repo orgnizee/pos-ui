@@ -126,7 +126,7 @@ export default function SettlePaymentModal({
           <button
             type="submit"
             disabled={pending || cents === 0}
-            className="w-full py-2 bg-primary text-sm text-white uppercase cursor-pointer disabled:bg-white disabled:text-primary disabled:border"
+            className="w-full py-2 bg-black text-sm text-white uppercase cursor-pointer disabled:bg-white disabled:text-primary disabled:border"
           >
             confirmar
           </button>
