@@ -56,7 +56,53 @@ export async function updateOrderAction(
   _: unknown,
   formData: FormData,
 ): Promise<OrderActionState> {
+  const itemsRaw = formData.get("items") as string | null;
+  const paymentMethodsRaw = formData.get("payment_methods") as string | null;
+
+  let parsedItems:
+    | {
+        product: string;
+        quantity: number;
+        price: string;
+        discount: string;
+      }[]
+    | undefined;
+  let parsedPaymentMethods:
+    | {
+        method: string;
+        amount: string;
+        due_at: string;
+      }[]
+    | undefined;
+
+  if (itemsRaw) {
+    try {
+      parsedItems = JSON.parse(itemsRaw) as {
+        product: string;
+        quantity: number;
+        price: string;
+        discount: string;
+      }[];
+    } catch {
+      return { error: true, message: "itens inválidos." };
+    }
+  }
+
+  if (paymentMethodsRaw) {
+    try {
+      parsedPaymentMethods = JSON.parse(paymentMethodsRaw) as {
+        method: string;
+        amount: string;
+        due_at: string;
+      }[];
+    } catch {
+      return { error: true, message: "pagamentos inválidos." };
+    }
+  }
+
   const res = await updateOrder(id, {
+    items: parsedItems,
+    payment_methods: parsedPaymentMethods,
     status: (formData.get("status") as OrderStatus) || undefined,
     order_date: (formData.get("order_date") as string) || undefined,
     discount_amount: (formData.get("discount_amount") as string) || undefined,
