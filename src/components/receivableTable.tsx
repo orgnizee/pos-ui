@@ -1,12 +1,20 @@
 "use client";
 
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { Receivable, PaymentStatus } from "@/lib/api/receivables";
 import { formatBRL, formatDateTime } from "@/lib/utils/format";
 import { useRouter } from "next/navigation";
+import { Account } from "@/lib/api/bankAccounts";
+import {
+  settleBatchReceivablesAction,
+  SettleBatchReceivableActionState,
+} from "@/lib/api/actions/settleReceivable";
+import { SelectInputField } from "./inputFieldSelect";
 
 interface ReceivableTableProps {
   receivables: Receivable[];
   basePath: string;
+  accounts: Account[];
 }
 
 const statusDot: Record<PaymentStatus, string> = {
@@ -16,9 +24,16 @@ const statusDot: Record<PaymentStatus, string> = {
   partially_paid: "bg-orange-400",
 };
 
+const selectableStatuses: PaymentStatus[] = [
+  "pending",
+  "overdue",
+  "partially_paid",
+];
+
 export default function ReceivableTable({
   receivables,
   basePath,
+  accounts,
 }: ReceivableTableProps) {
   const grouped = groupByIssuedDate(
     [...receivables].sort(
@@ -29,8 +44,64 @@ export default function ReceivableTable({
 
   const router = useRouter();
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [openBatchModal, setOpenBatchModal] = useState(false);
+  const [batchState, batchAction, pendingBatch] = useActionState<
+    SettleBatchReceivableActionState,
+    FormData
+  >(settleBatchReceivablesAction, null);
+
+  const selectedReceivables = useMemo(
+    () =>
+      receivables.filter(
+        (receivable) =>
+          selectedIds.includes(receivable.id) &&
+          selectableStatuses.includes(receivable.status),
+      ),
+    [receivables, selectedIds],
+  );
+
+  const totalSelected = selectedReceivables
+    .reduce(
+      (sum, receivable) => sum + parseFloat(receivable.outstanding_balance),
+      0,
+    )
+    .toFixed(2);
+
+  useEffect(() => {
+    if (!batchState || batchState.error) return;
+
+    printBatchReceipt(batchState.transactions);
+    router.refresh();
+  }, [batchState, router]);
+
+  const toggleSelected = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const selectedCount = selectedReceivables.length;
+
   return (
     <section className="mt-12">
+      {selectedCount > 0 && (
+        <div className="mb-6 border p-3 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase">{selectedCount} selecionado(s)</p>
+            <p className="text-sm">total a receber: {formatBRL(totalSelected)}</p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setOpenBatchModal(true)}
+            className="px-4 py-2 border text-xs uppercase cursor-pointer hover:bg-black hover:text-white"
+          >
+            receber e imprimir
+          </button>
+        </div>
+      )}
+
       {Object.entries(grouped).map(([label, group]) => (
         <div key={label}>
           <p>{label}</p>
@@ -76,9 +147,21 @@ export default function ReceivableTable({
                     onClick={() => router.push(`${basePath}/${receivable.id}`)}
                   >
                     <td className="border-b border-secondary/50">
-                      <div
-                        className={`w-2 h-2 ${statusDot[receivable.status]}`}
-                      />
+                      <div className="flex items-center gap-2">
+                        {selectableStatuses.includes(receivable.status) ? (
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(receivable.id)}
+                            onChange={() => toggleSelected(receivable.id)}
+                            onClick={(event) => event.stopPropagation()}
+                            className="cursor-pointer"
+                            aria-label={`selecionar fiado ${receivable.id}`}
+                          />
+                        ) : (
+                          <span className="w-4" />
+                        )}
+                        <div className={`w-2 h-2 ${statusDot[receivable.status]}`} />
+                      </div>
                     </td>
                     <td className="px-2 text-start border-b border-secondary/50">
                       {formatBRL(receivable.total_amount)}
@@ -106,8 +189,165 @@ export default function ReceivableTable({
           </div>
         </div>
       ))}
+
+      {openBatchModal && selectedCount > 0 && (
+        <BatchSettleModal
+          accounts={accounts}
+          selectedReceivables={selectedReceivables}
+          onClose={() => setOpenBatchModal(false)}
+          action={batchAction}
+          pending={pendingBatch}
+          state={batchState}
+        />
+      )}
     </section>
   );
+}
+
+function BatchSettleModal({
+  accounts,
+  selectedReceivables,
+  onClose,
+  action,
+  pending,
+  state,
+}: {
+  accounts: Account[];
+  selectedReceivables: Receivable[];
+  onClose: () => void;
+  action: (payload: FormData) => void;
+  pending: boolean;
+  state: SettleBatchReceivableActionState;
+}) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  const items = selectedReceivables.map((receivable) => ({
+    id: receivable.id,
+    amount: receivable.outstanding_balance,
+  }));
+
+  const total = items
+    .reduce((sum, item) => sum + parseFloat(item.amount), 0)
+    .toFixed(2);
+
+  const accountOptions = accounts.map((a) => ({
+    label: a.name.toUpperCase(),
+    value: String(a.id),
+  }));
+
+  return (
+    <div
+      ref={overlayRef}
+      onClick={(e) => e.target === overlayRef.current && onClose()}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-white/90"
+    >
+      <div className="w-full sm:w-120 border bg-white overflow-hidden">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4">
+          <p className="text-sm font-light uppercase tracking-widest text-primary">
+            receber múltiplos fiados
+          </p>
+          <button
+            onClick={onClose}
+            className="text-tertiary hover:text-primary text-xs uppercase tracking-widest font-light"
+          >
+            cancelar
+          </button>
+        </div>
+
+        <div className="px-6 pb-4 text-sm">
+          <p>{selectedReceivables.length} fiado(s) selecionado(s)</p>
+          <p className="mt-1">total: {formatBRL(total)}</p>
+        </div>
+
+        <form action={action} className="px-6 pb-8 flex flex-col gap-4">
+          <input type="hidden" name="items" value={JSON.stringify(items)} />
+
+          <SelectInputField
+            label="conta"
+            name="account"
+            required
+            defaultValue=""
+            options={accountOptions}
+          />
+
+          {state?.error && (
+            <p className="text-xs font-light normal-case text-red-500">
+              {state.message}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={pending || items.length === 0}
+            className="w-full py-2 bg-black text-sm text-white uppercase cursor-pointer disabled:bg-white disabled:text-primary disabled:border"
+          >
+            confirmar e imprimir
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function printBatchReceipt(
+  transactions: {
+    id: string;
+    amount: string;
+    account: { name: string };
+    contact: { name: string | null };
+    timestamp: string;
+  }[],
+) {
+  const printWindow = window.open("", "_blank", "width=420,height=720");
+  if (!printWindow) return;
+
+  const total = transactions
+    .reduce((sum, transaction) => sum + parseFloat(transaction.amount), 0)
+    .toFixed(2);
+
+  const rows = transactions
+    .map(
+      (transaction) => `
+        <div style="margin-bottom: 10px; border-bottom: 1px dashed #999; padding-bottom: 8px;">
+          <div style="display:flex; justify-content:space-between;"><span>fiado:</span><span>${transaction.contact.name ?? "-"}</span></div>
+          <div style="display:flex; justify-content:space-between;"><span>conta:</span><span>${transaction.account.name.toLowerCase()}</span></div>
+          <div style="display:flex; justify-content:space-between;"><span>valor:</span><span>${formatBRL(transaction.amount)}</span></div>
+          <div style="display:flex; justify-content:space-between;"><span>id:</span><span>${transaction.id}</span></div>
+          <div style="display:flex; justify-content:space-between;"><span>data:</span><span>${formatDateTime(transaction.timestamp)}</span></div>
+        </div>
+      `,
+    )
+    .join("");
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Comprovante de recebimentos</title>
+      </head>
+      <body style="font-family: monospace; font-size: 12px; width: 80mm; margin: 0 auto; padding: 8px;">
+        <p style="text-align: center; font-size: 16px; margin: 4px 0; font-weight: bold;">FRIGORÍFICO SARAIVA</p>
+        <p style="text-align: center; margin: 0 0 10px 0;">comprovante de recebimentos</p>
+        ${rows}
+        <div style="display:flex; justify-content:space-between; font-weight: bold; border-top: 1px dashed #999; padding-top: 8px;">
+          <span>total</span>
+          <span>${formatBRL(total)}</span>
+        </div>
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
 }
 
 // const groupByDueDate = (receivables: Receivable[]) => {
