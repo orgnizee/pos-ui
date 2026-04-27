@@ -86,6 +86,7 @@ export type CreateOrderInput = {
 
 export type UpdateOrderInput = {
   items?: {
+    id?: string;
     product: string;
     quantity: number;
     price: string;
@@ -93,6 +94,7 @@ export type UpdateOrderInput = {
   }[];
   customer?: string;
   payment_methods?: {
+    id?: string;
     method: string;
     amount: string;
     due_at: string;

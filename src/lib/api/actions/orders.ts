@@ -61,6 +61,7 @@ export async function updateOrderAction(
 
   let parsedItems:
     | {
+        id?: string;
         product: string;
         quantity: number;
         price: string;
@@ -69,6 +70,7 @@ export async function updateOrderAction(
     | undefined;
   let parsedPaymentMethods:
     | {
+        id?: string;
         method: string;
         amount: string;
         due_at: string;
@@ -78,6 +80,7 @@ export async function updateOrderAction(
   if (itemsRaw) {
     try {
       parsedItems = JSON.parse(itemsRaw) as {
+        id?: string;
         product: string;
         quantity: number;
         price: string;
@@ -91,6 +94,7 @@ export async function updateOrderAction(
   if (paymentMethodsRaw) {
     try {
       parsedPaymentMethods = JSON.parse(paymentMethodsRaw) as {
+        id?: string;
         method: string;
         amount: string;
         due_at: string;
