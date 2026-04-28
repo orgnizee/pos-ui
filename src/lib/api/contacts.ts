@@ -22,13 +22,23 @@ function parseContacts(results: ContactsResponse["results"]): Contact[] {
   });
 }
 
-export const getContacts = cache(async (): Promise<Contact[] | ApiError> => {
-  const res = await apiFetch<ContactsResponse>("/contacts", {
-    method: "GET",
-  });
-  if ("error" in res) return res;
-  return parseContacts(res.results);
-});
+export const getContacts = cache(
+  async (page: number = 1): Promise<Contact[] | ApiError> => {
+    const params = new URLSearchParams({
+      page: String(page),
+    });
+
+    const res = await apiFetch<ContactsResponse>(
+      `/contacts?${params.toString()}`,
+      {
+        method: "GET",
+      },
+    );
+
+    if ("error" in res) return res;
+    return parseContacts(res.results);
+  },
+);
 
 export async function searchContacts(
   search: string,

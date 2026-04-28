@@ -6,6 +6,7 @@ import SearchInput from "@/components/searchInput";
 import { Plus} from "lucide-react";
 import { getContacts, searchContacts} from "@/lib/api/contacts";
 import ContactCard from "@/components/contactCard";
+import Pagination from "@/components/pagination";
 
 export default async function ContatosPage({
   searchParams,
@@ -85,6 +86,8 @@ export default async function ContatosPage({
             <ContactCard key={contact.id} contact={contact} />
           ))}
       </div>
+
+      <Pagination count={contacts.length} />
     </section>
   );
 }
