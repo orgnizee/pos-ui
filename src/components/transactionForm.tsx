@@ -7,18 +7,17 @@ import {
 } from "@/lib/api/actions/transaction";
 import { Account } from "@/lib/api/bankAccounts";
 import { FinanceCategory } from "@/lib/api/financeCategory";
-import { Customer } from "@/lib/api/customers";
-import { Supplier } from "@/lib/api/suppliers";
 import { SelectInputField } from "./inputFieldSelect";
 import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { InputField } from "./inputField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
+import { Contact } from "@/lib/api/contacts";
 
 interface TransactionFormProps {
   type: string;
   accounts: Account[];
   categories: FinanceCategory[];
-  contacts: Customer[] | Supplier[];
+  contacts: Contact[];
 }
 
 export default function TransactionForm({
@@ -50,15 +49,12 @@ export default function TransactionForm({
   }));
 
   const contactOptions = contacts.map((c) => ({
-    label: isCustomer(c) ? c.name.toUpperCase() : c.legal_name.toUpperCase(),
+    label:
+      c.kind === "customer" ? c.name.toUpperCase() : c.legal_name.toUpperCase(),
     value: String(c.id),
   }));
 
   const error = state && "error" in state ? state.message : undefined;
-
-  function isCustomer(c: Customer | Supplier): c is Customer {
-    return "name" in c;
-  }
 
   return (
     <form action={action} className="w-full max-w-xl mt-12">

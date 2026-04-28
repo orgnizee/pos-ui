@@ -1,8 +1,6 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Customer } from "@/lib/api/customers";
-import { Supplier } from "@/lib/api/suppliers";
 import { FinanceCategory } from "@/lib/api/financeCategory";
 import { PaymentType, RecurrenceOption } from "@/lib/api/receivables";
 import {
@@ -15,15 +13,12 @@ import { SelectInputField } from "./inputFieldSelect";
 import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { InputTextareaField } from "./inputTextAreaField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
+import { Contact } from "@/lib/api/contacts";
 
 interface PaymentFormProps {
-  contacts: Customer[] | Supplier[];
+  contacts: Contact[];
   categories: FinanceCategory[];
   defaultType?: PaymentType;
-}
-
-function isCustomer(c: Customer | Supplier): c is Customer {
-  return "name" in c;
 }
 
 function SectionLabel({ label }: { label: string }) {
@@ -88,9 +83,10 @@ export default function ReceivableForm({
             defaultValue=""
             options={contacts.map((c) => ({
               value: String(c.id),
-              label: isCustomer(c)
-                ? c.name.toUpperCase()
-                : c.legal_name.toUpperCase(),
+              label:
+                c.kind === "customer"
+                  ? c.name.toUpperCase()
+                  : c.legal_name.toUpperCase(),
             }))}
           />
 

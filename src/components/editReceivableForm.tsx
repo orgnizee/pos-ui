@@ -5,24 +5,23 @@ import {
   updateReceivableAction,
   ReceivableActionState,
 } from "@/lib/api/actions/receivables";
-import { PaymentStatus, Receivable, RecurrenceOption } from "@/lib/api/receivables";
-import { Customer } from "@/lib/api/customers";
-import { Supplier } from "@/lib/api/suppliers";
+import {
+  PaymentStatus,
+  Receivable,
+  RecurrenceOption,
+} from "@/lib/api/receivables";
 import { FinanceCategory } from "@/lib/api/financeCategory";
 import { SelectInputField } from "./inputFieldSelect";
 import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
 import { InputField } from "./inputField";
+import { Contact } from "@/lib/api/contacts";
 
 interface EditPaymentFormProps {
   id: string;
   payment: Receivable;
-  contacts: Customer[] | Supplier[];
+  contacts: Contact[];
   categories: FinanceCategory[];
-}
-
-function isCustomer(c: Customer | Supplier): c is Customer {
-  return "name" in c;
 }
 
 function parseCents(amount: string): number {
@@ -141,9 +140,10 @@ export default function EditReceivableForm({
             defaultValue={payment.contact.id}
             options={contacts.map((c) => ({
               value: String(c.id),
-              label: isCustomer(c)
-                ? c.name.toUpperCase()
-                : c.legal_name.toUpperCase(),
+              label:
+                c.kind === "customer"
+                  ? c.name.toUpperCase()
+                  : c.legal_name.toUpperCase(),
             }))}
           />
 
@@ -151,17 +151,6 @@ export default function EditReceivableForm({
             label="referência"
             name="reference"
             defaultValue={payment.reference ?? ""}
-          />
-
-          <SelectInputField
-            label="status"
-            name="status"
-            options={contacts.map((c) => ({
-              value: String(c.id),
-              label: isCustomer(c)
-                ? c.name.toUpperCase()
-                : c.legal_name.toUpperCase(),
-            }))}
           />
 
           <SelectInputField

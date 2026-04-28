@@ -3,12 +3,12 @@ import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
-import { getCustomers } from "@/lib/api/customers";
+import { getContacts } from "@/lib/api/contacts";
 
 export default async function AddTransferPage() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
-  const customers = await getCustomers();
+  const customers = await getContacts();
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
