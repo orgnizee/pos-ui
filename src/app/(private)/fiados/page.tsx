@@ -200,7 +200,7 @@ export default async function FiadosPage({
           </Link>
         </div>
       </div>
-
+{/* 
       <div className="mt-0 ml-1 overflow-hidden">
         <div className="overflow-auto flex justify-start">
           <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
@@ -225,7 +225,7 @@ export default async function FiadosPage({
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Receivables History */}
       <ReceivableTable

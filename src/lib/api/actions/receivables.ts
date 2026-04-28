@@ -26,7 +26,7 @@ export async function createReceivableAction(
   const res = await createReceivable({
     contact: formData.get("contact") as string,
     category: (formData.get("category") as string) || undefined,
-    issued_at: new Date().toISOString().split("T")[0],
+    issued_at: formData.get("issued_at") as string,
     due_at: formData.get("due_at") as string,
     total_amount: formData.get("total_amount") as string,
     recurrence: (formData.get("recurrence") as RecurrenceOption) || undefined,

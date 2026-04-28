@@ -74,6 +74,7 @@ export default function ReceivableForm({
       <div className="mb-8">
         <SectionLabel label="informações" />
         <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+          <InputField label="emissão" name="issued_at" type="date" required />
           <InputField label="vencimento" name="due_at" type="date" required />
 
           <SearchableSelectInputField
