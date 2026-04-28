@@ -6,6 +6,7 @@ import SearchInput from "@/components/searchInput";
 import { Plus } from "lucide-react";
 import { getProducts } from "@/lib/api/products";
 import ProductCard from "@/components/productCard";
+import Pagination from "@/components/pagination";
 
 export default async function ProdutosPage({
   searchParams,
@@ -13,7 +14,7 @@ export default async function ProdutosPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedParams = await searchParams;
-  const { search, status, sort } = resolvedParams;
+  const { search, status, sort, page } = resolvedParams;
 
   const isAll = !status;
   const isAvailable = status === "available";
@@ -22,6 +23,9 @@ export default async function ProdutosPage({
   const isSortByName = currentSort === "name";
   const isSortBySku = currentSort === "sku";
   const isSortByStock = currentSort === "stock";
+  const currentPage =
+    typeof page === "string" && Number(page) > 0 ? Number(page) : 1;
+  const pageSize = 50;
 
   const allProducts = await getProducts({
     search: typeof search === "string" && search.length >= 3 ? search : undefined,
@@ -32,7 +36,7 @@ export default async function ProdutosPage({
     return <p>{allProducts.message}</p>;
   }
 
-  const products = allProducts
+  const sortedProducts = allProducts
     .filter((product) => {
       if (isAvailable) return product.is_available;
       if (isUnavailable) return !product.is_available;
@@ -51,6 +55,10 @@ export default async function ProdutosPage({
 
       return a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" });
     });
+  const pagedProducts = sortedProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
 
   return (
     <section className="mt-8">
@@ -121,10 +129,12 @@ export default async function ProdutosPage({
       </div>
 
       <div className="grid mt-0 mb-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-1">
-        {products.map((product) => (
+        {pagedProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
+
+      <Pagination count={sortedProducts.length} pageSize={pageSize} />
     </section>
   );
 }
