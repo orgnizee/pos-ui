@@ -8,7 +8,7 @@ export type Contact =
   | ({ kind: "customer" } & Customer)
   | ({ kind: "supplier" } & Supplier);
 
-type ContactsResponse = {
+export type ContactsResponse = {
   count: number;
   next: string | null;
   previous: string | null;
@@ -39,6 +39,34 @@ export const getContacts = cache(
     return parseContacts(res.results);
   },
 );
+
+export async function getContactsPage({
+  page = 1,
+  search,
+}: {
+  page?: number;
+  search?: string;
+}): Promise<{ count: number; results: Contact[] } | ApiError> {
+  const params = new URLSearchParams({
+    page: String(page),
+  });
+
+  if (search) {
+    params.set("search", search);
+  }
+
+  const res = await apiFetch<ContactsResponse>(
+    `/contacts?${params.toString()}`,
+    { method: "GET" },
+  );
+
+  if ("error" in res) return res;
+
+  return {
+    count: res.count,
+    results: parseContacts(res.results),
+  };
+}
 
 export async function searchContacts(
   search: string,
