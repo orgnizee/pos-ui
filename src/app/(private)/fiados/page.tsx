@@ -202,7 +202,7 @@ export default async function FiadosPage({
       </div>
 
       <div className="mt-0 ml-1 overflow-hidden">
-        <div className="overflow-auto flex justify-end">
+        <div className="overflow-auto flex justify-start">
           <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
             <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
             <Link

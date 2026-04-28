@@ -113,12 +113,6 @@ export default async function ContatosPage({
               <p className={filterClass(isSortByName)}>nome</p>
             </Link>
             <Link
-              href={buildFilterHref(resolvedParams, { sort: "code" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByCode)}>código</p>
-            </Link>
-            <Link
               href={buildFilterHref(resolvedParams, { sort: "recent" })}
               className="grid items-center justify-center shrink-0 rounded-md"
             >
