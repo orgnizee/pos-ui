@@ -4,7 +4,7 @@ import Link from "next/link";
 import { filterClass } from "@/lib/styleFilterButtons";
 import SearchInput from "@/components/searchInput";
 import { Plus} from "lucide-react";
-import { getContacts, searchContacts} from "@/lib/api/contacts";
+import { getContactsPage } from "@/lib/api/contacts";
 import ContactCard from "@/components/contactCard";
 import Pagination from "@/components/pagination";
 
@@ -14,25 +14,50 @@ export default async function ContatosPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedParams = await searchParams;
-  const { search, type } = resolvedParams;
+  const { search, type, sort, page } = resolvedParams;
   const isAll = !search && !type;
   const isCustomers = type === "customers";
   const isSuppliers = type === "suppliers";
+  const currentSort = typeof sort === "string" ? sort : "name";
+  const isSortByName = currentSort === "name";
+  const isSortByCode = currentSort === "code";
+  const isSortByRecent = currentSort === "recent";
+  const currentPage =
+    typeof page === "string" && Number(page) > 0 ? Number(page) : 1;
+  const searchTerm = typeof search === "string" && search.length >= 3 ? search : undefined;
 
-  const allContacts =
-    typeof search === "string" && search.length >= 3
-      ? await searchContacts(search)
-      : await getContacts();
+  const contactsResponse = await getContactsPage({
+    page: currentPage,
+    search: searchTerm,
+  });
 
-  if (isApiError(allContacts)) {
-    return <p>{allContacts.message}</p>;
+  if (isApiError(contactsResponse)) {
+    return <p>{contactsResponse.message}</p>;
   }
 
-  const contacts = allContacts.filter((c) => {
-    if (isCustomers) return c.kind === "customer";
-    if (isSuppliers) return c.kind === "supplier";
-    return true;
-  });
+  const activeContacts = contactsResponse.results.filter((contact) => contact.is_active);
+  const contacts = activeContacts
+    .filter((c) => {
+      if (isCustomers) return c.kind === "customer";
+      if (isSuppliers) return c.kind === "supplier";
+      return true;
+    })
+    .sort((a, b) => {
+      if (isSortByCode) {
+        return (a.code || "").localeCompare(b.code || "", "pt-BR", {
+          sensitivity: "base",
+          numeric: true,
+        });
+      }
+
+      if (isSortByRecent) {
+        return b.created_at.localeCompare(a.created_at);
+      }
+
+      const nameA = a.kind === "customer" ? a.name : a.legal_name;
+      const nameB = b.kind === "customer" ? b.name : b.legal_name;
+      return nameA.localeCompare(nameB, "pt-BR", { sensitivity: "base" });
+    });
 
   return (
     <section className="mt-8">
@@ -55,7 +80,7 @@ export default async function ContatosPage({
       {/* Filter Buttons */}
       <div className="mt-2 ml-1 overflow-hidden">
         <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-5 gap-2 font-bold items-center">
+          <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-0 gap-2 font-bold items-center">
             <Link
               href={"/contatos"}
               className="grid items-center justify-center shrink-0 rounded-md"
@@ -77,17 +102,40 @@ export default async function ContatosPage({
           </div>
         </div>
       </div>
+      <div className="mt-0 ml-1 overflow-hidden">
+        <div className="overflow-auto flex">
+          <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
+            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "name" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByName)}>nome</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "code" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByCode)}>código</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "recent" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByRecent)}>recentes</p>
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {/* Contact List */}
       <div className="grid mt-0 mb-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-1">
-        {contacts
-          .filter((contact) => contact.is_active)
-          .map((contact) => (
-            <ContactCard key={contact.id} contact={contact} />
-          ))}
+        {contacts.map((contact) => (
+          <ContactCard key={contact.id} contact={contact} />
+        ))}
       </div>
 
-      <Pagination count={contacts.length} />
+      <Pagination count={contactsResponse.count} />
     </section>
   );
 }

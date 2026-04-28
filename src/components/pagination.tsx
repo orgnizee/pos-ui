@@ -2,18 +2,28 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { usePathname } from "next/navigation";
 
-export default function Pagination({ count }: { count: number }) {
+export default function Pagination({
+  count,
+  pageSize = 50,
+}: {
+  count: number;
+  pageSize?: number;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
-  const currentPage = Number(searchParams.get("page") ?? 1);
-  const totalPages = Math.ceil(count / 50);
+  const parsedPage = Number(searchParams.get("page") ?? 1);
+  const currentPage = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+  const totalPages = Math.ceil(count / pageSize);
+  const safeCurrentPage = Math.min(currentPage, Math.max(totalPages, 1));
 
   const goToPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(page));
-    router.push(`/caixa?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   if (totalPages <= 1) return null;
@@ -21,20 +31,20 @@ export default function Pagination({ count }: { count: number }) {
   return (
     <div className="flex items-center gap-3 mb-4">
       <button
-        onClick={() => goToPage(currentPage - 1)}
-        disabled={currentPage === 1}
+        onClick={() => goToPage(safeCurrentPage - 1)}
+        disabled={safeCurrentPage === 1}
         className="flex items-center justify-start w-7 h-7 rounded-md disabled:opacity-30"
       >
         <ArrowLeft size={14} />
       </button>
 
       <p className="text-sm justify-center normal-case">
-        {currentPage} / {totalPages}
+        {safeCurrentPage} / {totalPages}
       </p>
 
       <button
-        onClick={() => goToPage(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        onClick={() => goToPage(safeCurrentPage + 1)}
+        disabled={safeCurrentPage === totalPages}
         className="flex items-center justify-start w-7 h-7 rounded-md disabled:opacity-30"
       >
         <ArrowRight size={14} />
