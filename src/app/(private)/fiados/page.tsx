@@ -9,6 +9,7 @@ import { formatBRL } from "@/lib/utils/format";
 import buildFilterHref from "@/lib/utils/search-params";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import Pagination from "@/components/pagination";
 
 export default async function FiadosPage({
   searchParams,
@@ -17,7 +18,7 @@ export default async function FiadosPage({
 }) {
   const resolvedParams = await searchParams;
 
-  const { status, search, date, start_date, end_date } = resolvedParams;
+  const { status, search, date, start_date, end_date, sort, page } = resolvedParams;
 
   const isAll = !status && !search && !date && !start_date && !end_date;
   const isPending = status === "pending";
@@ -27,6 +28,13 @@ export default async function FiadosPage({
   const isToday = date === "today";
   const isWeek = date === "week";
   const isMonth = date === "month";
+  const currentSort = typeof sort === "string" ? sort : "issued";
+  const isSortByIssued = currentSort === "issued";
+  const isSortByDueDate = currentSort === "due";
+  const isSortByOutstanding = currentSort === "outstanding";
+  const currentPage =
+    typeof page === "string" && Number(page) > 0 ? Number(page) : 1;
+  const pageSize = 50;
 
   const [receivables, accounts] = await Promise.all([
     getReceivables({
@@ -48,8 +56,26 @@ export default async function FiadosPage({
     return <p>{accounts.message}</p>;
   }
 
+  const sortedReceivables = [...receivables].sort((a, b) => {
+    if (isSortByDueDate) {
+      return new Date(a.due_at).getTime() - new Date(b.due_at).getTime();
+    }
+
+    if (isSortByOutstanding) {
+      return (
+        parseFloat(b.outstanding_balance) - parseFloat(a.outstanding_balance)
+      );
+    }
+
+    return new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime();
+  });
+  const pagedReceivables = sortedReceivables.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
   const byStatus = (paymentStatus: PaymentStatus) =>
-    receivables.filter((receivable) => receivable.status === paymentStatus);
+    sortedReceivables.filter((receivable) => receivable.status === paymentStatus);
 
   const sumOutstanding = (status: PaymentStatus) =>
     byStatus(status)
@@ -60,7 +86,7 @@ export default async function FiadosPage({
       .toFixed(2);
 
   const sumTotalAmount= () =>
-    receivables
+    sortedReceivables
       .reduce(
         (sum, receivable) => sum + parseFloat(receivable.total_amount),
         0,
@@ -68,7 +94,7 @@ export default async function FiadosPage({
       .toFixed(2);
 
   const sumTotalOutstanding= () =>
-    receivables
+    sortedReceivables
       .reduce(
         (sum, receivable) => sum + parseFloat(receivable.outstanding_balance),
         0,
@@ -76,7 +102,7 @@ export default async function FiadosPage({
       .toFixed(2);
 
   const sumTotalPaid= () =>
-    receivables
+    sortedReceivables
       .reduce(
         (sum, receivable) => sum + parseFloat(receivable.amount_paid),
         0,
@@ -175,12 +201,40 @@ export default async function FiadosPage({
         </div>
       </div>
 
+      <div className="mt-0 ml-1 overflow-hidden">
+        <div className="overflow-auto flex justify-end">
+          <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
+            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "issued" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByIssued)}>emissão</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "due" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByDueDate)}>vencimento</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "outstanding" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByOutstanding)}>a pagar</p>
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {/* Receivables History */}
       <ReceivableTable
-        receivables={receivables}
+        receivables={pagedReceivables}
         basePath="fiados"
         accounts={accounts}
       />
+
+      <Pagination count={sortedReceivables.length} pageSize={pageSize} />
 
       <div className="mt-6 overflow-hidden">
         <div className="overflow-auto flex">
