@@ -10,6 +10,7 @@ import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
 import { FinanceCategory } from "@/lib/api/financeCategory";
 import { SelectInputField } from "./inputFieldSelect";
+import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
 import { InputField } from "./inputField";
 
@@ -134,7 +135,7 @@ export default function EditReceivableForm({
             defaultValue={payment.category?.name}
           />
 
-          <SelectInputField
+          <SearchableSelectInputField
             label="contato"
             name="contact"
             defaultValue={payment.contact.id}
@@ -144,7 +145,7 @@ export default function EditReceivableForm({
                 ? c.name.toUpperCase()
                 : c.legal_name.toUpperCase(),
             }))}
-          ></SelectInputField>
+          />
 
           <InputField
             label="referência"

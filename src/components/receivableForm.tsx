@@ -12,6 +12,7 @@ import {
 
 import { InputField } from "./inputField";
 import { SelectInputField } from "./inputFieldSelect";
+import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { InputTextareaField } from "./inputTextAreaField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
 
@@ -80,7 +81,7 @@ export default function ReceivableForm({
         <div className="grid grid-cols-3 gap-x-8 gap-y-8">
           <InputField label="vencimento" name="due_at" type="date" required />
 
-          <SelectInputField
+          <SearchableSelectInputField
             label="contato"
             name="contact"
             required
