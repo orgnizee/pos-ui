@@ -10,6 +10,7 @@ import { FinanceCategory } from "@/lib/api/financeCategory";
 import { Customer } from "@/lib/api/customers";
 import { Supplier } from "@/lib/api/suppliers";
 import { SelectInputField } from "./inputFieldSelect";
+import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { InputField } from "./inputField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
 
@@ -112,8 +113,8 @@ export default function TransactionForm({
         {/* Right col */}
         <div className="flex flex-col gap-8">
           {type !== "transfer" && (
-            <SelectInputField
-              label="Contato"
+            <SearchableSelectInputField
+              label="contato"
               defaultValue={""}
               name="contact"
               options={contactOptions}
