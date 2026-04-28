@@ -3,12 +3,12 @@ import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
-import { getCustomers } from "@/lib/api/customers";
+import { getAllContacts } from "@/lib/api/contacts";
 
 export default async function AddCreditPage() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
-  const customers = await getCustomers();
+  const contacts = await getAllContacts();
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
@@ -18,8 +18,8 @@ export default async function AddCreditPage() {
     return <p>{categories.message}</p>;
   }
 
-  if (isApiError(customers)) {
-    return <p>{customers.message}</p>;
+  if (isApiError(contacts)) {
+    return <p>{contacts.message}</p>;
   }
 
   return (
@@ -32,7 +32,7 @@ export default async function AddCreditPage() {
           type="credit"
           categories={categories}
           accounts={accounts.filter((a) => a.is_active)}
-          contacts={customers}
+          contacts={contacts}
         />
       </div>
     </section>
