@@ -1,6 +1,6 @@
 import BackButton from "@/components/backButton";
 import { getReceivableByID } from "@/lib/api/receivables";
-import { getCustomers } from "@/lib/api/customers";
+import { getAllContacts } from "@/lib/api/contacts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { isApiError } from "@/lib/api/types";
 import EditReceivableForm from "@/components/editReceivableForm";
@@ -14,7 +14,7 @@ export default async function EditPaymentPage({
 
   const [payment, contacts, categories] = await Promise.all([
     getReceivableByID(id),
-    getCustomers(),
+    getAllContacts(),
     getFinanceCategories(),
   ]);
 

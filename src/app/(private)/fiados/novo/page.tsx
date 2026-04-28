@@ -2,13 +2,13 @@ import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
-import { getCustomers } from "@/lib/api/customers";
+import { getAllContacts } from "@/lib/api/contacts";
 import ReceivableForm from "@/components/receivableForm";
 
 export default async function AddReceberPage() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
-  const customers = await getCustomers();
+  const contacts = await getAllContacts();
 
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
@@ -18,8 +18,8 @@ export default async function AddReceberPage() {
     return <p>{categories.message}</p>;
   }
 
-  if (isApiError(customers)) {
-    return <p>{customers.message}</p>;
+  if (isApiError(contacts)) {
+    return <p>{contacts.message}</p>;
   }
 
   return (
@@ -29,7 +29,7 @@ export default async function AddReceberPage() {
 
       <div className="relative flex items-center justify-center mt-2 ml-auto mr-auto w-full">
         <ReceivableForm
-          contacts={customers}
+          contacts={contacts}
           categories={categories}
           defaultType="receivable"
         />

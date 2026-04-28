@@ -40,6 +40,37 @@ export const getContacts = cache(
   },
 );
 
+export const getAllContacts = cache(async (): Promise<Contact[] | ApiError> => {
+  const allContacts: Contact[] = [];
+  let page = 1;
+
+  while (true) {
+    const params = new URLSearchParams({
+      page: String(page),
+    });
+
+    const res = await apiFetch<ContactsResponse>(
+      `/contacts?${params.toString()}`,
+      {
+        method: "GET",
+      },
+    );
+
+    if ("error" in res) return res;
+
+    allContacts.push(...parseContacts(res.results));
+
+    if (!res.next) break;
+    page += 1;
+  }
+
+  return allContacts.sort((a, b) => {
+    const aName = a.kind === "customer" ? a.name : a.legal_name;
+    const bName = b.kind === "customer" ? b.name : b.legal_name;
+    return aName.localeCompare(bName);
+  });
+});
+
 export async function getContactsPage({
   page = 1,
   search,
