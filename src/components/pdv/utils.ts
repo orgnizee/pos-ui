@@ -76,3 +76,18 @@ export function getDueDate() {
     .reverse()
     .join("-");
 }
+
+export function getTodayDate() {
+  const d = new Date();
+  d.setDate(d.getDate());
+
+  return d
+    .toLocaleDateString("pt-BR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .split("/")
+    .reverse()
+    .join("-");
+}

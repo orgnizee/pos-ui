@@ -113,14 +113,29 @@ type OrdersResponse = {
   results: Order[];
 };
 
-export const getOrders = cache(async (): Promise<Order[] | ApiError> => {
-  const res = await apiFetch<OrdersResponse>("/orders", {
-    method: "GET",
-  });
+export const getOrders = cache(
+  async (filters?: {
+    search?: string;
+    date?: string;
+    start_date?: string;
+    end_date?: string;
+  }): Promise<Order[] | ApiError> => {
+    const params = new URLSearchParams();
 
-  if ("error" in res) return res;
-  return res.results;
-});
+    if (filters?.search) params.set("search", filters.search);
+    if (filters?.date) params.set("date", filters.date);
+    if (filters?.start_date) params.set("start_date", filters.start_date);
+    if (filters?.end_date) params.set("end_date", filters.end_date);
+
+    const query = params.size ? `?${params.toString()}` : "";
+    const res = await apiFetch<OrdersResponse>(`/orders${query}`, {
+      method: "GET",
+    });
+
+    if ("error" in res) return res;
+    return res.results.map((r) => r);
+  },
+);
 
 export const getOrderByID = cache(
   async (id: string): Promise<Order | ApiError> => {

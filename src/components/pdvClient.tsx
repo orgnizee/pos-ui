@@ -23,6 +23,7 @@ import {
   automaticCentDiscountCents,
   formatBRL,
   getDueDate,
+  getTodayDate,
   lineTotalCents,
   parseCurrencyToCents,
   parseQtyInput,
@@ -644,7 +645,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
         customer={customer}
         cart={cart}
         payments={payments}
-        today={getDueDate()}
+        today={getTodayDate()}
         isFiadoMethod={isFiadoMethod}
         getDueDate={getDueDate}
         paymentMethods={paymentMethods}
