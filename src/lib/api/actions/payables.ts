@@ -3,27 +3,27 @@
 import { redirect } from "next/navigation";
 import { isApiError } from "@/lib/api/types";
 import {
+  createPayable,
+  deletePayable,
   RecurrenceOption,
+  updatePayable,
   Weekday,
-  createReceivable,
-  updateReceivable,
-  deleteReceivable,
-} from "../receivables";
+} from "../payables";
 
-export type ReceivableActionState = {
+export type PayableActionState = {
   error: true;
   message: string;
   details?: unknown;
 } | null;
 
-export async function createReceivableAction(
+export async function createPayableAction(
   _: unknown,
   formData: FormData,
-): Promise<ReceivableActionState> {
+): Promise<PayableActionState> {
   const installment_count = formData.get("installment_count");
   const due_day_of_month = formData.get("due_day_of_month");
 
-  const res = await createReceivable({
+  const res = await createPayable({
     contact: formData.get("contact") as string,
     category: (formData.get("category") as string) || undefined,
     issued_at: formData.get("issued_at") as string,
@@ -43,15 +43,15 @@ export async function createReceivableAction(
     return { error: true, message: res.message, details: res.details };
   }
 
-  redirect("/fiados");
+  redirect("/pagamentos");
 }
 
-export async function updateReceivableAction(
+export async function updatePayableAction(
   id: string,
   _: unknown,
   formData: FormData,
-): Promise<ReceivableActionState> {
-  const res = await updateReceivable(id, {
+): Promise<PayableActionState> {
+  const res = await updatePayable(id, {
     contact: (formData.get("contact") as string) || undefined,
     category: (formData.get("category") as string) || null,
     issued_at: (formData.get("issued_at") as string) || undefined,
@@ -68,23 +68,21 @@ export async function updateReceivableAction(
     return { error: true, message: res.message, details: res.details };
   }
 
-  redirect("/fiados");
+  redirect("/pagamentos");
 }
 
-export async function deleteReceivableAction(
+export async function deletePayableAction(
   id: string,
-): Promise<ReceivableActionState> {
-  const res = await deleteReceivable(id);
-
-  console.log(res);
+): Promise<PayableActionState> {
+  const res = await deletePayable(id);
 
   if (isApiError(res)) {
     return {
       error: true,
-      message: "fiado recebido. exclua recebimento no caixa primeiro",
+      message: "conta paga. exclua pagamento no caixa primeiro",
       details: res.details,
     };
   }
 
-  redirect("/fiados");
+  redirect("/pagamentos");
 }

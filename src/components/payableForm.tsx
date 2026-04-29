@@ -2,11 +2,6 @@
 
 import { useActionState, useState } from "react";
 import { FinanceCategory } from "@/lib/api/financeCategory";
-import { PaymentType, RecurrenceOption } from "@/lib/api/receivables";
-import {
-  createReceivableAction,
-  ReceivableActionState,
-} from "@/lib/api/actions/receivables";
 
 import { InputField } from "./inputField";
 import { SelectInputField } from "./inputFieldSelect";
@@ -14,6 +9,8 @@ import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { InputTextareaField } from "./inputTextAreaField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
 import { Contact } from "@/lib/api/contacts";
+import { PaymentType, RecurrenceOption } from "@/lib/api/payables";
+import { createPayableAction, PayableActionState } from "@/lib/api/actions/payables";
 
 interface PaymentFormProps {
   contacts: Contact[];
@@ -29,15 +26,15 @@ function SectionLabel({ label }: { label: string }) {
   );
 }
 
-export default function ReceivableForm({
+export default function PayableForm({
   contacts,
   categories,
   defaultType = "payable",
 }: PaymentFormProps) {
   const [state, action, pending] = useActionState<
-    ReceivableActionState,
+    PayableActionState,
     FormData
-  >(createReceivableAction, null);
+  >(createPayableAction, null);
 
   const [recurrence, setRecurrence] = useState<RecurrenceOption>("once");
   const [cents, setCents] = useState(0);
@@ -62,7 +59,6 @@ export default function ReceivableForm({
           value={displayValue}
           onChange={(e) => setCents(Number(e.target.value.replace(/\D/g, "")))}
           className="text-3xl font-light outline-none border-b border-tertiary/30 focus:border-tertiary w-full pb-2"
-          autoFocus
         />
         <input
           type="hidden"

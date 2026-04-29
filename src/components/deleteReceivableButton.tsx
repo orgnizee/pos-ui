@@ -1,25 +1,27 @@
 "use client";
 
-import { useTransition } from "react";
-import { deleteReceivableAction } from "@/lib/api/actions/receivables";
-
+import { useActionState } from "react";
+import {
+  deleteReceivableAction,
+  ReceivableActionState,
+} from "@/lib/api/actions/receivables";
 
 export default function DeletePaymentButton({ id }: { id: string }) {
-  const [isPending, startTransition] = useTransition();
-
-  function handleDelete() {
-    startTransition(async () => {
-      await deleteReceivableAction(id);
-    });
-  }
+  const [state, dispatch, pending] = useActionState<
+    ReceivableActionState,
+    FormData
+  >(deleteReceivableAction.bind(null, id), null);
 
   return (
-    <button
-      onClick={handleDelete}
-      disabled={isPending}
+    <form action={dispatch}>
+      <button
+        type="submit"
+        disabled={pending}
         className="mt-3 ml-1 flex justify-start items-center cursor-pointer uppercase text-xs"
-    >
-      excluir
-    </button>
+      >
+        excluir
+      </button>
+      <p className="text-xs text-red-500 ml-1">{state?.message}</p>
+    </form>
   );
 }
