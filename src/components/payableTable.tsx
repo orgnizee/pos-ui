@@ -27,7 +27,7 @@ const selectableStatuses: PaymentStatus[] = [
   "partially_paid",
 ];
 
-export default function PayaableTable({
+export default function PayableTable({
   payables,
   basePath,
   accounts,
@@ -158,7 +158,7 @@ export default function PayaableTable({
                             onChange={() => toggleSelected(payable.id)}
                             onClick={(event) => event.stopPropagation()}
                             className="appearance-none w-4 h-4 border border-primary rounded-none cursor-pointer relative checked:bg-primary checked:border-primary checked:after:content-[''] checked:after:absolute checked:after:top-0.5 checked:after:left-1.25 checked:after:w-1 checked:after:h-2 checked:after:border checked:after:border-white checked:after:border-t-0 checked:after:border-l-0 checked:after:rotate-45"
-                            aria-label={`selecionar fiado ${payable.id}`}
+                            aria-label={`selecionar conta ${payable.id}`}
                           />
                         ) : (
                           <span className="w-4" />
@@ -258,7 +258,7 @@ function BatchSettleModal({
       <div className="w-full sm:w-120 border bg-white overflow-hidden">
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <p className="text-sm font-light uppercase tracking-widest text-primary">
-            receber múltiplos fiados
+            receber múltiplos pagamentos
           </p>
           <button
             onClick={onClose}

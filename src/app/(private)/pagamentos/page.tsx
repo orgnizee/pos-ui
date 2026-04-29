@@ -9,7 +9,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import Pagination from "@/components/pagination";
 import { getPayables, PaymentStatus } from "@/lib/api/payables";
-import PayaableTable from "@/components/payableTable";
+import PayableTable from "@/components/payableTable";
 
 export default async function PagamentosPage({
   searchParams,
@@ -120,7 +120,7 @@ export default async function PagamentosPage({
         <h1 className="text-8xl font-light">pagamentos</h1>
 
         <Link
-          href={"fiados/novo"}
+          href={"pagamentos/novo"}
           className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
         >
           <Plus className="text-primary" size={16} />
@@ -136,7 +136,7 @@ export default async function PagamentosPage({
           <div className="overflow-auto flex">
             <div className="overflow-x-auto scrollbar-hidden flex pt-1 pb-1 gap-6 font-bold items-center">
               <Link
-                href="/fiados"
+                href="/pagamentos"
                 className="grid items-center justify-center shrink-0 rounded-md"
               >
                 <p className={filterClass(isAll)}>tudo</p>
@@ -165,7 +165,7 @@ export default async function PagamentosPage({
       </div>
 
       <div className="flex justify-end mt-4 mr-3">
-        <SearchInput endpoint="fiados" />
+        <SearchInput endpoint="pagamentos" />
       </div>
 
       {/* Filter Status Buttons */}
@@ -227,7 +227,7 @@ export default async function PagamentosPage({
       </div> */}
 
       {/* Receivables History */}
-      <PayaableTable
+      <PayableTable
         payables={pagedPayables}
         basePath="pagamentos"
         accounts={accounts}
