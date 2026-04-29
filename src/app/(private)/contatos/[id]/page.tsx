@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import BackButton from "@/components/backButton";
 import { getCustomerByID } from "@/lib/api/customers";
 import { getSupplierByID } from "@/lib/api/suppliers";
@@ -6,15 +7,11 @@ import { formatCPF, formatCNPJ, formatPhone } from "@/lib/utils/format";
 import type { Contact } from "@/lib/api/contacts";
 import DeleteContactButton from "@/components/deleteContactButton";
 import Link from "next/link";
+import Loading from "./loading";
 
-export default async function ContactPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export async function ContactPayload({ id }: { id: string }) {
+  const [customer] = await Promise.all([getCustomerByID(id)]);
 
-  const customer = await getCustomerByID(id);
   let contact: Contact;
 
   if (!isApiError(customer)) {
@@ -153,6 +150,22 @@ export default async function ContactPage({
         </div>
       </div>
       <DeleteContactButton id={contact.id} kind={contact.kind} />
+    </section>
+  );
+}
+
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return (
+    <section className="mt-6">
+      <Suspense fallback={<Loading />}>
+        <ContactPayload id={id} />
+      </Suspense>
     </section>
   );
 }

@@ -1,16 +1,15 @@
+import { Suspense } from "react";
 import BackButton from "@/components/backButton";
 import DeleteProductButton from "@/components/deleteProductButton";
 import { getProductByID } from "@/lib/api/products";
 import { isApiError } from "@/lib/api/types";
 import Link from "next/link";
+import Loading from "./loading";
 
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const product = await getProductByID(id);
+export async function ProductPayload({ id }: { id: string }) {
+  const [product] = await Promise.all([
+    getProductByID(id),
+  ]);
 
   if (isApiError(product)) {
     return <p>{product.message}</p>;
@@ -70,6 +69,22 @@ export default async function ProductPage({
         </div>
       </div>
       <DeleteProductButton id={product.id} />
+    </section>
+  );
+}
+
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return (
+    <section className="mt-6">
+      <Suspense fallback={<Loading />}>
+        <ProductPayload id={id} />
+      </Suspense>
     </section>
   );
 }

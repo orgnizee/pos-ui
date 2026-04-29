@@ -1,14 +1,11 @@
+import { Suspense } from "react";
 import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccountByID } from "@/lib/api/bankAccounts";
 import { UpdateBankAccountForm } from "@/components/bankAccountForm";
+import Loading from "./loading";
 
-export default async function UpdateBankAccount({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export async function UpdateBankAccountPayload({ id }: { id: string }) {
   const account = await getAccountByID(id);
 
   if (isApiError(account)) {
@@ -26,6 +23,24 @@ export default async function UpdateBankAccount({
         <div className="mt-2 relative ml-auto mr-auto flex items-center justify-center sm:w-150 sm:min-h-95">
           <UpdateBankAccountForm account={account} />
         </div>
+      </div>
+    </section>
+  );
+}
+
+export default async function UpdateBankAccountPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return (
+    <section className="mt-6">
+      <div className="no-print">
+        <Suspense fallback={<Loading />}>
+          <UpdateBankAccountPayload id={id} />
+        </Suspense>
       </div>
     </section>
   );

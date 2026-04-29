@@ -1,11 +1,13 @@
+import { Suspense } from "react";
 import TransactionForm from "@/components/transactionForm";
 import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { getAllContacts } from "@/lib/api/contacts";
+import Loading from "./loading";
 
-export default async function AddDebitPage() {
+export async function AddDebitPayload() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
   const contacts = await getAllContacts();
@@ -34,6 +36,18 @@ export default async function AddDebitPage() {
           accounts={accounts.filter((a) => a.is_active)}
           contacts={contacts}
         />
+      </div>
+    </section>
+  );
+}
+
+export default async function AddDebitPage() {
+  return (
+    <section className="mt-6">
+      <div className="no-print">
+        <Suspense fallback={<Loading />}>
+          <AddDebitPayload />
+        </Suspense>
       </div>
     </section>
   );

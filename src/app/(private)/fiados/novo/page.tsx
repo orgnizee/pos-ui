@@ -1,11 +1,13 @@
+import { Suspense } from "react";
 import BackButton from "@/components/backButton";
 import { isApiError } from "@/lib/api/types";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { getAllContacts } from "@/lib/api/contacts";
 import ReceivableForm from "@/components/receivableForm";
+import Loading from "./loading";
 
-export default async function AddReceberPage() {
+export async function AddReceberPayload() {
   const accounts = await getAccounts();
   const categories = await getFinanceCategories();
   const contacts = await getAllContacts();
@@ -33,6 +35,18 @@ export default async function AddReceberPage() {
           categories={categories}
           defaultType="receivable"
         />
+      </div>
+    </section>
+  );
+}
+
+export default async function AddReceberPage() {
+  return (
+    <section className="mt-6">
+      <div className="no-print">
+        <Suspense fallback={<Loading />}>
+          <AddReceberPayload />
+        </Suspense>
       </div>
     </section>
   );
