@@ -6,7 +6,7 @@ export default function ProductCard({ product }: { product: Product }) {
     <div className="relative p-2 px-2 w-full min-h-37.5 border">
       <div className="flex items-center justify-between h-7.5 w-full mb-1.5">
         <kbd className="text-sm text-start font-light text-primary truncate">
-          {product.brand || "/"}
+          {product.unit || "/"}
         </kbd>
         <div className="text-nowrap text-xs text-primary truncate">
           <p>{product.sku || product.id}</p>
