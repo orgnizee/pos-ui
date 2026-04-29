@@ -34,7 +34,7 @@ export default async function FiadosPage({
   );
   const canEdit = ["pending", "overdue"].includes(payment.status);
 
-  const canDelete = payment.notes?.toLowerCase().includes("venda")
+  const canDelete = payment.notes?.toLowerCase().includes("venda");
 
   return (
     <section className="mt-6">
@@ -44,6 +44,8 @@ export default async function FiadosPage({
         {canSettle && <SettleButton receivable={payment} accounts={accounts} />}
       </div>
 
+      <div className="flex justify-between">
+      <h2 className="text-6xl">fiado</h2>
       <div className="flex flex-col px-1 pt-1 items-center">
         <div
           className={`relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-130 border ${payment.status === "overdue" ? "border-red-500" : payment.status === "paid" ? "border-green-500" : ""}`}
@@ -134,6 +136,7 @@ export default async function FiadosPage({
             </div>
           )}
         </div>
+      </div>
       </div>
 
       <div className="flex items-center justify-between">
