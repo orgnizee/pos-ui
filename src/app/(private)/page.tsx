@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default async function Home() {
   return (
-    <main className="flex flex-col mt-16">
+    <main className="flex flex-col mt-12">
       <Link href={"/pdv"} className="text-8xl font-light">
         <span className="text-2xl">1</span>
         pdv
