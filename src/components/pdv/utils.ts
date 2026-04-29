@@ -15,7 +15,7 @@ export function parseCurrencyToCents(rawValue: string) {
 export function parsePriceToCents(price: string | null | undefined) {
   const parsed = Number.parseFloat(price ?? "0");
   if (!Number.isFinite(parsed)) return 0;
-  return Math.floor(parsed * 100);
+  return Math.round(parsed * 100);
 }
 
 export function lineTotalCents(
@@ -23,8 +23,8 @@ export function lineTotalCents(
   quantity: number,
 ) {
   const priceCents = parsePriceToCents(price);
-  const quantityThousandths = Math.floor(quantity * 1000);
-  return Math.max(Math.floor((priceCents * quantityThousandths) / 1000), 0);
+  const quantityThousandths = Math.round(quantity * 1000);
+  return Math.max(Math.round((priceCents * quantityThousandths) / 1000), 0);
 }
 
 export function automaticCentDiscountCents(
