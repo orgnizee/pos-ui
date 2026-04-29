@@ -27,7 +27,7 @@ async function OrderPayload({ id }: { id: string }) {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="no-print flex justify-between">
         <h2 className="text-6xl">venda</h2>
         <div className="flex flex-col px-1 pt-1 items-center">
           <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">
@@ -118,11 +118,10 @@ export default async function VendaPage({
 
   return (
     <section className="mt-6 mb-4">
-      <div className="no-print">
-        <div className="mt-6 mb-4 flex items-center justify-between">
+        <div className="no-print mt-6 mb-4 flex items-center justify-between">
           <BackButton />
 
-          <div className="flex items-center">
+          <div className="no-print flex items-center">
             <PrintOrderReceiptButton />
 
             <Link href={`/vendas/${id}/editar`} className="text-xs cursor-pointer mr-2">
@@ -134,7 +133,6 @@ export default async function VendaPage({
         <Suspense fallback={<Loading />}>
           <OrderPayload id={id} />
         </Suspense>
-      </div>
     </section>
   );
 }

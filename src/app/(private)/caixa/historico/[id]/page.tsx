@@ -18,7 +18,7 @@ async function TransactionPayload({ id }: { id: string }) {
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="no-print flex justify-between">
         <h2 className="text-6xl">comprovante pagamento</h2>
         <div className="flex flex-col px-1 pt-1 items-center">
           <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-120 border">
@@ -109,19 +109,17 @@ export default async function TransactionPage({
 
   return (
     <section className="mt-6">
-      <div className="no-print">
-        <div className="mt-6 mb-4 flex items-center justify-between">
-          <BackButton />
+      <div className="no-print mt-6 mb-4 flex items-center justify-between">
+        <BackButton />
 
-          <div className="flex items-center">
-            <PrintOrderReceiptButton />
-          </div>
+        <div className="no-print flex items-center">
+          <PrintOrderReceiptButton />
         </div>
-
-        <Suspense fallback={<Loading />}>
-          <TransactionPayload id={id} />
-        </Suspense>
       </div>
+
+      <Suspense fallback={<Loading />}>
+        <TransactionPayload id={id} />
+      </Suspense>
     </section>
   );
 }

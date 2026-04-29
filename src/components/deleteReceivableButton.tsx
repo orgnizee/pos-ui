@@ -17,7 +17,7 @@ export default function DeletePaymentButton({ id }: { id: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-3 ml-1 flex justify-start items-center cursor-pointer uppercase text-xs"
+        className="no-print mt-3 ml-1 flex justify-start items-center cursor-pointer uppercase text-xs"
       >
         excluir
       </button>

@@ -16,7 +16,7 @@ export default function DeleteTransactionButton({ id }: { id: string }) {
     <button
       onClick={handleDelete}
       disabled={isPending}
-      className="mt-3 flex justify-start items-center cursor-pointer uppercase text-xs"
+      className="no-print mt-3 flex justify-start items-center cursor-pointer uppercase text-xs"
     >
       excluir
     </button>
