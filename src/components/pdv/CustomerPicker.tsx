@@ -58,6 +58,7 @@ export function CustomerPicker({
                 placeholder="BUSCAR CLIENTE"
                 className="w-full py-2 bg-transparent outline-none text-sm placeholder:text-tertiary"
                 autoComplete="off"
+                autoFocus
               />
               {customerLoading && (
                 <span className="text-tertiary text-xs shrink-0 animate-pulse">...</span>

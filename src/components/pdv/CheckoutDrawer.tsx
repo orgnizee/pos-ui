@@ -159,6 +159,7 @@ export function CheckoutDrawer({
           />
           <input type="hidden" name="order_date" value={today} />
           <input type="hidden" name="status" value="completed" />
+          <input type="hidden" name="category" value="01KPZQ9KKDKP6DRVZV79ZT35A6" />
 
           <p className="mt-8 uppercase text-tertiary">formas de pagamento</p>
           <div className="border p-3 space-y-3">

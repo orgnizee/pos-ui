@@ -36,6 +36,7 @@ export async function createOrderAction(
     }[],
     discount_amount: (formData.get("discount_amount") as string) || undefined,
     order_date: formData.get("order_date") as string,
+    category: formData.get("category") as string,
     notes: (formData.get("notes") as string) || undefined,
     status: formData.get("status") as OrderStatus,
   });
