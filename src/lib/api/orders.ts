@@ -119,13 +119,15 @@ export const getOrders = cache(
     date?: string;
     start_date?: string;
     end_date?: string;
-  }): Promise<Order[] | ApiError> => {
+    page?: string;
+  }): Promise<{count: number, results: Order[]} | ApiError> => {
     const params = new URLSearchParams();
 
     if (filters?.search) params.set("search", filters.search);
     if (filters?.date) params.set("date", filters.date);
     if (filters?.start_date) params.set("start_date", filters.start_date);
     if (filters?.end_date) params.set("end_date", filters.end_date);
+    if (filters?.page) params.set("page", filters.page);
 
     const query = params.size ? `?${params.toString()}` : "";
     const res = await apiFetch<OrdersResponse>(`/orders${query}`, {
@@ -133,7 +135,7 @@ export const getOrders = cache(
     });
 
     if ("error" in res) return res;
-    return res.results.map((r) => r);
+    return {count: res.count, results: res.results.map((r) => r)};
   },
 );
 

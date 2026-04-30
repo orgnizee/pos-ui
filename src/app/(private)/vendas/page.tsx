@@ -22,18 +22,13 @@ export default async function VendasPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedParams = await searchParams;
-  const { search, date, start_date, end_date } = resolvedParams;
+  const { search, date, start_date, end_date, page } = resolvedParams;
 
   const currentSort =
     typeof resolvedParams.sort === "string" ? resolvedParams.sort : "recent";
   const isSortByRecent = currentSort === "recent";
   const isSortByOldest = currentSort === "oldest";
   const isSortByTotal = currentSort === "total";
-  const currentPage =
-    typeof resolvedParams.page === "string" && Number(resolvedParams.page) > 0
-      ? Number(resolvedParams.page)
-      : 1;
-  const pageSize = 50;
   const selectedStatus =
     typeof resolvedParams.status === "string"
       ? (resolvedParams.status as OrderStatus)
@@ -45,13 +40,14 @@ export default async function VendasPage({
     date: typeof date === "string" ? date : undefined,
     start_date: typeof start_date === "string" ? start_date : undefined,
     end_date: typeof end_date === "string" ? end_date : undefined,
+    page: typeof page === "string" ? page : undefined,
   });
 
   if (isApiError(allOrders)) {
     return <p>{allOrders.message}</p>;
   }
 
-  const sortedOrders = allOrders
+  const sortedOrders = allOrders.results
     .filter((order) => {
       if (!selectedStatus) return true;
       return order.status === selectedStatus;
@@ -67,10 +63,6 @@ export default async function VendasPage({
 
       return b.created_at.localeCompare(a.created_at);
     });
-  const pagedOrders = sortedOrders.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
 
   return (
     <section className="mt-8">
@@ -139,12 +131,12 @@ export default async function VendasPage({
       </div>
 
       <div className="grid mt-8 mb-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-1">
-        {pagedOrders.map((order) => (
+        {sortedOrders.map((order) => (
           <OrderCard key={order.id} order={order} />
         ))}
       </div>
 
-      <Pagination count={sortedOrders.length} pageSize={pageSize} />
+      <Pagination count={allOrders.count} />
     </section>
   );
 }
