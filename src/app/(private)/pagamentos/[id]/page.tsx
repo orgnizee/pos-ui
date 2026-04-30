@@ -3,11 +3,11 @@ import BackButton from "@/components/backButton";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL, formatDateTime } from "@/lib/utils/format";
-import SettleButton from "@/components/settleReceivableutton";
 import Link from "next/link";
 import { getPayableByID, PaymentStatus } from "@/lib/api/payables";
 import Loading from "./loading";
 import DeletePayableButton from "@/components/deletePayableButton";
+import SettlePayableButton from "@/components/settlePayableButton";
 
 export async function PagamentosPayload({ id }: { id: string }) {
   const [payment, accounts] = await Promise.all([
@@ -37,14 +37,16 @@ export async function PagamentosPayload({ id }: { id: string }) {
       <div className="mb-4 flex items-center justify-between">
         <BackButton />
 
-        {canSettle && <SettleButton receivable={payment} accounts={accounts} />}
+        {canSettle && (
+          <SettlePayableButton payable={payment} accounts={accounts} />
+        )}
       </div>
 
-      <div className="flex justify-between">
-        <h2 className="text-6xl">pagamento</h2>
+      <div className="sm:flex justify-between">
+        <h2 className="sm:text-6xl text-5xl">pagamento</h2>
         <div className="flex flex-col px-1 pt-1 items-center">
           <div
-            className={`relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-130 border ${payment.status === "overdue" ? "border-red-500" : payment.status === "paid" ? "border-green-500" : ""}`}
+            className={`relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full sm:w-140 h-130 border ${payment.status === "overdue" ? "border-red-500" : payment.status === "paid" ? "border-green-500" : ""}`}
           >
             <p className="absolute top-5 text-sm font-normal">
               {formatDateTime(payment.issued_at)}

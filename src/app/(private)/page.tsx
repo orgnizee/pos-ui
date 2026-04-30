@@ -47,22 +47,22 @@ export default async function Home() {
       {user.username === "hugo" && (
         <>
           <Link href={"/caixa"}>
-            <span className="text-2xl">2</span>
+            <span className="text-2xl">1</span>
             caixa
           </Link>
 
           <Link href={"/fiados"}>
-            <span className="text-2xl">3</span>
+            <span className="text-2xl">2</span>
             recer
           </Link>
 
           <Link href={"/pagamentos"}>
-            <span className="text-2xl">4</span>
+            <span className="text-2xl">3</span>
             pagar
           </Link>
 
           <Link href={"/contatos"}>
-            <span className="text-2xl">5</span>
+            <span className="text-2xl">4</span>
             contatos
           </Link>
         </>

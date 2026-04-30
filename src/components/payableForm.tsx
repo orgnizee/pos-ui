@@ -70,7 +70,7 @@ export default function PayableForm({
       {/* Informações */}
       <div className="mb-8">
         <SectionLabel label="informações" />
-        <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+        <div className="grid sm:grid-cols-3 grid-cols-2 gap-x-8 gap-y-8">
           <InputField label="emissão" name="issued_at" type="date" required />
           <InputField label="vencimento" name="due_at" type="date" required />
 

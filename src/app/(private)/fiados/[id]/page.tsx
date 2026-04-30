@@ -5,7 +5,7 @@ import { getReceivableByID, PaymentStatus } from "@/lib/api/receivables";
 import { getAccounts } from "@/lib/api/bankAccounts";
 import { isApiError } from "@/lib/api/types";
 import { formatBRL, formatDateTime } from "@/lib/utils/format";
-import SettleButton from "@/components/settleReceivableutton";
+import SettleButton from "@/components/settleReceivableButton";
 import Link from "next/link";
 import Loading from "./loading";
 

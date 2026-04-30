@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { Account } from "@/lib/api/bankAccounts";
 import { SelectInputField } from "./inputFieldSelect";
 import { Payable, PaymentStatus } from "@/lib/api/payables";
-import { SettleBatchPayableActionState, settleBatchPayablesAction } from "@/lib/api/actions/settlePayable";
+import {
+  SettleBatchPayableActionState,
+  settleBatchPayablesAction,
+} from "@/lib/api/actions/settlePayable";
 
 interface PayableTableProps {
   payables: Payable[];
@@ -59,10 +62,7 @@ export default function PayableTable({
   );
 
   const totalSelected = selectedReceivables
-    .reduce(
-      (sum, payable) => sum + parseFloat(payable.outstanding_balance),
-      0,
-    )
+    .reduce((sum, payable) => sum + parseFloat(payable.outstanding_balance), 0)
     .toFixed(2);
 
   useEffect(() => {
@@ -112,31 +112,31 @@ export default function PayableTable({
             <table className="w-full table-fixed">
               <colgroup>
                 <col className="w-10 sm:w-10" />
-                <col className="w-32 sm:w-22" />
-                <col className="hidden sm:table-column w-42" />
-                <col className="w-22" />
-                <col className="hidden sm:table-column w-32" />
+                <col className="hidden sm:table-column w-32 sm:w-22" />
+                <col className="w-42" />
+                <col className="hidden sm:table-column w-22" />
+                <col className="w-32" />
                 <col className="hidden sm:table-column w-28" />
                 <col className="hidden sm:table-column w-52" />
               </colgroup>
 
               <thead>
                 <tr className="text-xs uppercase text-left">
-                  <th className=" border-secondary/50"></th>
-                  <th className="px-2  border-secondary/50">Total</th>
-                  <th className="hidden sm:table-cell px-2  border-secondary/50">
-                    Cliente
+                  <th className="border-secondary/50"></th>
+                  <th className="hidden sm:table-cell px-2 border-secondary/50">
+                    Total
                   </th>
-                  <th className="px-2 pr-4 text-end sm:text-start  border-secondary/50">
+                  <th className="px-2 border-secondary/50">Cliente</th>
+                  <th className="hidden sm:table-cell px-2 pr-4 border-secondary/50">
                     pago
                   </th>
-                  <th className="hidden sm:table-cell px-2 pr-4  border-secondary/50">
+                  <th className="px-2 pr-4 text-end sm:text-start border-secondary/50">
                     a pagar
                   </th>
-                  <th className="hidden sm:table-cell px-2 pr-4  border-secondary/50">
+                  <th className="hidden sm:table-cell px-2 pr-4 border-secondary/50">
                     Vencimento
                   </th>
-                  <th className="hidden sm:table-cell pr-4 text-right  border-secondary/50">
+                  <th className="hidden sm:table-cell pr-4 text-right border-secondary/50">
                     Notas
                   </th>
                 </tr>
@@ -168,10 +168,10 @@ export default function PayableTable({
                         />
                       </div>
                     </td>
-                    <td className="px-2 text-start border-b border-secondary/50">
+                    <td className="hidden sm:table-cell px-2 text-start border-b border-secondary/50">
                       {formatBRL(payable.total_amount)}
                     </td>
-                    <td className="hidden sm:table-cell px-2 text-start border-b border-secondary/50">
+                    <td className="px-2 text-start border-b border-secondary/50">
                       {payable.contact.name ?? "-"}
                     </td>
                     <td className="hidden sm:table-cell px-2 pr-4 text-start border-b border-secondary/50">
