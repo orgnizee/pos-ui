@@ -35,6 +35,7 @@ type Props = {
   pendingOrder: boolean;
   onClose: () => void;
   orderDiscountCents: number;
+  standardCategory: string;
 };
 
 export function CheckoutDrawer({
@@ -65,6 +66,7 @@ export function CheckoutDrawer({
   pendingOrder,
   onClose,
   orderDiscountCents,
+  standardCategory,
 }: Props) {
   if (!showCheckoutDrawer) return null;
 
@@ -159,7 +161,7 @@ export function CheckoutDrawer({
           />
           <input type="hidden" name="order_date" value={today} />
           <input type="hidden" name="status" value="completed" />
-          <input type="hidden" name="category" value="01KPZQ9KKDKP6DRVZV79ZT35A6" />
+          <input type="hidden" name="category" value={standardCategory} />
 
           <p className="mt-8 uppercase text-tertiary">formas de pagamento</p>
           <div className="border p-3 space-y-3">

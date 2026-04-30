@@ -33,9 +33,14 @@ import {
 type Props = {
   initialProducts: Product[];
   paymentMethods: PaymentMethod[];
+  standardCategory: string;
 };
 
-export default function PdvClient({ initialProducts, paymentMethods }: Props) {
+export default function PdvClient({
+  initialProducts,
+  paymentMethods,
+  standardCategory,
+}: Props) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const nextCartItemIdRef = useRef(0);
   const [search, setSearch] = useState("");
@@ -659,6 +664,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           pendingOrder={pendingOrder}
           onClose={() => setShowCheckoutDrawer(false)}
           orderDiscountCents={orderDiscountCents}
+          standardCategory={standardCategory}
         />
       </section>
 
@@ -755,6 +761,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           pendingOrder={pendingOrder}
           onClose={() => setShowCheckoutDrawer(false)}
           orderDiscountCents={orderDiscountCents}
+          standardCategory={standardCategory}
         />
       </section>
     </>
