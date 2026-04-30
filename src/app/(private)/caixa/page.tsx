@@ -26,8 +26,17 @@ export default async function CaixaPage({
 
   const resolvedParams = await searchParams;
 
-  const { bank, date, type, search, category, inativas, start_date, end_date } =
-    resolvedParams;
+  const {
+    bank,
+    date,
+    type,
+    search,
+    category,
+    inativas,
+    start_date,
+    end_date,
+    page,
+  } = resolvedParams;
   const isAll = !date && !type && !bank && !category;
   const isToday = date === "today";
   const isWeek = date === "week";
@@ -41,6 +50,7 @@ export default async function CaixaPage({
     ...(typeof category === "string" && { category }),
     ...(typeof start_date === "string" && { start_date }),
     ...(typeof end_date === "string" && { end_date }),
+    ...(typeof page === "string" && { page }),
   });
 
   if (isApiError(accounts)) {
