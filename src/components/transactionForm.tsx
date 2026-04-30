@@ -88,6 +88,7 @@ export default function TransactionForm({
 
           {type !== "transfer" && (
             <SelectInputField
+              required
               label="categoria"
               defaultValue={""}
               name="category"

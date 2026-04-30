@@ -76,12 +76,37 @@ export default async function CaixaPage({
 
   return (
     <section className="mt-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Desktop Header */}
+      <div className="hidden sm:flex items-center justify-between">
         <h1 className="text-8xl font-light">caixa</h1>
 
         {/* Add Transaction Buttons */}
         <div className="flex gap-2">
+          <Link
+            href={"caixa/entrada"}
+            className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
+          >
+            <Plus className="text-primary" size={16} />
+          </Link>
+          <Link
+            href={"caixa/saida"}
+            className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
+          >
+            <Minus className="text-primary" size={16} />
+          </Link>
+          <Link
+            href={"caixa/transferencia"}
+            className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"
+          >
+            <ArrowRightLeft className="text-primary" size={16} />
+          </Link>
+        </div>
+      </div>
+
+      {/* Mobile Header */}
+      <div className="sm:hidden flex flex-col gap-2">
+        {/* Add Transaction Buttons */}
+        <div className="flex gap-2 justify-end">
           <Link
             href={"caixa/entrada"}
             className="flex w-10 h-10 items-center justify-center border border-primary hover:border-tertiary"

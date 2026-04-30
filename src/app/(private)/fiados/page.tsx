@@ -118,7 +118,7 @@ export default async function FiadosPage({
     <section className="mt-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-8xl font-light">fiados</h1>
+        <h1 className="sm:text-8xl text-6xl sm:ml-0 -ml-1 font-light">fiados</h1>
 
         <Link
           href={"fiados/novo"}

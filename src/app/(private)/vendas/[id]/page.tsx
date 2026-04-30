@@ -27,10 +27,10 @@ async function OrderPayload({ id }: { id: string }) {
 
   return (
     <>
-      <div className="no-print flex justify-between">
+      <div className="no-print sm:flex justify-between">
         <h2 className="text-6xl">venda</h2>
         <div className="flex flex-col px-1 pt-1 items-center">
-          <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">
+          <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full sm:w-140 h-fit border">
             <p className="absolute top-5 text-sm font-normal">
               venda {order.order_number} {statusLabel[order.status]}
             </p>

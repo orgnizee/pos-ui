@@ -31,7 +31,7 @@ export async function ProductPayload({ id }: { id: string }) {
       </div>
 
       <div className="flex flex-col px-1 pt-1 items-center">
-        <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">
+        <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full sm:w-140 h-fit border">
           <p className="absolute top-5 text-sm font-normal">produto</p>
           <p className="mt-10 sm:mt-12 text-4xl text-center">{product.name}</p>
           <p className="mt-2">{dash(product.brand)}</p>

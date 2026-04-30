@@ -6,8 +6,8 @@ export default function Loading() {
         <Skeleton className="h-4 w-12 mr-2" />
       </div>
 
-      <div className="flex flex-col px-1 pt-1 items-center">
-        <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-fit border">
+      <div className="sm:flex flex-col px-1 pt-1 items-center">
+        <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full sm:w-140 h-fit border">
           <Skeleton className="absolute top-5 h-4 w-16" />
 
           <Skeleton className="mt-10 sm:mt-12 h-8 w-60" />

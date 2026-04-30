@@ -63,7 +63,7 @@ export default async function ProdutosPage({
   return (
     <section className="mt-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-8xl font-light">produtos</h1>
+        <h1 className="sm:text-8xl text-5xl font-light">produtos</h1>
 
         <Link
           href={"produtos/novo"}

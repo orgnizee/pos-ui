@@ -65,7 +65,7 @@ export default function ContactForm() {
       {/* Identificação */}
       <div className="mb-8">
         <SectionLabel label="identificação" />
-        <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+        <div className="grid sm:grid-cols-3 grid-cols-1 gap-x-8 gap-y-8">
           {type === "customer" ? (
             <InputField label="nome" name="name" required autoFocus />
           ) : (
@@ -108,7 +108,7 @@ export default function ContactForm() {
       {/* Contato */}
       <div className="mb-8">
         <SectionLabel label="contato" />
-        <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+        <div className="grid sm:grid-cols-3 grid-cols-2 gap-x-8 gap-y-8">
           <MaskedInput label="celular" name="phone" formatter={formatPhone} />
           <InputField label="e-mail" name="email" type="email" />
         </div>

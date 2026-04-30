@@ -7,11 +7,11 @@ export default function Loading() {
           <div className="h-6 w-8 rounded bg-zinc-200" />
         </div>
 
-        <div className="flex justify-between">
+        <div className="sm:flex justify-between">
           <div className="h-14 w-80 rounded bg-zinc-200" />
 
           <div className="flex flex-col px-1 pt-1 items-center">
-            <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-120 border border-zinc-200">
+            <div className="relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full sm:w-140 h-120 border border-zinc-200">
               <div className="absolute top-5 h-4 w-40 rounded bg-zinc-200" />
 
               <div className="mt-10 sm:mt-15 h-12 w-52 rounded bg-zinc-200" />

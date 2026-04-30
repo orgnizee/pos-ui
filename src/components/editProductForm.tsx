@@ -39,7 +39,7 @@ export default function EditProductForm({
     <form action={action} className="w-full max-w-4xl mt-12 mb-6">
       <div className="mb-8">
         <SectionLabel label="identificação" />
-        <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+        <div className="grid sm:grid-cols-3 grid-cols-2 gap-x-8 gap-y-8">
           <InputField
             label="nome"
             name="name"
@@ -103,7 +103,7 @@ export default function EditProductForm({
 
       <div className="mb-8">
         <SectionLabel label="status" />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 grid-cols-1 gap-4">
           <label className="flex items-center gap-2 text-sm font-light cursor-pointer">
             <input
               type="checkbox"

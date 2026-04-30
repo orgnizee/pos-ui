@@ -28,7 +28,7 @@ export default async function EditContactPage({
   return (
     <section className="mt-6">
       <BackButton />
-      <p className="mt-8 text-6xl text-start font-light">novo contato</p>
+      <p className="mt-8 text-6xl text-start font-light">editar contato</p>
 
       <div className="relative flex items-center justify-center mt-2 ml-auto mr-auto w-full">
         <EditContactForm id={id} contact={contact} />

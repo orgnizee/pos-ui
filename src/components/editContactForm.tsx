@@ -50,7 +50,7 @@ export default function EditContactForm({
       {/* Identificação */}
       <div className="mb-8">
         <SectionLabel label="identificação" />
-        <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+        <div className="grid sm:grid-cols-3 grid-cols-1 gap-x-8 gap-y-8">
           {contact.kind === "customer" ? (
             <InputField
               label="nome"
@@ -132,7 +132,7 @@ export default function EditContactForm({
       {/* Contato */}
       <div className="mb-8">
         <SectionLabel label="contato" />
-        <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+        <div className="grid sm:grid-cols-3 grid-cols-2 gap-x-8 gap-y-8">
           <MaskedInput
             label="celular"
             name="phone"

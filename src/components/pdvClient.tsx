@@ -569,95 +569,194 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
   const amountReceived = formatBRL(amountReceivedCents / 100);
 
   return (
-    <section className="mt-4 grid grid-cols-[30%_70%] h-[calc(100vh-75px)]">
-      <CartPanel
-        cart={cart}
-        totalItems={totalItems}
-        totalAmount={totalAmount}
-        itemDiscountTotal={itemDiscountTotal}
-        onRemoveItem={removeItem}
-        onUpdateQtyFromInput={updateQtyFromInput}
-        onUpdateItemDiscountFromInput={updateItemDiscountFromInput}
-        onUpdateQty={updateQty}
-      />
+    <>
+      {/* Desktop */}
+      <section className="hidden sm:grid grid-cols-[30%_70%] h-[calc(100vh-75px)] mt-4">
+        <CartPanel
+          cart={cart}
+          totalItems={totalItems}
+          totalAmount={totalAmount}
+          itemDiscountTotal={itemDiscountTotal}
+          onRemoveItem={removeItem}
+          onUpdateQtyFromInput={updateQtyFromInput}
+          onUpdateItemDiscountFromInput={updateItemDiscountFromInput}
+          onUpdateQty={updateQty}
+        />
 
-      <div className="flex-1 flex flex-col ml-6">
-        <CustomerPicker
+        <div className="flex-1 flex flex-col ml-6">
+          <CustomerPicker
+            customer={customer}
+            showCustomerPicker={showCustomerPicker}
+            customerSearch={customerSearch}
+            customerLoading={customerLoading}
+            customerResults={customerResults}
+            highlightedCustomerIdx={highlightedCustomerIdx}
+            customerSearchRef={customerSearchRef}
+            customerListRef={customerListRef}
+            onToggle={() =>
+              showCustomerPicker
+                ? setShowCustomerPicker(false)
+                : openCustomerPicker()
+            }
+            onClose={() => setShowCustomerPicker(false)}
+            onSearchChange={handleCustomerSearchChange}
+            onSelectCustomer={selectCustomer}
+          />
+
+          <ProductSearch
+            searchRef={searchRef}
+            listRef={listRef}
+            search={search}
+            loading={loading}
+            results={results}
+            showResults={showResults}
+            highlightedIdx={highlightedIdx}
+            scaleBarcodeFeedback={scaleBarcodeFeedback}
+            onSearchChange={handleSearchChange}
+            onFocusSearch={() => results.length > 0 && setShowResults(true)}
+            onCloseResults={() => setShowResults(false)}
+            onAddToCart={addToCart}
+          />
+
+          <div className="justify-end flex">
+            <button
+              id="btn-receber"
+              ref={receiveButtonRef}
+              disabled={cart.length === 0}
+              onClick={openCheckoutDrawer}
+              className="border w-fit p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              receber [ctrl + 3]
+            </button>
+          </div>
+        </div>
+
+        <CheckoutDrawer
+          showCheckoutDrawer={showCheckoutDrawer}
+          orderTotal={orderTotal}
+          orderAction={orderAction}
+          amountPaidInputRef={amountPaidInputRef}
+          discountAmount={discountAmount}
+          payableBeforeOrderDiscountCents={payableBeforeOrderDiscountCents}
+          isPaymentAmountManuallyEdited={isPaymentAmountManuallyEdited}
+          setDiscountCents={setDiscountCents}
+          setPayments={setPayments}
+          amountReceived={amountReceived}
+          setAmountReceivedCents={setAmountReceivedCents}
+          change={change}
           customer={customer}
-          showCustomerPicker={showCustomerPicker}
-          customerSearch={customerSearch}
-          customerLoading={customerLoading}
-          customerResults={customerResults}
-          highlightedCustomerIdx={highlightedCustomerIdx}
-          customerSearchRef={customerSearchRef}
-          customerListRef={customerListRef}
-          onToggle={() =>
-            showCustomerPicker
-              ? setShowCustomerPicker(false)
-              : openCustomerPicker()
-          }
-          onClose={() => setShowCustomerPicker(false)}
-          onSearchChange={handleCustomerSearchChange}
-          onSelectCustomer={selectCustomer}
+          cart={cart}
+          payments={payments}
+          today={getTodayDate()}
+          isFiadoMethod={isFiadoMethod}
+          getDueDate={getDueDate}
+          paymentMethods={paymentMethods}
+          setIsPaymentAmountManuallyEdited={setIsPaymentAmountManuallyEdited}
+          remaining={remaining}
+          orderState={orderState}
+          finalizeButtonRef={finalizeButtonRef}
+          canSubmitOrder={canSubmitOrder}
+          pendingOrder={pendingOrder}
+          onClose={() => setShowCheckoutDrawer(false)}
+          orderDiscountCents={orderDiscountCents}
         />
+      </section>
 
-        <ProductSearch
-          searchRef={searchRef}
-          listRef={listRef}
-          search={search}
-          loading={loading}
-          results={results}
-          showResults={showResults}
-          highlightedIdx={highlightedIdx}
-          scaleBarcodeFeedback={scaleBarcodeFeedback}
-          onSearchChange={handleSearchChange}
-          onFocusSearch={() => results.length > 0 && setShowResults(true)}
-          onCloseResults={() => setShowResults(false)}
-          onAddToCart={addToCart}
-        />
+      {/* Mobile */}
+      <section className="sm:hidden flex flex-col relative h-[calc(100vh-75px)] mt-4">
+        <div className="mt-4">
+          <ProductSearch
+            searchRef={searchRef}
+            listRef={listRef}
+            search={search}
+            loading={loading}
+            results={results}
+            showResults={showResults}
+            highlightedIdx={highlightedIdx}
+            scaleBarcodeFeedback={scaleBarcodeFeedback}
+            onSearchChange={handleSearchChange}
+            onFocusSearch={() => results.length > 0 && setShowResults(true)}
+            onCloseResults={() => setShowResults(false)}
+            onAddToCart={addToCart}
+          />
+        </div>
 
-        <div className="justify-end flex">
+        <div className="h-120 mt-8">
+          <CartPanel
+            cart={cart}
+            totalItems={totalItems}
+            totalAmount={totalAmount}
+            itemDiscountTotal={itemDiscountTotal}
+            onRemoveItem={removeItem}
+            onUpdateQtyFromInput={updateQtyFromInput}
+            onUpdateItemDiscountFromInput={updateItemDiscountFromInput}
+            onUpdateQty={updateQty}
+          />
+        </div>
+
+        <div className="mt-6">
+          <CustomerPicker
+            customer={customer}
+            showCustomerPicker={showCustomerPicker}
+            customerSearch={customerSearch}
+            customerLoading={customerLoading}
+            customerResults={customerResults}
+            highlightedCustomerIdx={highlightedCustomerIdx}
+            customerSearchRef={customerSearchRef}
+            customerListRef={customerListRef}
+            onToggle={() =>
+              showCustomerPicker
+                ? setShowCustomerPicker(false)
+                : openCustomerPicker()
+            }
+            onClose={() => setShowCustomerPicker(false)}
+            onSearchChange={handleCustomerSearchChange}
+            onSelectCustomer={selectCustomer}
+          />
+        </div>
+
+        <div className="absolute bottom-5 w-full">
           <button
             id="btn-receber"
             ref={receiveButtonRef}
             disabled={cart.length === 0}
             onClick={openCheckoutDrawer}
-            className="border w-fit p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
+            className="border w-full p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
           >
             receber [ctrl + 3]
           </button>
         </div>
-      </div>
 
-      <CheckoutDrawer
-        showCheckoutDrawer={showCheckoutDrawer}
-        orderTotal={orderTotal}
-        orderAction={orderAction}
-        amountPaidInputRef={amountPaidInputRef}
-        discountAmount={discountAmount}
-        payableBeforeOrderDiscountCents={payableBeforeOrderDiscountCents}
-        isPaymentAmountManuallyEdited={isPaymentAmountManuallyEdited}
-        setDiscountCents={setDiscountCents}
-        setPayments={setPayments}
-        amountReceived={amountReceived}
-        setAmountReceivedCents={setAmountReceivedCents}
-        change={change}
-        customer={customer}
-        cart={cart}
-        payments={payments}
-        today={getTodayDate()}
-        isFiadoMethod={isFiadoMethod}
-        getDueDate={getDueDate}
-        paymentMethods={paymentMethods}
-        setIsPaymentAmountManuallyEdited={setIsPaymentAmountManuallyEdited}
-        remaining={remaining}
-        orderState={orderState}
-        finalizeButtonRef={finalizeButtonRef}
-        canSubmitOrder={canSubmitOrder}
-        pendingOrder={pendingOrder}
-        onClose={() => setShowCheckoutDrawer(false)}
-        orderDiscountCents={orderDiscountCents}
-      />
-    </section>
+        <CheckoutDrawer
+          showCheckoutDrawer={showCheckoutDrawer}
+          orderTotal={orderTotal}
+          orderAction={orderAction}
+          amountPaidInputRef={amountPaidInputRef}
+          discountAmount={discountAmount}
+          payableBeforeOrderDiscountCents={payableBeforeOrderDiscountCents}
+          isPaymentAmountManuallyEdited={isPaymentAmountManuallyEdited}
+          setDiscountCents={setDiscountCents}
+          setPayments={setPayments}
+          amountReceived={amountReceived}
+          setAmountReceivedCents={setAmountReceivedCents}
+          change={change}
+          customer={customer}
+          cart={cart}
+          payments={payments}
+          today={getTodayDate()}
+          isFiadoMethod={isFiadoMethod}
+          getDueDate={getDueDate}
+          paymentMethods={paymentMethods}
+          setIsPaymentAmountManuallyEdited={setIsPaymentAmountManuallyEdited}
+          remaining={remaining}
+          orderState={orderState}
+          finalizeButtonRef={finalizeButtonRef}
+          canSubmitOrder={canSubmitOrder}
+          pendingOrder={pendingOrder}
+          onClose={() => setShowCheckoutDrawer(false)}
+          orderDiscountCents={orderDiscountCents}
+        />
+      </section>
+    </>
   );
 }

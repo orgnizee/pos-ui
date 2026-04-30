@@ -40,11 +40,11 @@ async function FiadoPayload({ id }: { id: string }) {
         {canSettle && <SettleButton receivable={payment} accounts={accounts} />}
       </div>
 
-      <div className="flex justify-between">
+      <div className="sm:flex w-full justify-between">
         <h2 className="text-6xl">fiado</h2>
         <div className="flex flex-col px-1 pt-1 items-center">
           <div
-            className={`relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-140 h-130 border ${payment.status === "overdue" ? "border-red-500" : payment.status === "paid" ? "border-green-500" : ""}`}
+            className={`relative mt-2 ml-auto mr-auto p-4 flex flex-col items-center justify-start w-full sm:w-140 h-130 border ${payment.status === "overdue" ? "border-red-500" : payment.status === "paid" ? "border-green-500" : ""}`}
           >
             <p className="absolute top-5 text-sm font-normal">
               {formatDateTime(payment.issued_at)}
@@ -68,7 +68,9 @@ async function FiadoPayload({ id }: { id: string }) {
 
             <div className="relative w-full sm:w-100 h-5 mt-8 py-4 flex items-center justify-between">
               <p className="text-sm font-light">status</p>
-              <p className="text-sm font-light">{statusLabel[payment.status]}</p>
+              <p className="text-sm font-light">
+                {statusLabel[payment.status]}
+              </p>
             </div>
             <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
@@ -82,13 +84,17 @@ async function FiadoPayload({ id }: { id: string }) {
 
             <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
               <p className="text-sm font-light">vencimento</p>
-              <p className="text-sm font-light">{formatDateTime(payment.due_at)}</p>
+              <p className="text-sm font-light">
+                {formatDateTime(payment.due_at)}
+              </p>
             </div>
             <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 
             <div className="relative w-full sm:w-100 h-5 py-4 flex items-center justify-between">
               <p className="text-sm font-light">valor pago</p>
-              <p className="text-sm font-light">{formatBRL(payment.amount_paid)}</p>
+              <p className="text-sm font-light">
+                {formatBRL(payment.amount_paid)}
+              </p>
             </div>
             <hr className="border-t border-tertiary/25 w-full sm:w-100" />
 

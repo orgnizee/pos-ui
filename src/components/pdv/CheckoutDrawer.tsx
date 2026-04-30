@@ -71,16 +71,18 @@ export function CheckoutDrawer({
   return (
     <>
       <div className="fixed inset-0 bg-white/90 z-40" onClick={onClose} />
-      <aside className="fixed top-0 right-0 h-full w-full max-w-xl bg-white border-l z-50 p-6 overflow-y-auto">
+      <aside className="fixed bottom-0 sm:bottom-2 right-0 h-[90%] sm:h-[98%] w-full max-w-xl bg-white sm:border border-t z-50 p-6 overflow-y-auto">
         <h2 className="text-4xl uppercase">Total {formatBRL(orderTotal)}</h2>
 
-        <form action={orderAction} className="mt-4 flex flex-col gap-1">
+        <form action={orderAction} className="mt-4 flex flex-col relative h-[90%] sm:static gap-1">
           <div className="flex justify-between">
             <span>valor recebido</span>
             <input
               ref={amountPaidInputRef}
-              value={(amountReceived)}
-              onChange={(e) => setAmountReceivedCents(parseCurrencyToCents(e.target.value))}
+              value={amountReceived}
+              onChange={(e) =>
+                setAmountReceivedCents(parseCurrencyToCents(e.target.value))
+              }
               className="text-primary placeholder:text-secondary outline-none text-end"
               placeholder="R$ 0,00"
               inputMode="numeric"
@@ -102,12 +104,16 @@ export function CheckoutDrawer({
 
                 if (!isPaymentAmountManuallyEdited) {
                   const nextOrderTotal = Math.max(
-                    (payableBeforeOrderDiscountCents - normalizedDiscountCents) / 100,
+                    (payableBeforeOrderDiscountCents -
+                      normalizedDiscountCents) /
+                      100,
                     0,
                   );
                   setPayments((prev) =>
                     prev.map((payment, idx) =>
-                      idx === 0 ? { ...payment, amount: nextOrderTotal.toFixed(2) } : payment,
+                      idx === 0
+                        ? { ...payment, amount: nextOrderTotal.toFixed(2) }
+                        : payment,
                     ),
                   );
                 }
@@ -138,20 +144,29 @@ export function CheckoutDrawer({
                 quantity: item.quantity,
                 price: item.product.price ?? "0",
                 discount: (
-                  Math.min(item.discountCents, lineTotalCents(item.product.price, item.quantity)) /
-                  100
+                  Math.min(
+                    item.discountCents,
+                    lineTotalCents(item.product.price, item.quantity),
+                  ) / 100
                 ).toFixed(2),
               })),
             )}
           />
-          <input type="hidden" name="payment_methods" value={JSON.stringify(payments)} />
+          <input
+            type="hidden"
+            name="payment_methods"
+            value={JSON.stringify(payments)}
+          />
           <input type="hidden" name="order_date" value={today} />
           <input type="hidden" name="status" value="completed" />
 
           <p className="mt-8 uppercase text-tertiary">formas de pagamento</p>
           <div className="border p-3 space-y-3">
             {payments.map((payment, idx) => (
-              <div key={`${payment.method}-${idx}`} className="grid grid-cols-12 gap-2">
+              <div
+                key={`${payment.method}-${idx}`}
+                className="grid grid-cols-12 gap-2"
+              >
                 <div className="col-span-6">
                   <SelectInputField
                     id={`payment-method-${idx}`}
@@ -165,7 +180,9 @@ export function CheckoutDrawer({
                             ? {
                                 ...p,
                                 method: selectedMethodId,
-                                due_at: isFiadoMethod(selectedMethodId) ? getDueDate() : today,
+                                due_at: isFiadoMethod(selectedMethodId)
+                                  ? getDueDate()
+                                  : today,
                               }
                             : p,
                         ),
@@ -188,7 +205,9 @@ export function CheckoutDrawer({
                           i === idx
                             ? {
                                 ...p,
-                                amount: (parseCurrencyToCents(e.target.value) / 100).toFixed(2),
+                                amount: (
+                                  parseCurrencyToCents(e.target.value) / 100
+                                ).toFixed(2),
                               }
                             : p,
                         ),
@@ -202,7 +221,10 @@ export function CheckoutDrawer({
 
                 {isFiadoMethod(payment.method) && (
                   <div className="col-span-12">
-                    <label htmlFor={`payment-due-at-${idx}`} className="text-xs text-tertiary">
+                    <label
+                      htmlFor={`payment-due-at-${idx}`}
+                      className="text-xs text-tertiary"
+                    >
                       vencimento
                     </label>
                     <input
@@ -211,7 +233,9 @@ export function CheckoutDrawer({
                       value={payment.due_at || getDueDate()}
                       onChange={(e) =>
                         setPayments((prev) =>
-                          prev.map((p, i) => (i === idx ? { ...p, due_at: e.target.value } : p)),
+                          prev.map((p, i) =>
+                            i === idx ? { ...p, due_at: e.target.value } : p,
+                          ),
                         )
                       }
                       className="w-full"
@@ -230,13 +254,15 @@ export function CheckoutDrawer({
 
           <InputTextareaField label="observações" name="notes" />
 
-          <div className="absolute bottom-25 right-5">
+          <div className="absolute bottom-15 sm:bottom-25 sm:right-5">
             <p className="text-4xl">a pagar {formatBRL(orderTotal)}</p>
           </div>
 
-          {orderState?.error && <p className="text-sm text-red-500">{orderState.message}</p>}
+          {orderState?.error && (
+            <p className="text-sm text-red-500">{orderState.message}</p>
+          )}
 
-          <div className="absolute bottom-5 w-132">
+          <div className="absolute -bottom-5 sm:bottom-5 w-full sm:w-132">
             <button
               id="btn-finalizar"
               ref={finalizeButtonRef}
