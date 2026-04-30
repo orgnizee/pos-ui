@@ -67,7 +67,7 @@ export default async function VendasPage({
   return (
     <section className="mt-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-8xl font-light">vendas</h1>
+        <h1 className="sm:text-8xl text-5xl font-light">vendas</h1>
       </div>
 
       <div className="flex justify-end mt-8">

@@ -681,7 +681,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
           />
         </div>
 
-        <div className="h-120 mt-8">
+        <div className="h-100 mt-8">
           <CartPanel
             cart={cart}
             totalItems={totalItems}
@@ -723,7 +723,7 @@ export default function PdvClient({ initialProducts, paymentMethods }: Props) {
             onClick={openCheckoutDrawer}
             className="border w-full p-2 bg-black text-white cursor-pointer uppercase disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            receber [ctrl + 3]
+            receber
           </button>
         </div>
 
