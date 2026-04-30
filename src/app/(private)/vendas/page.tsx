@@ -70,36 +70,6 @@ export default async function VendasPage({
         <h1 className="text-8xl font-light">vendas</h1>
       </div>
 
-      <p className="mt-8 text-start text-lg font-light">histórico</p>
-
-      {/* Order Buttons */}
-      <div className="flex gap-6">
-        <DateRange />
-        <div className="overflow-auto flex">
-          <div className="overflow-x-auto scrollbar-hidden flex pb-0 gap-6 font-bold items-center">
-            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
-            <Link
-              href={buildFilterHref(resolvedParams, { sort: "recent" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByRecent)}>recentes</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { sort: "oldest" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByOldest)}>antigas</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { sort: "total" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByTotal)}>valor</p>
-            </Link>
-          </div>
-        </div>
-      </div>
-
       <div className="flex justify-end mt-8">
         <SearchInput endpoint="vendas" />
       </div>
@@ -127,6 +97,34 @@ export default async function VendasPage({
               </Link>
             );
           })}
+        </div>
+      </div>
+
+      {/* Order Buttons */}
+      <div className="flex gap-6 ml-1 mt-2">
+        <DateRange />
+        <div className="overflow-auto flex">
+          <div className="overflow-x-auto scrollbar-hidden flex pb-0 gap-6 font-bold items-center">
+            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "recent" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByRecent)}>recentes</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "oldest" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByOldest)}>antigas</p>
+            </Link>
+            <Link
+              href={buildFilterHref(resolvedParams, { sort: "total" })}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByTotal)}>valor</p>
+            </Link>
+          </div>
         </div>
       </div>
 
