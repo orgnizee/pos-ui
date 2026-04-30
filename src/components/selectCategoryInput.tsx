@@ -12,8 +12,8 @@ export default function SelectCategoryInput({
   const searchParams = useSearchParams();
   const current = searchParams.get("category") ?? "";
 
-  const receitas = categories.find((c) => c.name === "receitas");
-  const despesas = categories.find((c) => c.name === "despesas");
+  const receitas = categories.find((c) => c.name.toLowerCase() === "receitas");
+  const despesas = categories.find((c) => c.name.toLowerCase() === "despesas");
 
   const children = (parentId: string) =>
     categories
@@ -38,7 +38,7 @@ export default function SelectCategoryInput({
       style={{ textAlignLast: "end" }}
       className={`${filterClass(current !== "")}`}
     >
-      <option disabled value="">
+      <option value="">
         CATEGORIA
       </option>
       {receitas && (

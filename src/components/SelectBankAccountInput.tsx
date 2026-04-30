@@ -34,7 +34,7 @@ export default function SelectBankAccountInput({
       style={{ textAlignLast: "end" }}
       className={`${filterClass(current !== "")}`}
     >
-      <option disabled value="">
+      <option value="">
         CONTA
       </option>
       {options.map(({ label, value }) => (

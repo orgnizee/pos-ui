@@ -31,7 +31,7 @@ export default function SelectTypeInput() {
       style={{ textAlignLast: "end" }}
       className={`${filterClass(current !== "")}`}
     >
-      <option disabled value="">
+      <option value="">
         TIPO
       </option>
       {options.map(({ label, value }) => (
