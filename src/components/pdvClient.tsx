@@ -497,7 +497,7 @@ export default function PdvClient({
         }
       }
 
-      if (e.key === "Enter" && document.activeElement === searchRef.current) {
+      if (e.key === "Enter") {
         const handledScaleBarcode = await handleScaleBarcodeSubmit();
         if (handledScaleBarcode) {
           e.preventDefault();
