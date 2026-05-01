@@ -17,6 +17,7 @@ import { CustomerPicker } from "./pdv/CustomerPicker";
 import { ProductSearch } from "./pdv/ProductSearch";
 import { CartPanel } from "./pdv/CartPanel";
 import { CheckoutDrawer } from "./pdv/CheckoutDrawer";
+import { BarcodeScannerButton } from "./pdv/BarcodeScannerButton";
 import { CartItem, CustomerOption, PaymentEntry } from "./pdv/types";
 import {
   FALLBACK_DEFAULT_CUSTOMER,
@@ -172,36 +173,62 @@ export default function PdvClient({
     [addToCartWithQuantity],
   );
 
-  const handleScaleBarcodeSubmit = useCallback(async () => {
-    const UNIT_CONVERSIONS: Record<string, (qty: number) => number> = {
-      kg: (q) => q,
-      g: (q) => q / 1000,
-      un: (q) => q * 1000,
-    };
+  const handleBarcodeValue = useCallback(
+    async (rawCode: string, showNotFoundFeedback = false) => {
+      const code = rawCode.trim();
+      if (!code) return false;
 
-    const parsed = parseScaleBarcode(search);
-    if (!parsed) return false;
+      const exactMatches = await searchProductsAction(code);
+      const exactMatch = exactMatches.find(
+        (product) =>
+          product.barcode?.trim() === code || product.sku?.trim() === code,
+      );
 
-    const searchedProducts = await searchProductsAction(parsed.productCode);
-    const exactMatch = searchedProducts.find(
-      (product) =>
-        product.barcode?.trim() === parsed.productCode ||
-        product.sku?.trim() === parsed.productCode,
-    );
+      if (exactMatch) {
+        addToCart(exactMatch);
+        return true;
+      }
 
-    if (!exactMatch) {
-      setScaleBarcodeFeedback("Etiqueta válida, mas produto não encontrado.");
-      setShowResults(false);
+      const UNIT_CONVERSIONS: Record<string, (qty: number) => number> = {
+        kg: (q) => q,
+        g: (q) => q / 1000,
+        un: (q) => q * 1000,
+      };
+
+      const parsed = parseScaleBarcode(code);
+      if (!parsed) {
+        if (showNotFoundFeedback) {
+          setScaleBarcodeFeedback("Código lido, mas produto não encontrado.");
+        }
+        return false;
+      }
+
+      const searchedProducts = await searchProductsAction(parsed.productCode);
+      const scaleMatch = searchedProducts.find(
+        (product) =>
+          product.barcode?.trim() === parsed.productCode ||
+          product.sku?.trim() === parsed.productCode,
+      );
+
+      if (!scaleMatch) {
+        setScaleBarcodeFeedback("Etiqueta válida, mas produto não encontrado.");
+        setShowResults(false);
+        return true;
+      }
+
+      const unit = scaleMatch.unit?.toLowerCase() ?? "kg";
+      const convert = UNIT_CONVERSIONS[unit] ?? ((q: number) => q);
+      const finalQty = convert(parsed.weightQty);
+
+      addToCartWithQuantity(scaleMatch, finalQty);
       return true;
-    }
+    },
+    [addToCart, addToCartWithQuantity],
+  );
 
-    const unit = exactMatch.unit?.toLowerCase() ?? "kg";
-    const convert = UNIT_CONVERSIONS[unit] ?? ((q: number) => q);
-    const finalQty = convert(parsed.weightQty);
-
-    addToCartWithQuantity(exactMatch, finalQty);
-    return true;
-  }, [addToCartWithQuantity, search]);
+  const handleScaleBarcodeSubmit = useCallback(async () => {
+    return handleBarcodeValue(search);
+  }, [handleBarcodeValue, search]);
 
   const updateQty = (itemId: string, delta: number) => {
     setCart((prev) =>
@@ -670,7 +697,15 @@ export default function PdvClient({
 
       {/* Mobile */}
       <section className="sm:hidden flex flex-col relative h-[calc(100vh-75px)] mt-4">
-        <div className="mt-4">
+        <div className="flex justify-center">
+          <BarcodeScannerButton
+            onDetected={async (code) => {
+              await handleBarcodeValue(code, true);
+            }}
+          />
+        </div>
+
+        <div className="mt-4 flex justify-center items-center gap-1">
           <ProductSearch
             searchRef={searchRef}
             listRef={listRef}

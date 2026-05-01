@@ -34,7 +34,7 @@ export function ProductSearch({
   onAddToCart,
 }: Props) {
   return (
-    <div className="flex-1 flex items-center justify-center px-6">
+    <div className="flex-1 flex items-center justify-center sm:px-6">
       <div className="w-full relative">
         <div className="flex items-center gap-2 border-b border-tertiary">
           <Search size={16} strokeWidth={1} className="text-tertiary shrink-0" />
