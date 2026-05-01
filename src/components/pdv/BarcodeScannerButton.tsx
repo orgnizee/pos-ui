@@ -9,7 +9,7 @@ import { IScannerControls } from "@zxing/browser";
 import { NotFoundException, Result } from "@zxing/library";
 
 type Props = {
-  onDetected: (code: string) => Promise<void> | void;
+  onDetected: (code: string) => Promise<boolean> | boolean;
 };
 
 const DUPLICATE_SCAN_COOLDOWN_MS = 1200;
@@ -17,6 +17,7 @@ const DUPLICATE_SCAN_COOLDOWN_MS = 1200;
 export function BarcodeScannerButton({ onDetected }: Props) {
   const [isActive, setIsActive] = useState(false);
   const [error, setError] = useState("");
+  const [scanFeedback, setScanFeedback] = useState("");
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
   const lastScanRef = useRef<{ text: string; at: number } | null>(null);
@@ -26,6 +27,32 @@ export function BarcodeScannerButton({ onDetected }: Props) {
   useEffect(() => {
     onDetectedRef.current = onDetected;
   }, [onDetected]);
+
+
+  const playTone = useCallback((kind: "success" | "error") => {
+    const AudioCtx = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return;
+
+    const context = new AudioCtx();
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = kind === "success" ? 880 : 220;
+
+    gainNode.gain.setValueAtTime(0.0001, context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.15, context.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.18);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.2);
+    oscillator.onended = () => {
+      void context.close();
+    };
+  }, []);
 
   const stopScanner = useCallback(() => {
     controlsRef.current?.stop();
@@ -44,6 +71,7 @@ export function BarcodeScannerButton({ onDetected }: Props) {
 
     try {
       setError("");
+      setScanFeedback("Posicione o código de barras na câmera.");
 
       const reader = new BrowserMultiFormatReader();
       readerRef.current = reader;
@@ -81,7 +109,14 @@ export function BarcodeScannerButton({ onDetected }: Props) {
           isProcessingRef.current = true;
 
           try {
-            await onDetectedRef.current(text);
+            const wasRead = await onDetectedRef.current(text);
+            if (wasRead) {
+              setScanFeedback("Código lido com sucesso.");
+              playTone("success");
+            } else {
+              setScanFeedback("Código lido, mas não encontrado.");
+              playTone("error");
+            }
           } finally {
             isProcessingRef.current = false;
           }
@@ -93,11 +128,11 @@ export function BarcodeScannerButton({ onDetected }: Props) {
       stopScanner();
       setError("Permita o acesso à câmera para usar o leitor.");
     }
-  }, [stopScanner]);
+  }, [playTone, stopScanner]);
 
   useEffect(() => {
     return () => stopScanner();
-  }, [stopScanner]);
+  }, [playTone, stopScanner]);
 
   const toggleScanner = useCallback(() => {
     if (isActive) {
@@ -124,10 +159,9 @@ export function BarcodeScannerButton({ onDetected }: Props) {
         <Barcode size={16} />
       </button>
 
-      {(error) && (
-        <p className={`text-center text-xs ${error ? "text-red-500" : "text-tertiary"}`}>
-          {error}
-        </p>
+      {error && <p className="text-center text-xs text-red-500">{error}</p>}
+      {!error && scanFeedback && (
+        <p className="text-center text-xs text-tertiary">{scanFeedback}</p>
       )}
     </div>
   );
