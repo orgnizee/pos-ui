@@ -697,7 +697,7 @@ export default function PdvClient({
 
       {/* Mobile */}
       <section className="sm:hidden flex flex-col relative h-[calc(100vh-75px)] mt-4">
-        <div className="flex justify-center">
+        <div className="flex justify-start">
           <BarcodeScannerButton
             onDetected={(code) => handleBarcodeValue(code, true)}
           />

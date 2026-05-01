@@ -144,7 +144,7 @@ export function BarcodeScannerButton({ onDetected }: Props) {
   }, [isActive, startScanner, stopScanner]);
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex justify-between items-center gap-2">
       <button
         type="button"
         onClick={toggleScanner}
