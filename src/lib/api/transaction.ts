@@ -37,6 +37,8 @@ type TransactionsResponse = {
   next: string | null;
   previous: string | null;
   results: { transaction: Transaction }[];
+  total_income: string;
+  total_expense: string;
 };
 
 export async function createTransaction(data: {

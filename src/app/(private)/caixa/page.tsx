@@ -74,6 +74,10 @@ export default async function CaixaPage({
     ? accounts
     : accounts.filter((a) => a.is_active);
 
+  const transactionsTotalBalance = String(
+    Number(transactions.total_income) + Number(transactions.total_expense),
+  );
+
   return (
     <section className="mt-8">
       {/* Desktop Header */}
@@ -228,6 +232,23 @@ export default async function CaixaPage({
           <SelectCategoryInput categories={categories} />
           <SelectBankAccountInput accounts={accounts} />
         </div>
+      </div>
+
+      <div className="flex justify-start gap-6 mt-4">
+        <p className="font-medium">
+          <span className="block text-xs font-light">entradas</span>
+          {formatBRL(transactions.total_income)}
+        </p>
+
+        <p className="font-medium">
+          <span className="block text-xs font-light">saídas</span>
+          {formatBRL(transactions.total_expense)}
+        </p>
+
+        <p className="font-medium">
+          <span className="block text-xs font-light">balanço</span>
+          {formatBRL(transactionsTotalBalance)}
+        </p>
       </div>
 
       {/* Transaction History */}
