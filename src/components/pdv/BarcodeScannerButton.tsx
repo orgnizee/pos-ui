@@ -12,7 +12,7 @@ type Props = {
   onDetected: (code: string) => Promise<boolean> | boolean;
 };
 
-const DUPLICATE_SCAN_COOLDOWN_MS = 1200;
+const DUPLICATE_SCAN_COOLDOWN_MS = 3000;
 
 export function BarcodeScannerButton({ onDetected }: Props) {
   const [isActive, setIsActive] = useState(false);
