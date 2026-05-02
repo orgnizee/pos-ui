@@ -27,7 +27,7 @@ export async function AddDebitPayload() {
   return (
     <section className="mt-6">
       <BackButton />
-      <p className="mt-8 text-6xl text-start font-light">saída</p>
+      <p className="mt-8 sm:text-6xl text-5xl text-start font-light">saída</p>
 
       <div className="relative flex items-center justify-center mt-2 ml-auto mr-auto w-full">
         <TransactionForm
