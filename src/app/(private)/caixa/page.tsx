@@ -154,24 +154,47 @@ export default async function CaixaPage({
       <div className="">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex px-1 pt-1 pb-5 gap-4 font-bold items-center">
-            {filtered.map((account) => (
-              <Link
-                href={`/caixa/conta/${account.id}`}
-                key={account.id}
-                className={`relative flex items-center justify-center min-w-50 min-h-55 shrink-0 overflow-hidden border ${!account.is_active ? "border-secondary text-secondary" : "border-primary text-primary"}`}
-              >
-                <p
-                  className={`text-center text-xl font-normal ${Number(account.balance) < 0 && "text-red-500"}`}
+            {filtered
+              .filter((a) => a.name.toLowerCase() === "caixa")
+              .map((account) => (
+                <Link
+                  href={`/caixa/conta/${account.id}`}
+                  key={account.id}
+                  className={`relative flex items-center justify-center min-w-50 min-h-55 shrink-0 overflow-hidden border ${!account.is_active ? "border-secondary text-secondary" : "border-primary text-primary"}`}
                 >
-                  {account.is_active ? formatBRL(account.balance) : "/"}
-                </p>
-                <p
-                  className={`absolute bottom-0 left-1/2 -translate-x-1/2 px-2.5 py-1 text-center text-lg normal-case font-light`}
+                  <p
+                    className={`text-center text-xl font-normal ${Number(account.balance) < 0 && "text-red-500"}`}
+                  >
+                    {account.is_active ? formatBRL(account.balance) : "/"}
+                  </p>
+                  <p
+                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 px-2.5 py-1 text-center text-lg normal-case font-light`}
+                  >
+                    {account.name.toLowerCase()}
+                  </p>
+                </Link>
+              ))}
+
+            {filtered
+              .filter((a) => a.name.toLowerCase() !== "caixa")
+              .map((account) => (
+                <Link
+                  href={`/caixa/conta/${account.id}`}
+                  key={account.id}
+                  className={`relative flex items-center justify-center min-w-50 min-h-55 shrink-0 overflow-hidden border ${!account.is_active ? "border-secondary text-secondary" : "border-primary text-primary"}`}
                 >
-                  {account.name.toLowerCase()}
-                </p>
-              </Link>
-            ))}
+                  <p
+                    className={`text-center text-xl font-normal ${Number(account.balance) < 0 && "text-red-500"}`}
+                  >
+                    {account.is_active ? formatBRL(account.balance) : "/"}
+                  </p>
+                  <p
+                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 px-2.5 py-1 text-center text-lg normal-case font-light`}
+                  >
+                    {account.name.toLowerCase()}
+                  </p>
+                </Link>
+              ))}
 
             <Link
               href={"/caixa/conta"}
