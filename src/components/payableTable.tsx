@@ -35,7 +35,7 @@ export default function PayableTable({
   basePath,
   accounts,
 }: PayableTableProps) {
-  const grouped = groupByDueDate(
+  const grouped = groupByDueMonth(
     [...payables].sort(
       (a, b) =>
         new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime(),
@@ -359,17 +359,12 @@ function printBatchReceipt(
   printWindow.print();
 }
 
-const groupByDueDate = (payables: Payable[]) => {
+const groupByDueMonth = (payables: Payable[]) => {
   const groups: Record<string, Payable[]> = {};
 
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
-
-  const isSameDay = (a: Date, b: Date) =>
-    a.getDate() === b.getDate() &&
-    a.getMonth() === b.getMonth() &&
-    a.getFullYear() === b.getFullYear();
 
   for (const payable of payables) {
     const [year, month, day] = payable.due_at
@@ -378,17 +373,10 @@ const groupByDueDate = (payables: Payable[]) => {
       .map(Number);
     const date = new Date(year, month - 1, day); // local time, no UTC shift
 
-    let label: string;
-    if (isSameDay(date, today)) {
-      label = "hoje";
-    } else if (isSameDay(date, yesterday)) {
-      label = "ontem";
-    } else {
-      label = date
-        .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
-        .replace(".", "")
-        .replace(/^\w/, (c) => c.toUpperCase());
-    }
+    const label = date
+      .toLocaleDateString("pt-BR", { month: "long" })
+      .replace(".", "")
+      .replace(/^\w/, (c) => c.toUpperCase());
 
     if (!groups[label]) groups[label] = [];
     groups[label].push(payable);
@@ -397,40 +385,40 @@ const groupByDueDate = (payables: Payable[]) => {
   return groups;
 };
 
-const groupByIssuedDate = (payables: Payable[]) => {
-  const groups: Record<string, Payable[]> = {};
+// const groupByIssuedDate = (payables: Payable[]) => {
+//   const groups: Record<string, Payable[]> = {};
 
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
+//   const today = new Date();
+//   const yesterday = new Date();
+//   yesterday.setDate(today.getDate() - 1);
 
-  const isSameDay = (a: Date, b: Date) =>
-    a.getDate() === b.getDate() &&
-    a.getMonth() === b.getMonth() &&
-    a.getFullYear() === b.getFullYear();
+//   const isSameDay = (a: Date, b: Date) =>
+//     a.getDate() === b.getDate() &&
+//     a.getMonth() === b.getMonth() &&
+//     a.getFullYear() === b.getFullYear();
 
-  for (const payable of payables) {
-    const [year, month, day] = payable.issued_at
-      .split("T")[0]
-      .split("-")
-      .map(Number);
-    const date = new Date(year, month - 1, day); // local time, no UTC shift
+//   for (const payable of payables) {
+//     const [year, month, day] = payable.issued_at
+//       .split("T")[0]
+//       .split("-")
+//       .map(Number);
+//     const date = new Date(year, month - 1, day); // local time, no UTC shift
 
-    let label: string;
-    if (isSameDay(date, today)) {
-      label = "hoje";
-    } else if (isSameDay(date, yesterday)) {
-      label = "ontem";
-    } else {
-      label = date
-        .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
-        .replace(".", "")
-        .replace(/^\w/, (c) => c.toUpperCase());
-    }
+//     let label: string;
+//     if (isSameDay(date, today)) {
+//       label = "hoje";
+//     } else if (isSameDay(date, yesterday)) {
+//       label = "ontem";
+//     } else {
+//       label = date
+//         .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+//         .replace(".", "")
+//         .replace(/^\w/, (c) => c.toUpperCase());
+//     }
 
-    if (!groups[label]) groups[label] = [];
-    groups[label].push(payable);
-  }
+//     if (!groups[label]) groups[label] = [];
+//     groups[label].push(payable);
+//   }
 
-  return groups;
-};
+//   return groups;
+// };
