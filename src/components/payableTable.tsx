@@ -38,7 +38,7 @@ export default function PayableTable({
   const grouped = groupByDueMonth(
     [...payables].sort(
       (a, b) =>
-        new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime(),
+        new Date(a.due_at).getTime() - new Date(b.due_at).getTime(),
     ),
   );
 
