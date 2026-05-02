@@ -37,7 +37,7 @@ export default function ReceivableTable({
   accounts,
   order = "issue",
 }: ReceivableTableProps) {
-  let grouped: Record<string, Receivable[]>
+  let grouped: Record<string, Receivable[]>;
 
   if (order === "due") {
     grouped = groupByDueMonth(
@@ -426,7 +426,11 @@ const groupByIssuedDate = (receivables: Receivable[]) => {
       label = "ontem";
     } else {
       label = date
-        .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+        .toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "short",
+          year: "2-digit",
+        })
         .replace(".", "")
         .replace(/^\w/, (c) => c.toUpperCase());
     }

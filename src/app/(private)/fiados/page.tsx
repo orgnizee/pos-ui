@@ -36,11 +36,8 @@ export default async function FiadosPage({
   const isToday = date === "today";
   const isWeek = date === "week";
   const currentSort = typeof sort === "string" ? sort : "issued";
-  const isSortByIssued = currentSort === "issued";
+  // const isSortByIssued = currentSort === "issued";
   const isSortByDueDate = currentSort === "due";
-  const currentPage =
-    typeof page === "string" && Number(page) > 0 ? Number(page) : 1;
-  const pageSize = 50;
 
   const [receivables, accounts] = await Promise.all([
     getReceivables({
@@ -51,6 +48,7 @@ export default async function FiadosPage({
       ...(typeof start_date === "string" && { start_date }),
       ...(typeof end_date === "string" && { end_date }),
       ...(typeof sort === "string" && { sort }),
+      ...(typeof page === "string" && { page }),
     }),
     getAccounts(),
   ]);
@@ -67,47 +65,50 @@ export default async function FiadosPage({
     return <p>{accounts.message}</p>;
   }
 
-  const sortedReceivables = [...receivables].sort((a, b) => {
+  const sortedReceivables = [...receivables.results].sort((a, b) => {
     if (isSortByDueDate) {
-      return new Date(a.due_at).getTime() - new Date(b.due_at).getTime();
+      return (
+        new Date(a.payment.due_at).getTime() -
+        new Date(b.payment.due_at).getTime()
+      );
     }
 
-    return new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime();
+    return (
+      new Date(a.payment.issued_at).getTime() -
+      new Date(b.payment.issued_at).getTime()
+    );
   });
-  const pagedReceivables = sortedReceivables.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
+
 
   const byStatus = (paymentStatus: PaymentStatus) =>
     sortedReceivables.filter(
-      (receivable) => receivable.status === paymentStatus,
+      (receivable) => receivable.payment.status === paymentStatus,
     );
 
   const sumOutstanding = (status: PaymentStatus) =>
     byStatus(status)
       .reduce(
-        (sum, receivable) => sum + parseFloat(receivable.outstanding_balance),
+        (sum, receivable) => sum + parseFloat(receivable.payment.outstanding_balance),
         0,
       )
       .toFixed(2);
 
   const sumTotalAmount = () =>
     sortedReceivables
-      .reduce((sum, receivable) => sum + parseFloat(receivable.total_amount), 0)
+      .reduce((sum, receivable) => sum + parseFloat(receivable.payment.total_amount), 0)
       .toFixed(2);
 
   const sumTotalOutstanding = () =>
     sortedReceivables
       .reduce(
-        (sum, receivable) => sum + parseFloat(receivable.outstanding_balance),
+        (sum, receivable) => sum + parseFloat(receivable.payment.outstanding_balance),
         0,
       )
       .toFixed(2);
 
   const sumTotalPaid = () =>
     sortedReceivables
-      .reduce((sum, receivable) => sum + parseFloat(receivable.amount_paid), 0)
+      .reduce((sum, receivable) => sum + parseFloat(receivable.payment.amount_paid), 0)
       .toFixed(2);
 
   return (
@@ -162,7 +163,7 @@ export default async function FiadosPage({
       </div>
 
       {/* Order Buttons */}
-      <div className="mt-0 overflow-hidden">
+      {/* <div className="mt-0 overflow-hidden">
         <div className="overflow-auto flex justify-start">
           <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
             <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
@@ -180,7 +181,7 @@ export default async function FiadosPage({
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex justify-end mt-4 mr-3">
         <SearchInput endpoint="fiados" />
@@ -220,13 +221,13 @@ export default async function FiadosPage({
 
       {/* Receivables History */}
       <ReceivableTable
-        receivables={pagedReceivables}
+        receivables={sortedReceivables.map((s) => s.payment)}
         basePath="fiados"
         accounts={accounts}
         order={normalizedSort}
       />
 
-      <Pagination count={sortedReceivables.length} pageSize={pageSize} />
+      <Pagination count={receivables.count} />
 
       <div className="mt-6 overflow-hidden">
         <div className="overflow-auto flex">
