@@ -374,7 +374,7 @@ const groupByDueMonth = (payables: Payable[]) => {
     const date = new Date(year, month - 1, day); // local time, no UTC shift
 
     const label = date
-      .toLocaleDateString("pt-BR", { month: "long" })
+      .toLocaleDateString("pt-BR", { month: "long", year: "2-digit" })
       .replace(".", "")
       .replace(/^\w/, (c) => c.toUpperCase());
 
