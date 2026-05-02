@@ -2,8 +2,8 @@ import BackButton from "@/components/backButton";
 import { getAllContacts } from "@/lib/api/contacts";
 import { getFinanceCategories } from "@/lib/api/financeCategory";
 import { isApiError } from "@/lib/api/types";
-import EditReceivableForm from "@/components/editReceivableForm";
 import { getPayableByID } from "@/lib/api/payables";
+import EditPayableForm from "@/components/editPayableForm";
 
 export default async function EditPayablePage({
   params,
@@ -28,7 +28,7 @@ export default async function EditPayablePage({
       <p className="mt-8 sm:text-6xl text-5xl text-start font-light">editar pagamento</p>
 
       <div className="relative flex items-center justify-center mt-2 ml-auto mr-auto w-full">
-        <EditReceivableForm
+        <EditPayableForm
           id={id}
           payment={payment}
           contacts={contacts}
