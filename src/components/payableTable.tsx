@@ -100,7 +100,7 @@ export default function PayableTable({
             onClick={() => setOpenBatchModal(true)}
             className="px-4 py-2 border text-xs uppercase cursor-pointer hover:bg-black hover:text-white"
           >
-            receber e imprimir
+            pagar e imprimir
           </button>
         </div>
       )}

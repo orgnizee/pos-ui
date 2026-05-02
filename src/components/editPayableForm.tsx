@@ -7,9 +7,8 @@ import { SearchableSelectInputField } from "./searchableSelectInputField";
 import { buildCategoryGroups } from "@/lib/categoryGroups";
 import { InputField } from "./inputField";
 import { Contact } from "@/lib/api/contacts";
-import { Payable, PaymentStatus, RecurrenceOption } from "@/lib/api/payables";
-import { updateSupplierAction } from "@/lib/api/actions/supplier";
-import { PayableActionState } from "@/lib/api/actions/payables";
+import { Payable, RecurrenceOption } from "@/lib/api/payables";
+import { PayableActionState, updatePayableAction } from "@/lib/api/actions/payables";
 
 interface EditPaymentFormProps {
   id: string;
@@ -37,7 +36,7 @@ export default function EditPayableForm({
   contacts,
   categories,
 }: EditPaymentFormProps) {
-  const boundAction = updateSupplierAction.bind(null, id);
+  const boundAction = updatePayableAction.bind(null, id);
   const [state, action, pending] = useActionState<
     PayableActionState,
     FormData
@@ -46,8 +45,6 @@ export default function EditPayableForm({
   const [recurrence, setRecurrence] = useState<RecurrenceOption>(
     payment.recurrence,
   );
-
-  const [status, setStatus] = useState<PaymentStatus>(payment.status);
 
   const [cents, setCents] = useState(() => parseCents(payment.total_amount));
   const [amountPaidCents, setAmountPaidCents] = useState(() =>
