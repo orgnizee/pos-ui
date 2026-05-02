@@ -10,6 +10,7 @@ import Link from "next/link";
 import Pagination from "@/components/pagination";
 import { getPayables, PaymentStatus } from "@/lib/api/payables";
 import PayableTable from "@/components/payableTable";
+import MonthSelect from "@/components/monthSelector";
 
 export default async function PagamentosPage({
   searchParams,
@@ -18,7 +19,8 @@ export default async function PagamentosPage({
 }) {
   const resolvedParams = await searchParams;
 
-  const { status, search, date, start_date, end_date, sort, page } = resolvedParams;
+  const { status, search, date, start_date, end_date, sort, page } =
+    resolvedParams;
 
   const isAll = !status && !search && !date && !start_date && !end_date;
   const isPending = status === "pending";
@@ -27,7 +29,6 @@ export default async function PagamentosPage({
   const isPartiallyPaid = status === "partially_paid";
   const isToday = date === "today";
   const isWeek = date === "week";
-  const isMonth = date === "month";
   const currentSort = typeof sort === "string" ? sort : "issued";
   const isSortByDueDate = currentSort === "due";
   const isSortByOutstanding = currentSort === "outstanding";
@@ -84,15 +85,12 @@ export default async function PagamentosPage({
       )
       .toFixed(2);
 
-  const sumTotalAmount= () =>
+  const sumTotalAmount = () =>
     sortedPayables
-      .reduce(
-        (sum, payable) => sum + parseFloat(payable.total_amount),
-        0,
-      )
+      .reduce((sum, payable) => sum + parseFloat(payable.total_amount), 0)
       .toFixed(2);
 
-  const sumTotalOutstanding= () =>
+  const sumTotalOutstanding = () =>
     sortedPayables
       .reduce(
         (sum, payable) => sum + parseFloat(payable.outstanding_balance),
@@ -100,18 +98,10 @@ export default async function PagamentosPage({
       )
       .toFixed(2);
 
-  const sumTotalPaid= () =>
+  const sumTotalPaid = () =>
     sortedPayables
-      .reduce(
-        (sum, payable) => sum + parseFloat(payable.amount_paid),
-        0,
-      )
+      .reduce((sum, payable) => sum + parseFloat(payable.amount_paid), 0)
       .toFixed(2);
-
-  // const sumPaid = (status: PaymentStatus) =>
-  //   byStatus(status)
-  //     .reduce((sum, payable) => sum + parseFloat(payable.amount_paid), 0)
-  //     .toFixed(2);
 
   return (
     <section className="mt-8">
@@ -141,24 +131,22 @@ export default async function PagamentosPage({
               >
                 <p className={filterClass(isAll)}>tudo</p>
               </Link>
+
               <Link
                 href={buildFilterHref(resolvedParams, { date: "today" })}
                 className="grid items-center justify-center shrink-0 rounded-md"
               >
                 <p className={filterClass(isToday)}>hoje</p>
               </Link>
+
               <Link
                 href={buildFilterHref(resolvedParams, { date: "week" })}
                 className="grid items-center justify-center shrink-0 rounded-md"
               >
                 <p className={filterClass(isWeek)}>essa semana</p>
               </Link>
-              <Link
-                href={buildFilterHref(resolvedParams, { date: "month" })}
-                className="grid items-center justify-center shrink-0 rounded-md"
-              >
-                <p className={filterClass(isMonth)}>esse mês</p>
-              </Link>
+
+              <MonthSelect />
             </div>
           </div>
         </div>
@@ -199,32 +187,6 @@ export default async function PagamentosPage({
           </Link>
         </div>
       </div>
-{/* 
-      <div className="mt-0 ml-1 overflow-hidden">
-        <div className="overflow-auto flex justify-start">
-          <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
-            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
-            <Link
-              href={buildFilterHref(resolvedParams, { sort: "issued" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByIssued)}>emissão</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { sort: "due" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByDueDate)}>vencimento</p>
-            </Link>
-            <Link
-              href={buildFilterHref(resolvedParams, { sort: "outstanding" })}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByOutstanding)}>a pagar</p>
-            </Link>
-          </div>
-        </div>
-      </div> */}
 
       {/* Receivables History */}
       <PayableTable
@@ -244,7 +206,11 @@ export default async function PagamentosPage({
               value={sumOutstanding("overdue")}
               highlight="red"
             />
-            <SummaryCard label="pago" value={sumTotalPaid()} highlight="green" />
+            <SummaryCard
+              label="pago"
+              value={sumTotalPaid()}
+              highlight="green"
+            />
             <SummaryCard label="a pagar" value={sumTotalOutstanding()} />
           </div>
         </div>
