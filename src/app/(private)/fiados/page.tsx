@@ -11,12 +11,15 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import Pagination from "@/components/pagination";
 import MonthSelect from "@/components/monthSelector";
+import { getUser } from "@/lib/api/user";
 
 export default async function FiadosPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const user = await getUser();
+
   const resolvedParams = await searchParams;
 
   const { status, search, date, start_date, end_date, sort, page } =
@@ -51,6 +54,10 @@ export default async function FiadosPage({
     }),
     getAccounts(),
   ]);
+
+  if (isApiError(user)) {
+    return <p>{user.message}</p>;
+  }
 
   if (isApiError(receivables)) {
     return <p>{receivables.message}</p>;
@@ -103,17 +110,12 @@ export default async function FiadosPage({
       .reduce((sum, receivable) => sum + parseFloat(receivable.amount_paid), 0)
       .toFixed(2);
 
-  // const sumPaid = (status: PaymentStatus) =>
-  //   byStatus(status)
-  //     .reduce((sum, receivable) => sum + parseFloat(receivable.amount_paid), 0)
-  //     .toFixed(2);
-
   return (
     <section className="mt-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="sm:text-8xl text-6xl sm:ml-0 -ml-1 font-light">
-          fiados
+          {user.username === "hugo" ? "receber" : "fiados"}
         </h1>
 
         <Link
