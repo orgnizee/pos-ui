@@ -58,7 +58,9 @@ async function FiadoPayload({ id }: { id: string }) {
               {formatBRL(payment.total_amount)}
             </p>
 
-            <p className="mt-2">{payment.contact?.name}</p>
+            <Link href={`/contatos/${payment.contact.id}`} className="mt-2">
+              {payment.contact.name}
+            </Link>
 
             <div className="mt-5 w-fit h-fit border-b border-secondary/50">
               <p className="py-0.5 text-[12px]">
