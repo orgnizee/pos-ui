@@ -96,7 +96,7 @@ export default function ReceivableTable({
   const selectedCount = selectedReceivables.length;
 
   return (
-    <section className="mt-8">
+    <section className="mt-12">
       {selectedCount > 0 && (
         <div className="mb-6 border p-3 flex items-center justify-between gap-3">
           <div>

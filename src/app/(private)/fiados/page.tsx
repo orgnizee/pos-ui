@@ -161,6 +161,27 @@ export default async function FiadosPage({
         </div>
       </div>
 
+      {/* Order Buttons */}
+      <div className="mt-0 overflow-hidden">
+        <div className="overflow-auto flex justify-start">
+          <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
+            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
+            <Link
+              href={"/fiados?sort=issued"}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByIssued)}>emissão</p>
+            </Link>
+            <Link
+              href={"/fiados?sort=due"}
+              className="grid items-center justify-center shrink-0 rounded-md"
+            >
+              <p className={filterClass(isSortByDueDate)}>vencimento</p>
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <div className="flex justify-end mt-4 mr-3">
         <SearchInput endpoint="fiados" />
       </div>
@@ -194,26 +215,6 @@ export default async function FiadosPage({
           >
             <p className={filterClass(isPaid)}>pago</p>
           </Link>
-        </div>
-      </div>
-
-      <div className="mt-0 overflow-hidden">
-        <div className="overflow-auto flex justify-start">
-          <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
-            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
-            <Link
-              href={"/fiados?sort=issued"}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByIssued)}>emissão</p>
-            </Link>
-            <Link
-              href={"/fiados?sort=due"}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByDueDate)}>vencimento</p>
-            </Link>
-          </div>
         </div>
       </div>
 
