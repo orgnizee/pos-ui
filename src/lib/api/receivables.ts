@@ -56,6 +56,7 @@ export const getReceivables = cache(
     date?: string; // "today" | "week" | "month" | "YYYY-MM-DD"
     start_date?: string;
     end_date?: string;
+    sort?: string;
   }): Promise<Receivable[] | ApiError> => {
     const params = new URLSearchParams();
     if (filters?.type) params.set("type", filters.type);
@@ -64,6 +65,7 @@ export const getReceivables = cache(
     if (filters?.date) params.set("date", filters.date);
     if (filters?.start_date) params.set("start_date", filters.start_date);
     if (filters?.end_date) params.set("end_date", filters.end_date);
+    if (filters?.sort) params.set("sort", filters.sort);
     const query = params.size ? `?${params.toString()}` : "";
     const res = await apiFetch<ReceivableResponse>(`/receivables${query}`, {
       method: "GET",

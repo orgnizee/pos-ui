@@ -30,7 +30,7 @@ function formatDateRecife(date: Date) {
   return `${y}-${m}-${d}`;
 }
 
-export default function MonthSelect() {
+export default function MonthSelect({endpoint}: {endpoint: string}) {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -48,6 +48,7 @@ export default function MonthSelect() {
       const start = new Date(y, m - 1, 1);
       const end = new Date(y, m, 0);
 
+      newParams.delete("date")
       newParams.set("start_date", formatDateRecife(start));
       newParams.set("end_date", formatDateRecife(end));
     } else {
@@ -55,7 +56,7 @@ export default function MonthSelect() {
       newParams.delete("end_date");
     }
 
-    router.push(`/pagamentos?${newParams.toString()}`);
+    router.push(`/${endpoint}?${newParams.toString()}`);
   }
 
   return (

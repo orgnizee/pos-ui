@@ -15,6 +15,7 @@ interface ReceivableTableProps {
   receivables: Receivable[];
   basePath: string;
   accounts: Account[];
+  order: string;
 }
 
 const statusDot: Record<PaymentStatus, string> = {
@@ -34,13 +35,24 @@ export default function ReceivableTable({
   receivables,
   basePath,
   accounts,
+  order = "issue",
 }: ReceivableTableProps) {
-  const grouped = groupByIssuedDate(
-    [...receivables].sort(
-      (a, b) =>
-        new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime(),
-    ),
-  );
+  let grouped: Record<string, Receivable[]>
+
+  if (order === "due") {
+    grouped = groupByDueMonth(
+      [...receivables].sort(
+        (a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime(),
+      ),
+    );
+  } else {
+    grouped = groupByIssuedDate(
+      [...receivables].sort(
+        (a, b) =>
+          new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime(),
+      ),
+    );
+  }
 
   const router = useRouter();
 
@@ -84,7 +96,7 @@ export default function ReceivableTable({
   const selectedCount = selectedReceivables.length;
 
   return (
-    <section className="mt-12">
+    <section className="mt-8">
       {selectedCount > 0 && (
         <div className="mb-6 border p-3 flex items-center justify-between gap-3">
           <div>
@@ -133,7 +145,9 @@ export default function ReceivableTable({
                   <th className="hidden sm:table-cell px-2 pr-4 border-secondary/50">
                     pago
                   </th>
-                  <th className="px-2 pr-4 text-end sm:text-start border-secondary/50">a pagar</th>
+                  <th className="px-2 pr-4 text-end sm:text-start border-secondary/50">
+                    a pagar
+                  </th>
                   <th className="hidden sm:table-cell px-2 pr-4 border-secondary/50">
                     Vencimento
                   </th>
@@ -360,43 +374,31 @@ function printBatchReceipt(
   printWindow.print();
 }
 
-// const groupByDueDate = (receivables: Receivable[]) => {
-//   const groups: Record<string, Receivable[]> = {};
+const groupByDueMonth = (receivables: Receivable[]) => {
+  const groups: Record<string, Receivable[]> = {};
 
-//   const today = new Date();
-//   const yesterday = new Date();
-//   yesterday.setDate(today.getDate() - 1);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
 
-//   const isSameDay = (a: Date, b: Date) =>
-//     a.getDate() === b.getDate() &&
-//     a.getMonth() === b.getMonth() &&
-//     a.getFullYear() === b.getFullYear();
+  for (const receivable of receivables) {
+    const [year, month, day] = receivable.due_at
+      .split("T")[0]
+      .split("-")
+      .map(Number);
+    const date = new Date(year, month - 1, day); // local time, no UTC shift
 
-//   for (const receivable of receivables) {
-//     const [year, month, day] = receivable.due_at
-//       .split("T")[0]
-//       .split("-")
-//       .map(Number);
-//     const date = new Date(year, month - 1, day); // local time, no UTC shift
+    const label = date
+      .toLocaleDateString("pt-BR", { month: "long", year: "2-digit" })
+      .replace(".", "")
+      .replace(/^\w/, (c) => c.toUpperCase());
 
-//     let label: string;
-//     if (isSameDay(date, today)) {
-//       label = "hoje";
-//     } else if (isSameDay(date, yesterday)) {
-//       label = "ontem";
-//     } else {
-//       label = date
-//         .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
-//         .replace(".", "")
-//         .replace(/^\w/, (c) => c.toUpperCase());
-//     }
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(receivable);
+  }
 
-//     if (!groups[label]) groups[label] = [];
-//     groups[label].push(receivable);
-//   }
-
-//   return groups;
-// };
+  return groups;
+};
 
 const groupByIssuedDate = (receivables: Receivable[]) => {
   const groups: Record<string, Receivable[]> = {};

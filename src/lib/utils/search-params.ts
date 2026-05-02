@@ -9,6 +9,16 @@ export default function buildFilterHref(
     if (typeof value === "string") params.set(key, value);
   }
 
+  // If date is being set, remove range
+  if (updates.date !== undefined) {
+    params.delete("start_date");
+    params.delete("end_date");
+  }
+
+  if (updates.start_date !== undefined || updates.end_date !== undefined) {
+    params.delete("date");
+  }
+
   // Apply updates (undefined = remove the param)
   for (const [key, value] of Object.entries(updates)) {
     if (value === undefined) {
@@ -19,5 +29,5 @@ export default function buildFilterHref(
   }
 
   const qs = params.toString();
-  return qs ? `?${qs}` : "/caixa";
+  return qs ? `?${qs}` : "/";
 }

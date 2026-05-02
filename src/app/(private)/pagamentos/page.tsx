@@ -146,7 +146,7 @@ export default async function PagamentosPage({
                 <p className={filterClass(isWeek)}>essa semana</p>
               </Link>
 
-              <MonthSelect />
+              <MonthSelect endpoint="pagamentos" />
             </div>
           </div>
         </div>
