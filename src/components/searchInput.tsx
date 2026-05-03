@@ -17,6 +17,7 @@ export default function SearchInput({ endpoint }: { endpoint: string }) {
     const params = new URLSearchParams(searchParams.toString());
 
     if (value && value.length >= 3) {
+      params.delete("page")
       params.set("search", value);
     } else {
       params.delete("search");
