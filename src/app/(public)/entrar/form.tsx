@@ -10,6 +10,14 @@ export default function LoginForm() {
     null,
   );
 
+  if (pending) {
+    return (
+      <div className="w-full max-w-xl mt-20">
+        <p className="text-start text-lg font-light">carregando...</p>
+      </div>
+    );
+  }
+
   return (
     <form action={action} className="w-full max-w-xl mt-20">
       <p className="text-start text-lg font-light">entre na sua conta</p>
