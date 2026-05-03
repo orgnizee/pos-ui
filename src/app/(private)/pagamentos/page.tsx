@@ -19,7 +19,7 @@ export default async function PagamentosPage({
 }) {
   const resolvedParams = await searchParams;
 
-  const { status, search, date, start_date, end_date, sort, page } =
+  const { status, search, date, start_date, end_date, page } =
     resolvedParams;
 
   const isAll = !status && !search && !date && !start_date && !end_date;
@@ -29,12 +29,6 @@ export default async function PagamentosPage({
   const isPartiallyPaid = status === "partially_paid";
   const isToday = date === "today";
   const isWeek = date === "week";
-  const currentSort = typeof sort === "string" ? sort : "issued";
-  const isSortByDueDate = currentSort === "due";
-  const isSortByOutstanding = currentSort === "outstanding";
-  const currentPage =
-    typeof page === "string" && Number(page) > 0 ? Number(page) : 1;
-  const pageSize = 50;
 
   const [payables, accounts] = await Promise.all([
     getPayables({
@@ -44,6 +38,7 @@ export default async function PagamentosPage({
       ...(typeof date === "string" && { date }),
       ...(typeof start_date === "string" && { start_date }),
       ...(typeof end_date === "string" && { end_date }),
+      ...(typeof page === "string" && { page }),
     }),
     getAccounts(),
   ]);
@@ -55,53 +50,6 @@ export default async function PagamentosPage({
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
   }
-
-  const sortedPayables = [...payables].sort((a, b) => {
-    if (isSortByDueDate) {
-      return new Date(a.due_at).getTime() - new Date(b.due_at).getTime();
-    }
-
-    if (isSortByOutstanding) {
-      return (
-        parseFloat(b.outstanding_balance) - parseFloat(a.outstanding_balance)
-      );
-    }
-
-    return new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime();
-  });
-  const pagedPayables = sortedPayables.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
-
-  const byStatus = (paymentStatus: PaymentStatus) =>
-    sortedPayables.filter((payable) => payable.status === paymentStatus);
-
-  const sumOutstanding = (status: PaymentStatus) =>
-    byStatus(status)
-      .reduce(
-        (sum, payable) => sum + parseFloat(payable.outstanding_balance),
-        0,
-      )
-      .toFixed(2);
-
-  const sumTotalAmount = () =>
-    sortedPayables
-      .reduce((sum, payable) => sum + parseFloat(payable.total_amount), 0)
-      .toFixed(2);
-
-  const sumTotalOutstanding = () =>
-    sortedPayables
-      .reduce(
-        (sum, payable) => sum + parseFloat(payable.outstanding_balance),
-        0,
-      )
-      .toFixed(2);
-
-  const sumTotalPaid = () =>
-    sortedPayables
-      .reduce((sum, payable) => sum + parseFloat(payable.amount_paid), 0)
-      .toFixed(2);
 
   return (
     <section className="mt-8">
@@ -190,28 +138,28 @@ export default async function PagamentosPage({
 
       {/* Receivables History */}
       <PayableTable
-        payables={pagedPayables}
+        payables={payables.results.map((p) => p.payment)}
         basePath="pagamentos"
         accounts={accounts}
       />
 
-      <Pagination count={sortedPayables.length} pageSize={pageSize} />
+      <Pagination count={payables.count} />
 
       <div className="mt-6 overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex w-full justify-between px-1 pt-1 pb-5 gap-4 font-bold items-center">
-            <SummaryCard label="total" value={sumTotalAmount()} />
+            <SummaryCard label="total" value={payables.total} />
             <SummaryCard
               label="em atraso"
-              value={sumOutstanding("overdue")}
+              value={payables.total_overdue}
               highlight="red"
             />
             <SummaryCard
               label="pago"
-              value={sumTotalPaid()}
+              value={payables.total_paid}
               highlight="green"
             />
-            <SummaryCard label="a pagar" value={sumTotalOutstanding()} />
+            <SummaryCard label="a pagar" value={payables.total_to_be_paid} />
           </div>
         </div>
       </div>

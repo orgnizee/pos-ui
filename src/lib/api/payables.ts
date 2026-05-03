@@ -46,6 +46,10 @@ type PayableResponse = {
   next: string | null;
   previous: string | null;
   results: { payment: Payable }[];
+  total: string,
+  total_overdue: string,
+  total_paid: string,
+  total_to_be_paid: string,
 };
 
 export const getPayables = cache(
@@ -56,7 +60,8 @@ export const getPayables = cache(
     date?: string; // "today" | "week" | "month" | "YYYY-MM-DD"
     start_date?: string;
     end_date?: string;
-  }): Promise<Payable[] | ApiError> => {
+    page?: string;
+  }): Promise<PayableResponse | ApiError> => {
     const params = new URLSearchParams();
     if (filters?.type) params.set("type", filters.type);
     if (filters?.status) params.set("status", filters.status);
@@ -64,12 +69,13 @@ export const getPayables = cache(
     if (filters?.date) params.set("date", filters.date);
     if (filters?.start_date) params.set("start_date", filters.start_date);
     if (filters?.end_date) params.set("end_date", filters.end_date);
+    if (filters?.page) params.set("page", filters.page);
     const query = params.size ? `?${params.toString()}` : "";
     const res = await apiFetch<PayableResponse>(`/payables${query}`, {
       method: "GET",
     });
     if ("error" in res) return res;
-    return res.results.map((r) => r.payment);
+    return res;
   },
 );
 

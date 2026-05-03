@@ -15,7 +15,6 @@ interface ReceivableTableProps {
   receivables: Receivable[];
   basePath: string;
   accounts: Account[];
-  order: string;
 }
 
 const statusDot: Record<PaymentStatus, string> = {
@@ -35,24 +34,13 @@ export default function ReceivableTable({
   receivables,
   basePath,
   accounts,
-  order = "issue",
 }: ReceivableTableProps) {
-  let grouped: Record<string, Receivable[]>;
-
-  if (order === "due") {
-    grouped = groupByDueMonth(
-      [...receivables].sort(
-        (a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime(),
-      ),
-    );
-  } else {
-    grouped = groupByIssuedDate(
-      [...receivables].sort(
-        (a, b) =>
-          new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime(),
-      ),
-    );
-  }
+  const grouped = groupByIssuedDate(
+    [...receivables].sort(
+      (a, b) =>
+        new Date(a.issued_at).getTime() - new Date(b.issued_at).getTime(),
+    ),
+  );
 
   const router = useRouter();
 
@@ -374,31 +362,31 @@ function printBatchReceipt(
   printWindow.print();
 }
 
-const groupByDueMonth = (receivables: Receivable[]) => {
-  const groups: Record<string, Receivable[]> = {};
+// const groupByDueMonth = (receivables: Receivable[]) => {
+//   const groups: Record<string, Receivable[]> = {};
 
-  const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
+//   const today = new Date();
+//   const yesterday = new Date();
+//   yesterday.setDate(today.getDate() - 1);
 
-  for (const receivable of receivables) {
-    const [year, month, day] = receivable.due_at
-      .split("T")[0]
-      .split("-")
-      .map(Number);
-    const date = new Date(year, month - 1, day); // local time, no UTC shift
+//   for (const receivable of receivables) {
+//     const [year, month, day] = receivable.due_at
+//       .split("T")[0]
+//       .split("-")
+//       .map(Number);
+//     const date = new Date(year, month - 1, day); // local time, no UTC shift
 
-    const label = date
-      .toLocaleDateString("pt-BR", { month: "long", year: "2-digit" })
-      .replace(".", "")
-      .replace(/^\w/, (c) => c.toUpperCase());
+//     const label = date
+//       .toLocaleDateString("pt-BR", { month: "long", year: "2-digit" })
+//       .replace(".", "")
+//       .replace(/^\w/, (c) => c.toUpperCase());
 
-    if (!groups[label]) groups[label] = [];
-    groups[label].push(receivable);
-  }
+//     if (!groups[label]) groups[label] = [];
+//     groups[label].push(receivable);
+//   }
 
-  return groups;
-};
+//   return groups;
+// };
 
 const groupByIssuedDate = (receivables: Receivable[]) => {
   const groups: Record<string, Receivable[]> = {};

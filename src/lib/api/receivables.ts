@@ -46,6 +46,10 @@ type ReceivableResponse = {
   next: string | null;
   previous: string | null;
   results: { payment: Receivable }[];
+  total: string,
+  total_overdue: string,
+  total_paid: string,
+  total_to_be_paid: string,
 };
 
 export const getReceivables = cache(

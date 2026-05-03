@@ -22,11 +22,8 @@ export default async function FiadosPage({
 
   const resolvedParams = await searchParams;
 
-  const { status, search, date, start_date, end_date, sort, page } =
+  const { status, search, date, start_date, end_date, page } =
     resolvedParams;
-
-  const normalizedSort =
-    typeof sort === "string" ? sort : Array.isArray(sort) ? sort[0] : "";
 
   const isAll = !status && !search && !date && !start_date && !end_date;
   const isPending = status === "pending";
@@ -35,9 +32,6 @@ export default async function FiadosPage({
   const isPartiallyPaid = status === "partially_paid";
   const isToday = date === "today";
   const isWeek = date === "week";
-  const currentSort = typeof sort === "string" ? sort : "issued";
-  // const isSortByIssued = currentSort === "issued";
-  const isSortByDueDate = currentSort === "due";
 
   const [receivables, accounts] = await Promise.all([
     getReceivables({
@@ -47,7 +41,6 @@ export default async function FiadosPage({
       ...(typeof date === "string" && { date }),
       ...(typeof start_date === "string" && { start_date }),
       ...(typeof end_date === "string" && { end_date }),
-      ...(typeof sort === "string" && { sort }),
       ...(typeof page === "string" && { page }),
     }),
     getAccounts(),
@@ -64,52 +57,6 @@ export default async function FiadosPage({
   if (isApiError(accounts)) {
     return <p>{accounts.message}</p>;
   }
-
-  const sortedReceivables = [...receivables.results].sort((a, b) => {
-    if (isSortByDueDate) {
-      return (
-        new Date(a.payment.due_at).getTime() -
-        new Date(b.payment.due_at).getTime()
-      );
-    }
-
-    return (
-      new Date(a.payment.issued_at).getTime() -
-      new Date(b.payment.issued_at).getTime()
-    );
-  });
-
-
-  const byStatus = (paymentStatus: PaymentStatus) =>
-    sortedReceivables.filter(
-      (receivable) => receivable.payment.status === paymentStatus,
-    );
-
-  const sumOutstanding = (status: PaymentStatus) =>
-    byStatus(status)
-      .reduce(
-        (sum, receivable) => sum + parseFloat(receivable.payment.outstanding_balance),
-        0,
-      )
-      .toFixed(2);
-
-  const sumTotalAmount = () =>
-    sortedReceivables
-      .reduce((sum, receivable) => sum + parseFloat(receivable.payment.total_amount), 0)
-      .toFixed(2);
-
-  const sumTotalOutstanding = () =>
-    sortedReceivables
-      .reduce(
-        (sum, receivable) => sum + parseFloat(receivable.payment.outstanding_balance),
-        0,
-      )
-      .toFixed(2);
-
-  const sumTotalPaid = () =>
-    sortedReceivables
-      .reduce((sum, receivable) => sum + parseFloat(receivable.payment.amount_paid), 0)
-      .toFixed(2);
 
   return (
     <section className="mt-8">
@@ -162,27 +109,6 @@ export default async function FiadosPage({
         </div>
       </div>
 
-      {/* Order Buttons */}
-      {/* <div className="mt-0 overflow-hidden">
-        <div className="overflow-auto flex justify-start">
-          <div className="overflow-x-auto scrollbar-hidden flex pb-5 gap-2 font-bold items-center">
-            <p className="text-xs text-primary/50 shrink-0">ordenar por</p>
-            <Link
-              href={"/fiados?sort=issued"}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByIssued)}>emissão</p>
-            </Link>
-            <Link
-              href={"/fiados?sort=due"}
-              className="grid items-center justify-center shrink-0 rounded-md"
-            >
-              <p className={filterClass(isSortByDueDate)}>vencimento</p>
-            </Link>
-          </div>
-        </div>
-      </div> */}
-
       <div className="flex justify-end mt-4 mr-3">
         <SearchInput endpoint="fiados" />
       </div>
@@ -221,10 +147,9 @@ export default async function FiadosPage({
 
       {/* Receivables History */}
       <ReceivableTable
-        receivables={sortedReceivables.map((s) => s.payment)}
+        receivables={receivables.results.map((s) => s.payment)}
         basePath="fiados"
         accounts={accounts}
-        order={normalizedSort}
       />
 
       <Pagination count={receivables.count} />
@@ -232,18 +157,18 @@ export default async function FiadosPage({
       <div className="mt-6 overflow-hidden">
         <div className="overflow-auto flex">
           <div className="overflow-x-auto scrollbar-hidden flex w-full justify-between px-1 pt-1 pb-5 gap-4 font-bold items-center">
-            <SummaryCard label="total" value={sumTotalAmount()} />
+            <SummaryCard label="total" value={receivables.total} />
             <SummaryCard
               label="em atraso"
-              value={sumOutstanding("overdue")}
+              value={receivables.total_overdue}
               highlight="red"
             />
             <SummaryCard
               label="pago"
-              value={sumTotalPaid()}
+              value={receivables.total_paid}
               highlight="green"
             />
-            <SummaryCard label="a pagar" value={sumTotalOutstanding()} />
+            <SummaryCard label="a pagar" value={receivables.total_to_be_paid} />
           </div>
         </div>
       </div>
