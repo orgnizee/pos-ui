@@ -409,8 +409,14 @@ export default function PdvClient({
   );
   const remaining = orderTotal - paymentTotal;
   const change = Math.max(amountReceivedCents / 100 - orderTotal, 0);
+
+  const hasFiadoPayment = payments.some((p) => isFiadoMethod(p.method));
+  const isDefaultCustomer = customer.id === defaultCustomer.id;
   const canSubmitOrder =
-    cart.length > 0 && payments.length > 0 && Math.abs(remaining) < 0.001;
+    cart.length > 0 &&
+    payments.length > 0 &&
+    Math.abs(remaining) < 0.001 &&
+    !(hasFiadoPayment && isDefaultCustomer);
 
   const resetCheckout = useCallback(() => {
     const today = new Date().toISOString().split("T")[0];

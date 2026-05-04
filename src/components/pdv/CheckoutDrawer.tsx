@@ -70,13 +70,18 @@ export function CheckoutDrawer({
 }: Props) {
   if (!showCheckoutDrawer) return null;
 
+  const hasConsumidorFinal = customer.name.toLowerCase() === "consumidor final";
+
   return (
     <>
       <div className="fixed inset-0 bg-white/90 z-40" onClick={onClose} />
       <aside className="fixed bottom-0 sm:bottom-2 right-0 h-[90%] sm:h-[98%] w-full max-w-xl bg-white sm:border border-t z-50 p-6 overflow-y-auto">
         <h2 className="text-4xl uppercase">Total {formatBRL(orderTotal)}</h2>
 
-        <form action={orderAction} className="mt-4 flex flex-col relative h-[90%] sm:static gap-1">
+        <form
+          action={orderAction}
+          className="mt-4 flex flex-col relative h-[90%] sm:static gap-1"
+        >
           <div className="flex justify-between">
             <span>valor recebido</span>
             <input
@@ -166,85 +171,92 @@ export function CheckoutDrawer({
           <p className="mt-8 uppercase text-tertiary">formas de pagamento</p>
           <div className="border p-3 space-y-3">
             {payments.map((payment, idx) => (
-              <div
-                key={`${payment.method}-${idx}`}
-                className="grid grid-cols-12 gap-2"
-              >
-                <div className="col-span-6">
-                  <SelectInputField
-                    id={`payment-method-${idx}`}
-                    label="pagamento"
-                    value={payment.method}
-                    onChange={(e) => {
-                      const selectedMethodId = e.target.value;
-                      setPayments((prev) =>
-                        prev.map((p, i) =>
-                          i === idx
-                            ? {
-                                ...p,
-                                method: selectedMethodId,
-                                due_at: isFiadoMethod(selectedMethodId)
-                                  ? getDueDate()
-                                  : today,
-                              }
-                            : p,
-                        ),
-                      );
-                    }}
-                    options={paymentMethods.map((m) => ({
-                      label: m.description.toUpperCase(),
-                      value: m.id,
-                    }))}
-                  />
-                </div>
-
-                <div className="col-span-6">
-                  <input
-                    value={formatBRL(Number(payment.amount) || 0)}
-                    onChange={(e) => {
-                      setIsPaymentAmountManuallyEdited(true);
-                      setPayments((prev) =>
-                        prev.map((p, i) =>
-                          i === idx
-                            ? {
-                                ...p,
-                                amount: (
-                                  parseCurrencyToCents(e.target.value) / 100
-                                ).toFixed(2),
-                              }
-                            : p,
-                        ),
-                      );
-                    }}
-                    className="text-primary placeholder:text-secondary outline-none text-end w-full mt-6"
-                    placeholder="R$ 0,00"
-                    inputMode="numeric"
-                  />
-                </div>
-
-                {isFiadoMethod(payment.method) && (
-                  <div className="col-span-12">
-                    <label
-                      htmlFor={`payment-due-at-${idx}`}
-                      className="text-xs text-tertiary"
-                    >
-                      vencimento
-                    </label>
-                    <input
-                      id={`payment-due-at-${idx}`}
-                      type="date"
-                      value={payment.due_at || getDueDate()}
-                      onChange={(e) =>
+              <div key={idx}>
+                {hasConsumidorFinal && isFiadoMethod(payment.method) && (
+                  <span className="text-sm text-red-500">
+                    selecione um cliente
+                  </span>
+                )}
+                <div
+                  key={`${payment.method}-${idx}`}
+                  className="grid grid-cols-12 gap-2"
+                >
+                  <div className="col-span-6">
+                    <SelectInputField
+                      id={`payment-method-${idx}`}
+                      label="pagamento"
+                      value={payment.method}
+                      onChange={(e) => {
+                        const selectedMethodId = e.target.value;
                         setPayments((prev) =>
                           prev.map((p, i) =>
-                            i === idx ? { ...p, due_at: e.target.value } : p,
+                            i === idx
+                              ? {
+                                  ...p,
+                                  method: selectedMethodId,
+                                  due_at: isFiadoMethod(selectedMethodId)
+                                    ? getDueDate()
+                                    : today,
+                                }
+                              : p,
                           ),
-                        )
-                      }
-                      className="w-full"
+                        );
+                      }}
+                      options={paymentMethods.map((m) => ({
+                        label: m.description.toUpperCase(),
+                        value: m.id,
+                      }))}
                     />
                   </div>
-                )}
+
+                  <div className="col-span-6">
+                    <input
+                      value={formatBRL(Number(payment.amount) || 0)}
+                      onChange={(e) => {
+                        setIsPaymentAmountManuallyEdited(true);
+                        setPayments((prev) =>
+                          prev.map((p, i) =>
+                            i === idx
+                              ? {
+                                  ...p,
+                                  amount: (
+                                    parseCurrencyToCents(e.target.value) / 100
+                                  ).toFixed(2),
+                                }
+                              : p,
+                          ),
+                        );
+                      }}
+                      className="text-primary placeholder:text-secondary outline-none text-end w-full mt-6"
+                      placeholder="R$ 0,00"
+                      inputMode="numeric"
+                    />
+                  </div>
+
+                  {isFiadoMethod(payment.method) && (
+                    <div className="col-span-12">
+                      <label
+                        htmlFor={`payment-due-at-${idx}`}
+                        className="text-xs text-tertiary"
+                      >
+                        vencimento
+                      </label>
+                      <input
+                        id={`payment-due-at-${idx}`}
+                        type="date"
+                        value={payment.due_at || getDueDate()}
+                        onChange={(e) =>
+                          setPayments((prev) =>
+                            prev.map((p, i) =>
+                              i === idx ? { ...p, due_at: e.target.value } : p,
+                            ),
+                          )
+                        }
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
 
